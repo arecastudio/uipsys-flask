@@ -26,10 +26,11 @@
 
 
 <div class="row">
-	<div class="col-lg-6">	   
+
+	<div class="col-lg-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">Entri Data Barang</div><!-- /.panel-heading -->
-			<div class="panel-body">                     
+			<div class="panel-body">
 				<form role="form" method="post" action="/insertDataBarang" enctype="multipart/form-data" accept-charset="utf-8">
 					<div class="form-group">
 						<label>Nama Barang</label>
@@ -56,22 +57,24 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-lg-6">
-		<div class="panel-default">
-			<div class="panel-heading">Pilih Foto</div>
-			<div class="panel-body">
-				<img src="{{ url_for('static',filename='icons/no-image.png') }}" name="fotoProduk" width="250px" height="250px" />
-				<hr/>
-				<input type="file" name="fileProduk"/>
+
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Entri Data Barang</div><!-- /.panel-heading -->
+				<div class="panel-body">
+					<img src="{{ url_for('static',filename='icons/no-image.png') }}" name="fotoProduk" width="250px" height="250px" />
+					<hr/>
+					<input type="file" name="fileProduk"/>
+				</div>
 			</div>
 		</div>
-	</div>
+
 </div>
 
 
 <div class="row">
 	<div class="col-lg-12">
-		<div class="panel-default">
+		<div class="panel panel-default">
 			<div class="panel-heading">Tabel Data Barang</div><!-- /.panel-heading -->
 			<div class="panel-body">
 
@@ -97,7 +100,7 @@
 						<td>{{ row[4] }}</td>
 						<td class="center">&nbsp;</td>
 					</tr>
-					{% if cnt.append(cnt.pop() + 1) %}{% endif %} 
+					{% if cnt.append(cnt.pop() + 1) %}{% endif %}
 					{% endfor %}
 
 					</tbody>

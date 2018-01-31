@@ -51,29 +51,79 @@ def logout():
 def about():
 	return render_template('about.html')
 
-@app.route('/dataBarang')
-def dataBarang():
-	cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
-	data = cursor.fetchall()
-	return render_template('data-barang.html',data=data)
-
 @app.route('/dataVendor')
 def dataVendor():
 	return redirect(url_for('main'))
 
-@app.route('/insertDataBarang',methods=['POST'])
-def insertDataBarang():
-	formdb=FormDataBarang()
-	try:
-		#baca kiriman data dari form
+@app.route('/dataBarang',methods=['POST','GET'])
+def dataBarang():
+	#cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
+	row = None
+	form=FormDataBarang(request.form)
+	#print (form.errors)
+	if request.method=='POST':
+		_id=request.form['tx_id']
 		_nama=request.form['tx_nama']
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
-		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
-	finally:
-		flash('You were successfully logged in')
-	return redirect(url_for('dataBarang'))
+		#print (_nama)
+		if form.validate():
+			if _id:
+				cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s)WHERE id=%s);",(_nama,_satuan,_harga,_ket,_id))
+				flash('Data barang berhasil diubah.')
+			else:				
+				cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
+				flash('Data barang berhasil ditambahkan.')
+			return redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
+		else:
+			flash('Silahkan lengkapi terlebih dahulu.')
+	else:
+		if request.args.get('id'):
+			sid=request.args.get('id')
+			cursor.execute("SELECT id,nama,satuan,harga,ket FROM barang WHERE id=%s;",(sid))
+			row=cursor.fetchone()
+			if row:
+				print('Data Perubahan Barang: '+str(row[1]))#cetak nama
+				form.tx_id.default=row[0]
+				form.tx_nama.default=row[1]
+				form.tx_satuan.default=row[2]
+				form.tx_harga.default=row[3]
+				form.tx_ket.default=row[4]
+				form.process()
+			else:
+				print('Data tidak ditemukan.')
+	return render_template('data-barang.html',form=form,data=row)
+
+@app.route('/tableDataBarang')
+def tableDataBarang():
+	cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
+	data = cursor.fetchall()
+	#return redirect(url_for('dataBarang'))
+	return render_template('data-barang-tabel.html',data=data)
+
+@app.route('/dataBarangUbah', methods=['POST', 'GET'])
+def dataBarangUbah():
+	error = None
+	if request.method=='GET':
+		sid = request.args.get('id')
+		cursor.execute("SELECT id,nama,satuan,harga,ket FROM barang WHERE id=%s;",(sid))
+		row=cursor.fetchone()
+		if row:
+			print('Data Perubahan Barang: '+str(row[1]))#cetak nama
+		else:
+			print('Data tidak ditemukan.')
+	return render_template('home.html')
+
+
+
+
+'''
+Running aplikasi**********************************************************************************
+'''
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html')
 
 
 if __name__ == '__main__':

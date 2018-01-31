@@ -1,8 +1,9 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, TextAreaField, IntegerField, RadioField, SelectField, SubmitField
+#from flask_wtf import Form
+from wtforms import  Form, TextField, IntegerField, TextAreaField, StringField, SubmitField, BooleanField, PasswordField, HiddenField
 from wtforms import validators, ValidationError
-
 class FormDataBarang(Form):
-    tx_nama=StringField('Nama barang',[validators.Length(min=1,max=100)])
-    tx_harga=IntegerField('Harga',[validators.DataRequired()])
-    tx_satuan=StringField('Satuan',[validators.Length(min=1,max=100)])
-    tx_ket=StringField('Keterangan',[validators.Length(min=1,max=200)])
+	tx_id = HiddenField()
+	tx_nama = TextField('Nama Barang', [validators.Required("Masukkan nama.")])
+	tx_harga = IntegerField('Harga', [validators.Required("Masukkan harga (numerik).")])
+	tx_satuan = TextField('Satuan', [validators.Required("Masukkan satuan.")])
+	tx_ket = TextField('Keterangan', [validators.Required("Masukkan keterangan.")])

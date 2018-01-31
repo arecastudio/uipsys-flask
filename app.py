@@ -1,9 +1,10 @@
+import os
 from flask import Flask, render_template,url_for,redirect,request, escape, session,json,flash
 from flaskext.mysql import MySQL
-from flask.ext.sendmail import Mail
-from flask.ext.sendmail import Message
+from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from form import FormDataBarang
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
 
@@ -20,6 +21,8 @@ mysql.init_app(app)
 conn = mysql.connect()
 cursor = conn.cursor()
 
+username=None
+
 @app.route('/')
 def main():
 	if 'username' in session:
@@ -32,11 +35,11 @@ def loginsubmit():
 	if request.method=='POST':
 		user=request.form['username']
 		session['username']=user
-		return redirect(url_for('main',username=user))
-	else:
-		user=request.arg.get('username')
-		session['username']=user
-		return redirect(url_for('main',username=user))
+		return redirect(url_for('main'))
+#	else:
+#		user=request.arg.get('username')
+#		session['username']=user
+#		return redirect(url_for('main',username=user))
 
 @app.route('/login')
 def login():
@@ -67,10 +70,11 @@ def dataBarang():
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
+                _file=request.form['file_foto']
 		#print (_nama)
 		if form.validate():
 			if _id:
-				cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s)WHERE id=%s);",(_nama,_satuan,_harga,_ket,_id))
+				cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s WHERE id=%s;",(_nama,_satuan,_harga,_ket,_id))
 				flash('Data barang berhasil diubah.')
 			else:				
 				cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
@@ -97,25 +101,10 @@ def dataBarang():
 
 @app.route('/tableDataBarang')
 def tableDataBarang():
-	cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
+	cursor.execute("SELECT id,nama,satuan,ROUND(harga,0),ket from barang ORDER BY id ASC;")
 	data = cursor.fetchall()
 	#return redirect(url_for('dataBarang'))
 	return render_template('data-barang-tabel.html',data=data)
-
-@app.route('/dataBarangUbah', methods=['POST', 'GET'])
-def dataBarangUbah():
-	error = None
-	if request.method=='GET':
-		sid = request.args.get('id')
-		cursor.execute("SELECT id,nama,satuan,harga,ket FROM barang WHERE id=%s;",(sid))
-		row=cursor.fetchone()
-		if row:
-			print('Data Perubahan Barang: '+str(row[1]))#cetak nama
-		else:
-			print('Data tidak ditemukan.')
-	return render_template('home.html')
-
-
 
 
 '''

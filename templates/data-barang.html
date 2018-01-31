@@ -13,11 +13,14 @@
 	</ul>
 </div>
 
+<div class="row">
 
+
+<!--alert area -->
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
 		{% for message in messages %}
-			<div class="row">
+			<div class="col-lg-12">
 				<div class="alert alert-warning alert-dismissable" role="alert">
 					<button type="button" class="close" data-dismiss="alert" aria-label="close">
 						<span aria-hidden="true">&times;</span>
@@ -31,7 +34,7 @@
 
 
 {% for message in form.tx_harga.errors %}
-<div class="row">
+<div class="col-lg-12">
 			<div class="alert alert-warning alert-dismissable" role="alert">
 				<button type="button" class="close" data-dismiss="alert" aria-label="close">
 					<span aria-hidden="true">&times;</span>
@@ -40,9 +43,8 @@
 			</div>
 	</div>
 {% endfor %}
+<!--alert area -->
 
-
-<div class="row">
 
 	<div class="col-lg-12">
 		<div class="panel panel-default">
@@ -72,7 +74,8 @@
 					<div class="col-lg-6">
 								<img src="{{ url_for('static',filename='icons/no-image.png') }}" name="fotoProduk" width="250px" height="250px" />
 								<hr/>
-								<input type="file" name="fileProduk"/>
+								<!--input type="file" name="fileProduk"/-->
+								{{ form.file_foto }}
 					</div>
 			</div><!--panel body-->
 		</form>

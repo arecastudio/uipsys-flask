@@ -5,6 +5,7 @@ from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from form import FormDataBarang
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug import secure_filename
 
 app = Flask(__name__)
 
@@ -20,6 +21,9 @@ mysql.init_app(app)
 
 conn = mysql.connect()
 cursor = conn.cursor()
+
+app.config['UPLOAD_FOLDER']='/tmp/'
+ALLOWED_EXTENSIONS = set(['jpg'])
 
 username=None
 
@@ -62,6 +66,7 @@ def dataVendor():
 def dataBarang():
 	#cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
 	row = None
+	filename = None
 	form=FormDataBarang(request.form)
 	#print (form.errors)
 	if request.method=='POST':
@@ -70,15 +75,18 @@ def dataBarang():
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
-                _file=request.form['file_foto']
+		foto=request.files['file_foto']
 		#print (_nama)
 		if form.validate():
 			if _id:
 				cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s WHERE id=%s;",(_nama,_satuan,_harga,_ket,_id))
 				flash('Data barang berhasil diubah.')
-			else:				
+			else:
 				cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
 				flash('Data barang berhasil ditambahkan.')
+			if foto and allowed_file(foto.filename):
+				filename = secure_filename(foto.filename)
+				foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
 		else:
 			flash('Silahkan lengkapi terlebih dahulu.')

@@ -7,4 +7,4 @@ class FormDataBarang(Form):
 	tx_harga = IntegerField('Harga', [validators.Required("Masukkan harga (numerik).")])
 	tx_satuan = TextField('Satuan', [validators.Required("Masukkan satuan.")])
 	tx_ket = TextField('Keterangan', [validators.Required("Masukkan keterangan.")])
-        file_foto = FileField('Foto produk')
+	file_foto = FileField('Foto produk')

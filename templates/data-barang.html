@@ -49,10 +49,10 @@
 	<div class="col-lg-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">Entri Data Barang</div><!-- /.panel-heading -->
-			<form id="form" name="form" role="form" method="post" action="/dataBarang" enctype="multipart/form-data" accept-charset="utf-8">
+			<form id="form" name="form" role="form" method="post" action="/dataBarang" enctype="multipart/form-data">
 			<div class="panel-body">
 				<div class="col-lg-6">
-								<div class="form-group">									
+								<div class="form-group">
 									{{ form.tx_id }}
 									{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control') }}
 								</div>
@@ -75,7 +75,7 @@
 								<img src="{{ url_for('static',filename='icons/no-image.png') }}" name="fotoProduk" width="250px" height="250px" />
 								<hr/>
 								<!--input type="file" name="fileProduk"/-->
-								{{ form.file_foto }}
+								{{ form.file_foto(class='btn btn-outline btn-success btn-sm btn-block') }}
 					</div>
 			</div><!--panel body-->
 		</form>

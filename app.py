@@ -3,12 +3,13 @@ from flaskext.mysql import MySQL
 from flask.ext.sendmail import Mail
 from flask.ext.sendmail import Message
 from werkzeug import generate_password_hash, check_password_hash
+from form import FormDataBarang
 
 app = Flask(__name__)
 
 mail = Mail(app)
 
-mysql = MySQL() 
+mysql = MySQL()
 # MySQL configurations
 app.config['MYSQL_DATABASE_USER'] = 'rail'
 app.config['MYSQL_DATABASE_PASSWORD'] = ''
@@ -56,15 +57,20 @@ def dataBarang():
 	data = cursor.fetchall()
 	return render_template('data-barang.html',data=data)
 
+@app.route('/dataVendor')
+def dataVendor():
+	return redirect(url_for('main'))
+
 @app.route('/insertDataBarang',methods=['POST'])
 def insertDataBarang():
-	try:		
+	formdb=FormDataBarang()
+	try:
 		#baca kiriman data dari form
 		_nama=request.form['tx_nama']
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
-		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))		
+		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
 	finally:
 		flash('You were successfully logged in')
 	return redirect(url_for('dataBarang'))

@@ -1,41 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>UIPSys - Integrated System</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- MetisMenu CSS -->
-    <link href="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
-
-    <!-- Social Buttons CSS -->
-    <link href="{{ url_for('static',filename='vendor/bootstrap-social/bootstrap-social.css') }}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static',filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
+{% include 'parts/header.html' %}
 
     <div id="wrapper">
 
@@ -253,7 +216,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -280,19 +243,19 @@
                             <a href="/"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-file-text fa-fw"></i> Berkas<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="flot.html">Flot Charts</a>
+                                    <a href="/dataBarang">Data Barang</a>
                                 </li>
                                 <li>
-                                    <a href="morris.html">Morris.js Charts</a>
+                                    <a href="/dataVendor">Data Vendor</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="/dataBarang"><i class="fa fa-table fa-fw"></i> Data Barang</a>
+                            <a href="#"><i class="fa fa-table fa-fw"></i> Data Grafik</a>
                         </li>
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
@@ -390,33 +353,4 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.js') }}"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('static',filename='dist/js/sb-admin-2.js') }}"></script>
-
-    <!-- DataTables JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/datatables-plugins/dataTables.bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/datatables-responsive/dataTables.responsive.js') }}"></script>
-
-    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
-    <script>
-    $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
-        });
-    });
-    </script>
-
-</body>
-
-</html>
+{% include 'parts/footer.html' %}

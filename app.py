@@ -22,8 +22,33 @@ mysql.init_app(app)
 conn = mysql.connect()
 cursor = conn.cursor()
 
-app.config['UPLOAD_FOLDER']='/tmp/'
+UPLOAD_FOLDER=app.root_path+'/assets/foto/'
+
+app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['jpg'])
+
+# blok fungsi=============================================================================================
+
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
+def insertDataBarang(nama,satuan,harga,ket,nama_foto):
+	if nama_foto == 'no-image.png':
+		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(nama,satuan,harga,ket))
+	else:
+		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket,nama_foto)VALUES(%s,%s,%s,%s,%s);",(nama,satuan,harga,ket,nama_foto))
+	return flash('Data barang berhasil ditambahkan.')
+
+def updateDataBarang(nama,satuan,harga,ket,sid,nama_foto):
+	if nama_foto == 'no-image.png':
+		cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s WHERE id=%s;",(nama,satuan,harga,ket,sid))
+	else:
+		cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s,nama_foto=%s WHERE id=%s;",(nama,satuan,harga,ket,nama_foto,sid))
+	return  flash('Data barang berhasil diubah.')
+
+# blok fungsi=============================================================================================
+
+#print('ROOT PATH: '+app.root_path)
 
 username=None
 
@@ -64,29 +89,30 @@ def dataVendor():
 
 @app.route('/dataBarang',methods=['POST','GET'])
 def dataBarang():
-	#cursor.execute("SELECT id,nama,satuan,harga,ket from barang ORDER BY id ASC;")
 	row = None
-	filename = None
+	filename = 'no-image.png'
 	form=FormDataBarang(request.form)
 	#print (form.errors)
-	if request.method=='POST':
+	if request.method=='POST':		
 		_id=request.form['tx_id']
 		_nama=request.form['tx_nama']
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
-		foto=request.files['file_foto']
-		#print (_nama)
+		#print('xxxxxxxxxxxxxxxxxxxxx'+_ket)
+		#foto=request.files['file_foto']
 		if form.validate():
+			#if request.files['file_foto'].filename!='':# and allowed_file(request.files['file_foto'].filename):
+			if 'file_foto' in request.files:
+				#print('ada foto')
+				foto=request.files['file_foto']
+				if allowed_file(foto.filename):
+					filename = secure_filename(foto.filename)
+					foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			if _id:
-				cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s WHERE id=%s;",(_nama,_satuan,_harga,_ket,_id))
-				flash('Data barang berhasil diubah.')
+				updateDataBarang(_nama,_satuan,_harga,_ket,_id,filename)#tambah fungsi seleksi di def query, jika filename not 'no-image.png'
 			else:
-				cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(_nama,_satuan,_harga,_ket))
-				flash('Data barang berhasil ditambahkan.')
-			if foto and allowed_file(foto.filename):
-				filename = secure_filename(foto.filename)
-				foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+				insertDataBarang(_nama,_satuan,_harga,_ket,filename)			
 			return redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
 		else:
 			flash('Silahkan lengkapi terlebih dahulu.')

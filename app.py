@@ -3,7 +3,7 @@ from flask import Flask, render_template,url_for,redirect,request, escape, sessi
 from flaskext.mysql import MySQL
 from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
-from form import FormDataBarang
+from form import FormDataBarang, FormDataVendor
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
 
@@ -83,9 +83,71 @@ def logout():
 def about():
 	return render_template('about.html')
 
-@app.route('/dataVendor')
+@app.route('/dataVendor',methods=['GET','POST'])
 def dataVendor():
-	return redirect(url_for('main'))
+	form=FormDataVendor(request.form)
+	cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE 1;")
+	data1=cursor.fetchall()
+	if request.method=='POST':
+		cid=request.form['tx_id']
+		cnama=request.form['tx_nama']
+		calamat=request.form['tx_alamat']
+		ctelp=request.form['tx_telp']
+		cemail=request.form['tx_email']
+		cmilik=request.form['tx_pemilik']
+		if form.validate_on_submit():
+			if cid:
+				cursor.execute("UPDATE vendor SET nama=%s,alamat=%s,telp=%s,email=%s,pemilik=%s WHERE id=%s;",(cnama,calamat,ctelp,cemail,cmilik,cid))
+				flash('Data vendor berhasil diubah.')
+				return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+			else:
+				cursor.execute("INSERT INTO vendor(nama,alamat,telp,email,pemilik)VALUES(UCASE(%s),%s,%s,%s,UCASE(%s));",(cnama,calamat,ctelp,cemail,cmilik))
+				flash('Data vendor berhasil ditambahkan.')
+				return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+	else:
+		if request.args.get('id'):			
+			sid=request.args.get('id')
+			cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE id=%s;",(sid))
+			row=cursor.fetchone()
+			if row:
+				print('Data Perubahan Vendor: '+str(row[1]))#cetak nama
+				form.tx_id.default=row[0]
+				form.tx_nama.default=row[1]
+				form.tx_alamat.default=row[2]
+				form.tx_telp.default=row[3]
+				form.tx_email.default=row[4]
+				form.tx_pemilik.default=row[5]
+				form.process()
+			else:
+				print('Data tidak ditemukan.')
+				flash('Data tidak ditemukan.')
+	return render_template('data-vendor.html',form=form,data1=data1)
+
+@app.route('/hapusVendor',methods=['GET','POST'])
+def hapusVendor():
+	if request.method=='GET':
+		sid=request.args.get('id')
+		cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE id=%s;",(sid))
+		data=cursor.fetchall()
+		#return about()
+		return render_template('hapus-vendor.html',data=data)
+	else:
+		sid=request.form['sid']
+		cursor.execute("DELETE FROM vendor WHERE id=%s;",(sid))
+		return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+
+@app.route('/hapusBarang',methods=['GET','POST'])
+def hapusBarang():
+	if request.method=='GET':
+		sid=request.args.get('id')
+		cursor.execute("SELECT id,nama,satuan,harga,ket FROM barang WHERE id=%s;",(sid))
+		data=cursor.fetchall()
+		#return about()
+		return render_template('hapus-barang.html',data=data)
+	else:
+		sid=request.form['sid']
+		cursor.execute("DELETE FROM barang WHERE id=%s;",(sid))
+		return tableDataBarang()
 
 @app.route('/dataBarang',methods=['POST','GET'])
 def dataBarang():
@@ -101,7 +163,7 @@ def dataBarang():
 		_ket=request.form['tx_ket']
 		#print('xxxxxxxxxxxxxxxxxxxxx'+_ket)
 		#foto=request.files['file_foto']
-		if form.validate():
+		if form.validate_on_submit():
 			#if request.files['file_foto'].filename!='':# and allowed_file(request.files['file_foto'].filename):
 			if 'file_foto' in request.files:
 				#print('ada foto')
@@ -114,8 +176,8 @@ def dataBarang():
 			else:
 				insertDataBarang(_nama,_satuan,_harga,_ket,filename)			
 			return redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
-		else:
-			flash('Silahkan lengkapi terlebih dahulu.')
+		#else:
+		#	flash('Silahkan lengkapi terlebih dahulu.')
 	else:
 		if request.args.get('id'):
 			sid=request.args.get('id')
@@ -131,6 +193,7 @@ def dataBarang():
 				form.process()
 			else:
 				print('Data tidak ditemukan.')
+				flash('Data tidak ditemukan.')
 	return render_template('data-barang.html',form=form,data=row)
 
 @app.route('/tableDataBarang')

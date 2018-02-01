@@ -1,0 +1,32 @@
+{% extends 'layouts.html' %}
+
+{% block title %}
+	Hapus Data Vendor
+{% endblock %}
+
+{% block body %}
+
+Yakin untuk hapus Vendor ini?
+{% for row in data %}
+{% set sid=row[0] %}
+	<table cellpadding="5px" cellspacing="5px" class="table">
+		<tr><td>Nama</td><td>: {{row[1]}}</td></tr>
+		<tr><td>Alamat</td><td>: {{row[2]}}</td></tr>
+		<tr><td>Telp</td><td>: {{row[3]}}</td></tr>
+		<tr><td>Email</td><td>: {{row[4]}}</td></tr>
+		<tr><td>Pemilik</td><td>: {{row[4]}}</td></tr>
+	</table>
+<hr/>
+<form method="POST" action="/hapusVendor">
+	<div class="btn-group" role="group">
+		<input type="hidden" name="sid" value="{{ sid }}" />
+		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
+		<a href="/dataVendor" class="btn btn-outline btn-primary">Tidak</a>
+	</div>
+</form>
+
+
+{% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'layouts.html' %}
+
+{% block title %}
+	Hapus Barang
+{% endblock %}
+
+{% block body %}
+
+Yakin untuk hapus barang ini?
+{% for row in data %}
+{% set sid=row[0] %}
+	<table cellpadding="5px" cellspacing="5px" class="table">
+		<tr><td>Nama</td><td>: {{row[1]}}</td></tr>
+		<tr><td>Satuan</td><td>: {{row[2]}}</td></tr>
+		<tr><td>Harga</td><td>: {{row[3]}}</td></tr>
+		<tr><td>Keterangan</td><td>: {{row[4]}}</td></tr>
+	</table>
+<hr/>
+<form method="POST" action="/hapusBarang">
+	<div class="btn-group" role="group">
+		<input type="hidden" name="sid" value="{{ sid }}" />
+		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
+		<a href="/tableDataBarang" class="btn btn-outline btn-primary">Tidak</a>
+	</div>
+</form>
+
+
+{% endfor %}
+
+
+{% endblock %}

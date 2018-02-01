@@ -11,6 +11,31 @@
 
     <title>UIPSys - Integrated System</title>
 
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/jquery/jquery.validate.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/jquery/jquery.form-validator.min.js') }}"></script>    
+    <!--script src="{{ url_for('static',filename='vendor/jquery/jquery-ui.js') }}"></script-->
+
+    <!--link rel="stylesheet" href="{{ url_for('static',filename='vendor/jquery/jquery-ui.css') }}"/-->
+<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script-->
+    <script src="{{ url_for('static',filename='vendor/jquery/jquery.js') }}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.js') }}"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ url_for('static',filename='dist/js/sb-admin-2.js') }}"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="{{ url_for('static',filename='vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/datatables-plugins/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='vendor/datatables-responsive/dataTables.responsive.js') }}"></script>    
+
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
@@ -32,6 +57,17 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+<style type="text/css">
+    .text-alert{
+        color: red;
+        margin: 2px;
+        padding: 2px;
+        background: #ffc;
+        text-align: right;
+    }
+</style>
+
 
 </head>
 

@@ -135,6 +135,7 @@ def hapusVendor():
 	else:
 		sid=request.form['sid']
 		cursor.execute("DELETE FROM vendor WHERE id=%s;",(sid))
+		flash('Data berhasil dihapus.')
 		return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
 
 # blok modul==========================================================================
@@ -150,6 +151,7 @@ def hapusBarang():
 	else:
 		sid=request.form['sid']
 		cursor.execute("DELETE FROM barang WHERE id=%s;",(sid))
+		flash('Data berhasil dihapus.')
 		return tableDataBarang()
 
 @app.route('/dataBarang',methods=['POST','GET'])
@@ -213,9 +215,49 @@ def dataBidang():
 	form=FormDataBidang(request.form)
 	cursor.execute("SELECT id,nama,ket from divisi ORDER BY nama ASC;")
 	data = cursor.fetchall()
+	if request.method=='POST':
+		cid=request.form['tx_id']
+		cnama=request.form['tx_nama']
+		cket=request.form['tx_ket']
+		if form.validate_on_submit():
+			if cid:
+				cursor.execute("UPDATE divisi SET nama=UCASE(%s),ket=%s WHERE id=%s;",(cnama,cket,cid))
+				return redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
+			else:
+				cursor.execute("INSERT INTO divisi(nama,ket)VALUES(UCASE(%s),%s);",(cnama,cket))
+				return redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
+		else:
+			flash('Data belum lengkap.')
+	else:
+		if request.args.get('id'):
+			cid=request.args.get('id')
+			cursor.execute("SELECT id,nama,ket FROM divisi WHERE id=%s;",(cid))
+			row=cursor.fetchone()
+			if row:
+				print('Data Perubahan Barang: '+str(row[1]))#cetak nama
+				form.tx_id.default=row[0]
+				form.tx_nama.default=row[1]
+				form.tx_ket.default=row[2]
+				form.process()
+			else:
+				print('Data tidak ditemukan.')
+				flash('Data tidak ditemukan.')
 	return render_template('data-bidang.html',data=data,form=form)
 
 
+@app.route('/hapusBidang',methods=['GET','POST'])
+def hapusBidang():
+	if request.method=='GET':
+		sid=request.args.get('id')
+		cursor.execute("SELECT id,nama,ket FROM divisi WHERE id=%s;",(sid))
+		data=cursor.fetchall()
+		#return about()
+		return render_template('hapus-bidang.html',data=data)
+	else:
+		sid=request.form['sid']
+		cursor.execute("DELETE FROM divisi WHERE id=%s;",(sid))
+		flash('Data berhasil dihapus.')
+		return redirect(url_for('dataBidang'))
 
 # blok modul==========================================================================
 

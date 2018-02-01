@@ -1,0 +1,29 @@
+{% extends 'layouts.html' %}
+
+{% block title %}
+	Hapus Bidang / Divisi
+{% endblock %}
+
+{% block body %}
+
+Yakin untuk hapus Bidang ini?
+{% for row in data %}
+{% set sid=row[0] %}
+	<table cellpadding="5px" cellspacing="5px" class="table">
+		<tr><td>Nama</td><td>: {{row[1]}}</td></tr>
+		<tr><td>Keterangan</td><td>: {{row[2]}}</td></tr>
+	</table>
+<hr/>
+<form method="POST" action="/hapusBidang">
+	<div class="btn-group" role="group">
+		<input type="hidden" name="sid" value="{{ sid }}" />
+		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
+		<a href="/dataBidang" class="btn btn-outline btn-primary">Tidak</a>
+	</div>
+</form>
+
+
+{% endfor %}
+
+
+{% endblock %}

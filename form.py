@@ -4,6 +4,10 @@ from wtforms import validators, ValidationError
 from wtforms.validators import InputRequired, Email
 from wtforms.fields.html5 import EmailField
 
+class FormLogin(Form):
+	tx_user = TextField('Username',[validators.Length(min=1,max=20)])
+	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
+
 class FormDataBarang(Form):
 	tx_id = HiddenField()
 	tx_nama = TextField('Nama Barang', [validators.Required("Masukkan nama.")])
@@ -27,11 +31,11 @@ class FormDataBidang(Form):
 
 class FormManUser(Form):
 	tx_id = HiddenField()
-	tx_user = TextField('Username', [validators.Required("Masukkan username.")])
+	tx_user = TextField('Username', [validators.Length(min=5, max=20)])
 	tx_nama = TextField('Nama Karyawan', [validators.Required("Masukkan nama lengkap.")])
 	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
 	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])
 	tx_mail = EmailField('Email', [validators.Required("Masukkan email.")])
-	op_divisi = SelectField(u'Bidang',[validators.optional()], coerce=int)
-	op_role = SelectField(u'Hak Pakai',[validators.optional()], coerce=int)
+	op_divisi = SelectField('Bidang',[validators.optional()], coerce=int)
+	op_role = SelectField('Hak Pakai',[validators.optional()], coerce=int)
 	tx_jabatan = TextField('Jabatan', [validators.Required("Masukkan jabatan.")])

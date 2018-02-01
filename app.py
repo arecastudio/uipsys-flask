@@ -5,7 +5,7 @@ from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
-from form import FormDataBarang, FormDataVendor,FormDataBidang,FormManUser
+from form import FormLogin,FormDataBarang,FormDataVendor,FormDataBidang,FormManUser
 
 
 
@@ -61,20 +61,25 @@ def main():
 		return render_template('home.html')
 	return redirect(url_for('login'))
 
-@app.route('/loginsubmit',methods=['POST','GET'])
-def loginsubmit():
-	if request.method=='POST':
-		user=request.form['username']
-		session['username']=user
-		return redirect(url_for('main'))
-#	else:
-#		user=request.arg.get('username')
-#		session['username']=user
-#		return redirect(url_for('main',username=user))
-
-@app.route('/login')
+@app.route('/login',methods=['POST','GET'])
 def login():
-	return render_template('login.html')
+	form=FormLogin(request.form)
+	if request.method=='POST':
+		uname=request.form['tx_user']
+		upass=request.form['tx_pass']
+		if form.validate_on_submit():
+			cursor.execute("SELECT nik,nama,id_divisi,id_role,jabatan,telp,email FROM user WHERE nik=%s LIMIT 1;",(uname))
+			row=cursor.fetchone()
+			if row:
+				session['username']=row[0]
+				print('Berhasil login.')
+				flash('Berhasil login.')
+				#return redirect(url_for('main'))
+			else:
+				print('Login gagal.')
+				flash('Login gagal.')
+				return redirect(url_for('login'))
+	return render_template('login.html',form=form)
 
 @app.route('/logout')
 def logout():
@@ -262,11 +267,24 @@ def hapusBidang():
 		return redirect(url_for('dataBidang'))
 
 # blok modul==========================================================================
+@app.route('/hapusUser',methods=['GET','POST'])
+def hapusUser():
+	if request.method=='GET':
+		sid=request.args.get('id')
+		cursor.execute("SELECT nik,nama,telp,email,jabatan FROM user WHERE nik=%s;",(sid))
+		data=cursor.fetchall()
+		#return about()
+		return render_template('hapus-user.html',data=data)
+	else:
+		sid=request.form['sid']
+		cursor.execute("DELETE FROM user WHERE nik=%s;",(sid))
+		flash('Data berhasil dihapus.')
+		return redirect(url_for('manUser'))
 
 @app.route('/manUser',methods=['GET','POST'])
 def manUser():
 	form=FormManUser(request.form)
-	cursor.execute("SELECT nik,nama,password,telp,email,id_divisi,id_role,jabatan from user ORDER BY nama ASC;")
+	cursor.execute("SELECT u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
 	data = cursor.fetchall()
 	cursor.execute("SELECT id,nama FROM divisi;")
 	tdivisi=cursor.fetchall()
@@ -288,15 +306,36 @@ def manUser():
 		cjab=request.form['tx_jabatan']
 		if form.validate_on_submit():
 			if cid:
-				pass
+				cursor.execute("UPDATE user SET nama=%s,password=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE nik=%s;",(cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
+				flash('Berhasil mengubah informasi user.')
+				return redirect(url_for('manUser'))#refresh
 			else:
-				cursor.execute("INSERT INTO user(nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,%s,%s,%s,%s,%s,%s);",(cuser,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
+				cursor.execute("INSERT INTO user(nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,MD5(%s),%s,%s,%s,%s,%s);",(cuser,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
 				flash('Berhasil menambahkan user baru.')
 				return redirect(url_for('manUser'))#refresh
 		else:
 			flash('Data belum lengkap.')
 	else:
-		pass
+		if request.args.get('id'):
+		#if 'id' in request.args and request.method=='GET':
+			sid=request.args.get('id')
+			cursor.execute("SELECT nik,nama,password,telp,email,id_divisi,id_role,jabatan FROM user WHERE nik=%s LIMIT 1;",(sid))
+			row=cursor.fetchone()
+			if row:
+				print('Data Perubahan User: '+str(row[1]))#cetak nama
+				form.tx_id.default=row[0]
+				form.tx_user.default=row[0]
+				form.tx_nama.default=row[1]
+				form.tx_pass.default=row[2]
+				form.tx_telp.default=row[3]
+				form.tx_mail.default=row[4]
+				form.op_divisi.default=row[5]
+				form.op_role.default=row[6]
+				form.tx_jabatan.default=row[7]
+				form.process()
+				flash('Untuk mengubah informasi user, pastikan untuk mengupdate password terbaru.')
+			else:
+				flash('Data tidak ditemukan.')
 	return render_template('man-user.html',data=data,form=form)
 
 # blok modul==========================================================================

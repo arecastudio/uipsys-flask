@@ -1,27 +1,27 @@
 {% extends 'layouts.html' %}
 
 {% block title %}
-	Hapus Data Vendor
+	Hapus Data User
 {% endblock %}
 
 {% block body %}
 
-Yakin untuk hapus Vendor ini?
+Yakin untuk hapus User ini?
 {% for row in data %}
 {% set sid=row[0] %}
 	<table cellpadding="5px" cellspacing="5px" class="table">
+		<tr><td>Username</td><td>: {{row[0]}}</td></tr>
 		<tr><td>Nama</td><td>: {{row[1]}}</td></tr>
-		<tr><td>Alamat</td><td>: {{row[2]}}</td></tr>
-		<tr><td>Telp</td><td>: {{row[3]}}</td></tr>
-		<tr><td>Email</td><td>: {{row[4]}}</td></tr>
-		<tr><td>Pemilik</td><td>: {{row[5]}}</td></tr>
+		<tr><td>Telp</td><td>: {{row[2]}}</td></tr>
+		<tr><td>Email</td><td>: {{row[3]}}</td></tr>
+		<tr><td>Jabatan</td><td>: {{row[4]}}</td></tr>
 	</table>
 <hr/>
-<form method="POST" action="/hapusVendor">
+<form method="POST" action="/hapusUser">
 	<div class="btn-group" role="group">
 		<input type="hidden" name="sid" value="{{ sid }}" />
 		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
-		<a href="/dataVendor" class="btn btn-outline btn-primary">Tidak</a>
+		<a href="/manUser" class="btn btn-outline btn-primary">Tidak</a>
 	</div>
 </form>
 

@@ -3,9 +3,9 @@ from flask import Flask, render_template,url_for,redirect,request, escape, sessi
 from flaskext.mysql import MySQL
 from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
-from form import FormDataBarang, FormDataVendor
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
+from form import FormDataBarang, FormDataVendor,FormDataBidang
 
 app = Flask(__name__)
 
@@ -34,16 +34,16 @@ def allowed_file(filename):
 
 def insertDataBarang(nama,satuan,harga,ket,nama_foto):
 	if nama_foto == 'no-image.png':
-		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,%s,%s,%s);",(nama,satuan,harga,ket))
+		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,UCASE(%s),%s,%s);",(nama,satuan,harga,ket))
 	else:
-		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket,nama_foto)VALUES(%s,%s,%s,%s,%s);",(nama,satuan,harga,ket,nama_foto))
+		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket,nama_foto)VALUES(%s,UCASE(%s),%s,%s,%s);",(nama,satuan,harga,ket,nama_foto))
 	return flash('Data barang berhasil ditambahkan.')
 
 def updateDataBarang(nama,satuan,harga,ket,sid,nama_foto):
 	if nama_foto == 'no-image.png':
-		cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s WHERE id=%s;",(nama,satuan,harga,ket,sid))
+		cursor.execute("UPDATE barang SET nama=%s,satuan=UCASE(%s),harga=%s,ket=%s WHERE id=%s;",(nama,satuan,harga,ket,sid))
 	else:
-		cursor.execute("UPDATE barang SET nama=%s,satuan=%s,harga=%s,ket=%s,nama_foto=%s WHERE id=%s;",(nama,satuan,harga,ket,nama_foto,sid))
+		cursor.execute("UPDATE barang SET nama=%s,satuan=UCASE(%s),harga=%s,ket=%s,nama_foto=%s WHERE id=%s;",(nama,satuan,harga,ket,nama_foto,sid))
 	return  flash('Data barang berhasil diubah.')
 
 # blok fungsi=============================================================================================
@@ -83,6 +83,7 @@ def logout():
 def about():
 	return render_template('about.html')
 
+# blok modul==========================================================================
 @app.route('/dataVendor',methods=['GET','POST'])
 def dataVendor():
 	form=FormDataVendor(request.form)
@@ -97,7 +98,7 @@ def dataVendor():
 		cmilik=request.form['tx_pemilik']
 		if form.validate_on_submit():
 			if cid:
-				cursor.execute("UPDATE vendor SET nama=%s,alamat=%s,telp=%s,email=%s,pemilik=%s WHERE id=%s;",(cnama,calamat,ctelp,cemail,cmilik,cid))
+				cursor.execute("UPDATE vendor SET nama=UCASE(%s),alamat=%s,telp=%s,email=%s,pemilik=UCASE(%s) WHERE id=%s;",(cnama,calamat,ctelp,cemail,cmilik,cid))
 				flash('Data vendor berhasil diubah.')
 				return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
 			else:
@@ -135,6 +136,8 @@ def hapusVendor():
 		sid=request.form['sid']
 		cursor.execute("DELETE FROM vendor WHERE id=%s;",(sid))
 		return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+
+# blok modul==========================================================================
 
 @app.route('/hapusBarang',methods=['GET','POST'])
 def hapusBarang():
@@ -203,6 +206,18 @@ def tableDataBarang():
 	#return redirect(url_for('dataBarang'))
 	return render_template('data-barang-tabel.html',data=data)
 
+# blok modul==========================================================================
+
+@app.route('/dataBidang',methods=['GET','POST'])
+def dataBidang():
+	form=FormDataBidang(request.form)
+	cursor.execute("SELECT id,nama,ket from divisi ORDER BY nama ASC;")
+	data = cursor.fetchall()
+	return render_template('data-bidang.html',data=data,form=form)
+
+
+
+# blok modul==========================================================================
 
 '''
 Running aplikasi**********************************************************************************

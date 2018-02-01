@@ -35,23 +35,23 @@
 					{{ form.tx_id }}
 					<div class="form-group">
 						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control') }}
-						{%for message in form.tx_nama.errors%}<i class="text-alert">{{message}}</i>{%endfor%}
+						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						{{ form.tx_alamat.label }} {{ form.tx_alamat(class='form-control') }}
-						{%for message in form.tx_alamat.errors%}<i class="text-alert">{{message}}</i>{%endfor%}
+						{%for message in form.tx_alamat.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						{{ form.tx_telp.label }} {{ form.tx_telp(class='form-control') }}
-						{%for message in form.tx_telp.errors%}<i class="text-alert">{{message}}</i>{%endfor%}
+						{%for message in form.tx_telp.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						{{ form.tx_email.label }} {{ form.tx_email(class='form-control') }}
-						{%for message in form.tx_email.errors%}<i class="text-alert">{{message}}</i>{%endfor%}
+						{%for message in form.tx_email.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						{{ form.tx_pemilik.label }} {{ form.tx_pemilik(class='form-control') }}
-						{%for message in form.tx_pemilik.errors%}<i class="text-alert">{{message}}</i>{%endfor%}
+						{%for message in form.tx_pemilik.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						<button type="submit" class="btn btn-outline btn-primary btn-lg btn-block">Simpan</button>

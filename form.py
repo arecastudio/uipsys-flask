@@ -7,7 +7,7 @@ class FormDataBarang(Form):
 	tx_nama = TextField('Nama Barang', [validators.Required("Masukkan nama.")])
 	tx_harga = IntegerField('Harga', [validators.Required("Masukkan harga (numerik).")])
 	tx_satuan = TextField('Satuan', [validators.Required("Masukkan satuan.")])
-	tx_ket = TextField('Keterangan', [validators.Required("Masukkan keterangan.")])
+	tx_ket = TextAreaField('Keterangan', [validators.Required("Masukkan keterangan.")])
 	file_foto = FileField('Foto produk')
 
 class FormDataVendor(Form):
@@ -17,3 +17,8 @@ class FormDataVendor(Form):
 	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])
 	tx_email = TextField('Email', [validators.Required("Masukkan email.")])
 	tx_pemilik = TextField('Nama pemilik', [validators.Required("Masukkan nama pemilik.")])
+
+class FormDataBidang(Form):
+	tx_id = HiddenField()
+	tx_nama = TextField('Nama Bidang', [validators.Required("Masukkan nama bidang / divisi.")])	
+	tx_ket = TextAreaField('Keterangan', [validators.Required("Masukkan keterangan.")])

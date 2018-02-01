@@ -1,6 +1,8 @@
 from flask_wtf import Form
-from wtforms import  TextField, IntegerField, TextAreaField, StringField, SubmitField, BooleanField, PasswordField, HiddenField, FileField
+from wtforms import  TextField, IntegerField, TextAreaField, SelectField, StringField, SubmitField, BooleanField, PasswordField, HiddenField, FileField
 from wtforms import validators, ValidationError
+from wtforms.validators import InputRequired, Email
+from wtforms.fields.html5 import EmailField
 
 class FormDataBarang(Form):
 	tx_id = HiddenField()
@@ -22,3 +24,14 @@ class FormDataBidang(Form):
 	tx_id = HiddenField()
 	tx_nama = TextField('Nama Bidang', [validators.Required("Masukkan nama bidang / divisi.")])	
 	tx_ket = TextAreaField('Keterangan', [validators.Required("Masukkan keterangan.")])
+
+class FormManUser(Form):
+	tx_id = HiddenField()
+	tx_user = TextField('Username', [validators.Required("Masukkan username.")])
+	tx_nama = TextField('Nama Karyawan', [validators.Required("Masukkan nama lengkap.")])
+	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
+	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])
+	tx_mail = EmailField('Email', [validators.Required("Masukkan email.")])
+	op_divisi = SelectField('Bidang',coerce=str)
+	op_role = SelectField('Hak Pakai',coerce=str)
+	tx_jabatan = TextField('Jabatan', [validators.Required("Masukkan jabatan.")])

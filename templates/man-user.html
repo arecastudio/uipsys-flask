@@ -1,0 +1,96 @@
+{% extends 'layouts.html' %}
+
+{% block title %}
+	Data Vendor
+{% endblock %}
+
+{% block body %}
+
+<div class="row">
+
+
+<!--alert area -->
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		{% for message in messages %}
+			<div class="col-lg-12">
+				<div class="alert alert-warning alert-dismissable" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					{{ message }}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
+
+
+<form id="form" name="form" role="form" method="post" action="/manUser" enctype="multipart/form-data">
+	{{ form.csrf_token }}
+	{{ form.tx_id }}
+	<div class="col-lg-6">
+		<div class="panel panel-default">
+			<div class="panel-body">
+					<div class="form-group">
+						{{ form.tx_user.label }} {{ form.tx_user(class='form-control') }}
+						{%for message in form.tx_user.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control') }}
+						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_pass.label }} {{ form.tx_pass(class='form-control') }}
+						{%for message in form.tx_pass.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_telp.label }} {{ form.tx_telp(class='form-control') }}
+						{%for message in form.tx_telp.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-6">
+		<div class="panel panel-default">
+			<div class="panel-body">
+					<div class="form-group">
+						{{ form.tx_mail.label }} {{ form.tx_mail(class='form-control') }}
+						{%for message in form.tx_mail.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.op_divisi.label }} {{ form.op_divisi(class='form-control') }}
+						{%for message in form.op_divisi.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.op_role.label }} {{ form.op_role(class='form-control') }}
+						{%for message in form.op_role.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_jabatan.label }} {{ form.tx_jabatan(class='form-control') }}
+						{%for message in form.tx_jabatan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-outline btn-primary btn-lg btn-block">Simpan</button>
+					</div>
+				
+			</div>
+		</div>
+	</div>
+
+</form>
+
+</div>
+
+
+<script type="text/javascript">
+	/*console.log("Aplikasi pertama menggunakan flask python.");*/
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true
+        });
+    });
+</script>
+
+{% endblock %}

@@ -5,7 +5,9 @@ from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
-from form import FormDataBarang, FormDataVendor,FormDataBidang
+from form import FormDataBarang, FormDataVendor,FormDataBidang,FormManUser
+
+
 
 app = Flask(__name__)
 
@@ -258,6 +260,44 @@ def hapusBidang():
 		cursor.execute("DELETE FROM divisi WHERE id=%s;",(sid))
 		flash('Data berhasil dihapus.')
 		return redirect(url_for('dataBidang'))
+
+# blok modul==========================================================================
+
+@app.route('/manUser',methods=['GET','POST'])
+def manUser():
+	form=FormManUser(request.form)
+	cursor.execute("SELECT nik,nama,password,telp,email,id_divisi,id_role,jabatan from user ORDER BY nama ASC;")
+	data = cursor.fetchall()
+	cursor.execute("SELECT id,nama FROM divisi;")
+	tdivisi=cursor.fetchall()
+	sdivisi=[(i[0], i[1]) for i in tdivisi]
+	form.op_divisi.choices=sdivisi
+	cursor.execute("SELECT id,nama FROM role;")
+	trole=cursor.fetchall()
+	srole=[(i[0], i[1]) for i in trole]
+	form.op_role.choices=srole
+	if request.method=='POST':
+		cid=request.form['tx_id']#tetap ada untuk membedakan data baru dan data update
+		cuser=request.form['tx_user']
+		cnama=request.form['tx_nama']
+		cpass=request.form['tx_pass']
+		ctelp=request.form['tx_telp']
+		cmail=request.form['tx_mail']
+		cdiv=request.form['op_divisi']
+		crole=request.form['op_role']
+		cjab=request.form['tx_jabatan']
+		if form.validate_on_submit() and form.submit.data:
+			if cid:
+				pass
+			else:
+				cursor.execute("INSERT INTO user(nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,%s,%s,%s,%s,%s,%s);",(cuser,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
+				flash('Berhasil menambahkan user baru.')
+				return redirect(url_for('manUser'))#refresh
+		else:
+			flash('Data belum lengkap.')
+	else:
+		pass
+	return render_template('man-user.html',data=data,form=form)
 
 # blok modul==========================================================================
 

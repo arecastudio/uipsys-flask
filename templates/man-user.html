@@ -26,9 +26,10 @@
 {% endwith %}
 
 
-<form id="form" name="form" role="form" method="post" action="/manUser" enctype="multipart/form-data">
+<form id="form" name="form" role="form" method="post" action="{{url_for('manUser')}}" enctype="multipart/form-data">
 	{{ form.csrf_token }}
 	{{ form.tx_id }}
+
 	<div class="col-lg-6">
 		<div class="panel panel-default">
 			<div class="panel-body">
@@ -72,9 +73,9 @@
 						{%for message in form.tx_jabatan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						<button type="submit" class="btn btn-outline btn-primary btn-lg btn-block">Simpan</button>
+						<input type="submit" class="btn btn-outline btn-primary btn-lg btn-block" name="" value="Simpan" />
 					</div>
-				
+
 			</div>
 		</div>
 	</div>

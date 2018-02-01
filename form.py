@@ -32,6 +32,6 @@ class FormManUser(Form):
 	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
 	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])
 	tx_mail = EmailField('Email', [validators.Required("Masukkan email.")])
-	op_divisi = SelectField('Bidang',coerce=str)
-	op_role = SelectField('Hak Pakai',coerce=str)
+	op_divisi = SelectField(u'Bidang',[validators.optional()], coerce=int)
+	op_role = SelectField(u'Hak Pakai',[validators.optional()], coerce=int)
 	tx_jabatan = TextField('Jabatan', [validators.Required("Masukkan jabatan.")])

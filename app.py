@@ -270,11 +270,11 @@ def manUser():
 	data = cursor.fetchall()
 	cursor.execute("SELECT id,nama FROM divisi;")
 	tdivisi=cursor.fetchall()
-	sdivisi=[(i[0], i[1]) for i in tdivisi]
+	sdivisi=[(int(i[0]), i[1]) for i in tdivisi]
 	form.op_divisi.choices=sdivisi
 	cursor.execute("SELECT id,nama FROM role;")
 	trole=cursor.fetchall()
-	srole=[(i[0], i[1]) for i in trole]
+	srole=[(int(i[0]), i[1]) for i in trole]
 	form.op_role.choices=srole
 	if request.method=='POST':
 		cid=request.form['tx_id']#tetap ada untuk membedakan data baru dan data update
@@ -286,7 +286,7 @@ def manUser():
 		cdiv=request.form['op_divisi']
 		crole=request.form['op_role']
 		cjab=request.form['tx_jabatan']
-		if form.validate_on_submit() and form.submit.data:
+		if form.validate_on_submit():
 			if cid:
 				pass
 			else:

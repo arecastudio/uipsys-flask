@@ -1,4 +1,4 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
 	Hapus Bidang / Divisi
@@ -15,10 +15,10 @@ Yakin untuk hapus Bidang ini?
 	</table>
 <hr/>
 <form method="POST" action="/hapusBidang">
+	<input type="hidden" name="sid" value="{{ sid }}" />
 	<div class="btn-group" role="group">
-		<input type="hidden" name="sid" value="{{ sid }}" />
 		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
-		<a href="/dataBidang" class="btn btn-outline btn-primary">Tidak</a>
+		<a href="/tableDataBidang" class="btn btn-outline btn-primary">Tidak</a>
 	</div>
 </form>
 

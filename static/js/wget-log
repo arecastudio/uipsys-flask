@@ -1,0 +1,115 @@
+--2018-02-05 19:27:33--  http://code.jquery.com/jquery-3.3.1.min.js
+Resolving code.jquery.com (code.jquery.com)... 151.139.237.113
+Connecting to code.jquery.com (code.jquery.com)|151.139.237.113|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 86927 (85K) [application/javascript]
+Saving to: ‘jquery-3.3.1.min.js’
+
+
+
+2018-02-05 19:27:35 (83.6 KB/s) - ‘jquery-3.3.1.min.js’ saved [86927/86927]
+
+--2018-02-05 19:27:35--  http://jquery.min.js/
+Resolving jquery.min.js (jquery.min.js)... 202.3.219.211
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:27:39--  (try: 2)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:27:44--  (try: 3)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:27:51--  (try: 4)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:27:58--  (try: 5)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:28:06--  (try: 6)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:28:15--  (try: 7)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:28:25--  (try: 8)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:28:36--  (try: 9)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:28:48--  (try:10)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:29:02--  (try:11)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:29:15--  (try:12)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:29:28--  (try:13)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:29:41--  (try:14)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:29:54--  (try:15)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:30:07--  (try:16)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:30:20--  (try:17)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:30:33--  (try:18)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:30:47--  (try:19)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Retrying.
+
+--2018-02-05 19:31:00--  (try:20)  http://jquery.min.js/
+Connecting to jquery.min.js (jquery.min.js)|202.3.219.211|:80... connected.
+HTTP request sent, awaiting response... Read error (Connection reset by peer) in headers.
+Giving up.
+
+FINISHED --2018-02-05 19:31:03--
+Total wall clock time: 3m 30s
+Downloaded: 1 files, 85K in 1.0s (83.6 KB/s)

@@ -5,7 +5,7 @@ from wtforms.validators import InputRequired, Email
 from wtforms.fields.html5 import EmailField
 
 class FormLogin(Form):
-	tx_user = TextField('Username',[validators.Length(min=1,max=20)])
+	tx_user = TextField('Username',[validators.Required("Masukkan username.")])
 	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
 
 class FormDataBarang(Form):

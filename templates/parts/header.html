@@ -1,74 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <!--meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"-->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+<head>    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <link rel="icon" href="{{ url_for('static',filename='uicon.ico') }}">
 
-    <title>UIPSys - Integrated System</title>
+    <title>UIPSys</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static',filename='css/style.css') }}" rel="stylesheet">
+
+    <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
 
 
-    <!-- jQuery -->
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.validate.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.form-validator.min.js') }}"></script>    
-    <!--script src="{{ url_for('static',filename='vendor/jquery/jquery-ui.js') }}"></script-->
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ url_for('static',filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
 
-    <!--link rel="stylesheet" href="{{ url_for('static',filename='vendor/jquery/jquery-ui.css') }}"/-->
-<!--script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script-->
-    <script src="{{ url_for('static',filename='vendor/jquery/jquery.js') }}"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.js') }}"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('static',filename='dist/js/sb-admin-2.js') }}"></script>
-
-    <!-- DataTables JavaScript -->
-    <script src="{{ url_for('static',filename='vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/datatables-plugins/dataTables.bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static',filename='vendor/datatables-responsive/dataTables.responsive.js') }}"></script>    
-
-    <!-- Bootstrap Core CSS -->
-    <link href="{{ url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- MetisMenu CSS -->
-    <link href="{{ url_for('static',filename='vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
-
-    <!-- Social Buttons CSS -->
-    <link href="{{ url_for('static',filename='vendor/bootstrap-social/bootstrap-social.css') }}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static',filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-<style type="text/css">
-    .text-alert{
-        color: #f00;
-        margin: 2px;
-        padding: 2px;
-        font-weight: bold;
-        font-size: 90%;
-    }
-</style>
-
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 </head>
-
 <body>

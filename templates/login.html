@@ -28,22 +28,23 @@
                     </div>
                     <div class="panel-body">
                         <form role="form" method="post" action="/login">
+                            {{ form.hidden_tag() }}
                             <fieldset>
                                 <div class="form-group">
-                                    {{ form.tx_user.label }} {{ form.tx_user(class='form-control') }}
+                                    {{ form.tx_user.label }} {{ form.tx_user(class='form-control form-control-sm') }}
                                     {%for message in form.tx_user.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
                                 </div>
                                 <div class="form-group">
-                                    {{ form.tx_pass.label }} {{ form.tx_pass(class='form-control') }}
+                                    {{ form.tx_pass.label }} {{ form.tx_pass(class='form-control form-control-sm') }}
                                     {%for message in form.tx_pass.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
                                 </div>
-                                <div class="checkbox">
+                                <!--div class="checkbox">
                                     <label>
                                         <input name="remember" type="checkbox" value="Remember Me">Remember Me
                                     </label>
                                 </div>
-                                <!-- Change this to a button or input when using this as a form -->
-                                <button class="btn btn-lg btn-success btn-block btn-outline" type="submit">Login</button>
+                                < Change this to a button or input when using this as a form -->
+                                <input type="submit" class="btn btn-lg btn-success btn-block btn-outline btn-sm" name="" value="Login">
                             </fieldset>
                         </form>
                     </div>

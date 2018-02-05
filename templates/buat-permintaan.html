@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+	Buat Permintaan
+{% endblock %}
+
+{% block body %}
+
+<p>
+<button id="btn-klir" class="btn btn-primary btn-outline btn-sm">Clear Session</button>
+</p>
+
+<div class="" id="home">
+{% for x in range(0,100) %}
+	<button id="{{x}}" name="{{x}}" class="btn-barang btn btn-outline btn-success btn-xl" style="width: 150px;height: 150px;margin: 5px;padding: 5px;">{{x}}</button>
+{% endfor %}
+</div>
+
+
+<span id="msg"></span>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('.btn-barang').click(function(){
+			var item_id=$(this).attr('id');
+			pesan(item_id);
+		});
+
+		function pesan(id){
+			//document.getElementById('pesan').value=id;
+			//var users={'param1':'admin','param2':'operator'};
+			var pilihan={'pilih':id};
+			$.ajax({
+				type:'POST',
+				url:'{{url_for('postSession')}}',
+				data:JSON.stringify(pilihan),
+				contentType: 'application/json;charset=UTF-8',
+				dataType:'json',
+				cache:false,
+				success:function(retval){
+					console.log(retval);
+				},
+				error:function(retval){
+					console.log('Gagal.');
+				}
+			});
+			return 0;
+		}
+
+		$('#btn-klir').click(function(){
+			$.ajax({
+				type:'POST',
+				url:'{{url_for('klirSession')}}',
+				cache:false,
+				success:function(retval){
+					console.log('berhasil klir session\n'+retval);
+				},
+				error:function(retval){
+					console.log('gagal klir session.');
+				}
+			});
+		});
+	});
+</script>
+
+{% endblock %}

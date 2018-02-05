@@ -1,4 +1,4 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
 	Data Bidang / Divisi
@@ -8,7 +8,7 @@
 
 
 
-<div class="row">	
+
 <!--alert area -->
 {% with messages = get_flashed_messages() %}
 	{% if messages %}
@@ -26,76 +26,73 @@
 {% endwith %}
 
 
-	<div class="col-lg-4">
-		<div class="panel panel-default">
-			<div class="panel-heading">Entry Data Bidang</div><!-- /.panel-heading -->
-			<div class="panel-body">
+	<div class="row">
+		<div class="col-sm-12">
 				<form id="form" name="form" role="form" method="post" action="/dataBidang" enctype="multipart/form-data">
 					{{ form.csrf_token }}
 					{{ form.tx_id }}
 					<div class="form-group">
-						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control') }}
+						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control form-control-sm') }}
 						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_ket.label }} {{ form.tx_ket(class='form-control') }}
+						{{ form.tx_ket.label }} {{ form.tx_ket(class='form-control form-control-sm') }}
 						{%for message in form.tx_ket.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						<button type="submit" class="btn btn-outline btn-primary btn-lg btn-block">Simpan</button>
+						<div class="btn-group">
+							<button type="button" class="btn btn-outline btn-primary btn-sm" id="btn-submit">Simpan</button>
+							<button type="button" class="btn btn-outline btn-warning btn-sm" id="btn-batal">Batal</button>
+						</div>
 					</div>
 				</form>
 			</div>
-		</div>
 	</div>
+	<div id="msg"></div>
 
-	<div class="col-lg-8">
-		<div class="panel panel-default">
-			<div class="panel-heading">Tabel Data Bidang</div><!-- /.panel-heading -->
-			<div class="panel-body">
-
-				<table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
-					<thead>
-						<tr>
-							<th>#</th>
-							<th>Nama Bidang</th>
-							<th>Keterangan</th>
-							<th>Controller</th>
-						</tr>
-					</thead>
-					<tbody>
-
-					{% set cnt = [1] %}
-					{% for row in data %}
-					<tr class="odd gradeX">
-						<td>{{ cnt[0] }}</td>
-						<td>{{ row[1] }}</td>
-						<td>{{ row[2] }}</td>
-						<td>
-							<a href="/dataBidang?id={{ row[0] }}" class="btn-sm btn-warning btn-outline btn-block" title="Ubah"><i class="fa fa-pencil fa-fw"></i></a>
-							<a href="/hapusBidang?id={{ row[0] }}" class="btn-sm btn-danger btn-outline btn-block" title="Hapus" ><i class="fa fa-times-circle-o fa-fw"></i></a>
-						</td>
-					</tr>
-					{% if cnt.append(cnt.pop() + 1) %}{% endif %}
-					{% endfor %}
-
-					</tbody>
-				</table>
-
-			</div>
-		</div>
-	</div>
-
-
-</div>
 
 
 
 <script type="text/javascript">
 	/*console.log("Aplikasi pertama menggunakan flask python.");*/
     $(document).ready(function() {
-        $('#dataTables-example').DataTable({
-            responsive: true
+        //$('#dataTables-example').DataTable({
+        //    responsive: true
+        //});
+
+        $('#btn-batal').click(function(){
+        	console.log('bersihkan form.');
+        	$('#tx_id').val('');
+        	$('#tx_nama').val('');
+        	$('#tx_ket').val('');
+        });
+
+        $('#btn-submit').click(function(){
+        	console.log('submit form');
+        	var data=$('#form').serialize();
+        	$.ajax({
+        		type:'POST',
+        		url:'/dataBidang',
+        		data:data,
+        		success:function(res){
+        			if (res.success) {
+        				console.log(res.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.success+'</span></div></div>';
+						$('#btn-batal').click();
+						$("#msg").html(msg);
+        			}else{
+        				console.log(res.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';
+						$("#msg").html(msg);
+        			}
+        			//$('#dataTables-example').DataTable().ajax.url('/dataBidangJson').load();
+        		},
+        		error:function(){
+					var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+        			console.log(msg);
+        			$("#msg").html(msg);
+        		}
+        	});
         });
     });
 </script>

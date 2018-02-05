@@ -1,10 +1,29 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
-Dashboard
+Welcome {{session['fullname']}}
 {% endblock %}
 
 {% block body %}
-ini adalah Dashboard<hr/>
+
+<div class="row">
+	
+<!--alert area -->
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="col-lg-12">
+                <div class="alert alert-warning alert-dismissable" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+</div>
 
 {% endblock %}

@@ -1,0 +1,61 @@
+body{
+  background:#f4f4f4;
+  margin-top: 0px;
+  margin-bottom: 10px;
+
+  font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.navbar{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.main-bg{background: linear-gradient(#00aaaa,#003333);}
+.text-black{color:black;}
+
+.footer{
+  font-size: 10px;
+  color: #fff;
+  padding: 3px;
+}
+
+.container-fluid {
+    padding-right:0;padding-left:0;
+    margin-right:-15px;margin-left:-15px
+ }
+
+#wrapper{
+  margin: 0px auto;
+  padding-bottom:10px;
+  padding-top:39px;
+  max-width: 100%;
+}
+
+#link-map{
+}
+
+#fotoProduk{
+  text-align: center;
+}
+
+.card{
+  margin-bottom: 5px;
+}
+
+.row{
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.breadcrumb{
+  padding-bottom: 0px;
+  padding-top: 0px;
+}

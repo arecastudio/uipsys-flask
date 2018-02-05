@@ -1,0 +1,53 @@
+body{
+  background:#f4f4f4;
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+.navbar{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.main-bg{background: linear-gradient(#00aaaa,#003333);}
+.text-black{color:black;}
+
+.footer{
+  font-size: 10px;
+  color: #fff;
+  padding: 3px;
+}
+
+.container-fluid{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+#wrapper{
+  margin: 0px auto;
+  padding-bottom:10px;
+  padding-top:39px;
+}
+
+#link-map{
+}
+
+.card{
+  margin-bottom: 5px;
+}
+
+.row{
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.breadcrumb{
+  padding-bottom: 0px;
+  padding-top: 0px;
+}

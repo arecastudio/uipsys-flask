@@ -1,0 +1,17 @@
+{% set cnt = [1] %}
+{% for row in data1 %}
+<tr class="odd gradeX">
+  <td>{{ cnt[0] }}</td>
+  <td>{{ row[1] }}</td>
+  <td>{{ row[2] }}</td>
+  <td>{{ row[3] }}</td>
+  <td>{{ row[4] }}</td>
+  <td>{{ row[5] }}</td>
+  <td>
+    <button type="button" id="{{row[0]}}" class="btn btn-ubah btn-sm btn-warning btn-outline"><i class="fa fa-pencil fa-fw"></i></button>
+    <a href="/hapusVendor?id={{ row[0] }}" class="btn btn-sm btn-danger btn-outline" title="Hapus"
+><i class="fa fa-times-circle-o fa-fw"></i></a>
+  </td>
+</tr>
+{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+{% endfor %}

@@ -1,4 +1,4 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
 	Hapus Barang
@@ -17,8 +17,8 @@ Yakin untuk hapus barang ini?
 	</table>
 <hr/>
 <form method="POST" action="/hapusBarang">
+	<input type="hidden" name="sid" value="{{ sid }}" />
 	<div class="btn-group" role="group">
-		<input type="hidden" name="sid" value="{{ sid }}" />
 		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
 		<a href="/tableDataBarang" class="btn btn-outline btn-primary">Tidak</a>
 	</div>

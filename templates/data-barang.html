@@ -1,20 +1,10 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
 	Data Barang
 {% endblock %}
 
 {% block body %}
-
-<div>
-	<ul class="nav nav-tabs">
-	  <li class="active"><a href="#">Entri Data</a></li>
-	  <li><a href="/tableDataBarang">Table View</a></li>
-	</ul>
-</div>
-
-<div class="row">
-
 
 <!--alert area -->
 {% with messages = get_flashed_messages() %}
@@ -32,50 +22,49 @@
 	{% endif %}
 {% endwith %}
 
-
-	<div class="col-lg-12">
-		<div class="panel panel-default">
-			<div class="panel-heading">Entri Data Barang</div><!-- /.panel-heading -->
 			<form id="form" name="form" role="form" method="post" action="/dataBarang" enctype="multipart/form-data">
 			{{ form.csrf_token }}
-			<div class="panel-body">
-				<div class="col-lg-6">
+						<div class="row">
+							<div class="col-sm-6">
 								<div class="form-group">
 									{{ form.tx_id }}
-									{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control') }}
+									{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control form-control-sm') }}
 									{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 								</div>
 								<div class="form-group">
-									{{ form.tx_harga.label }} {{ form.tx_harga(class='form-control') }}
+									{{ form.tx_harga.label }} {{ form.tx_harga(class='form-control form-control-sm') }}
 									{%for message in form.tx_harga.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 								</div>
 								<div class="form-group">
-									{{ form.tx_satuan.label }} {{ form.tx_satuan(class='form-control') }}
+									{{ form.tx_satuan.label }} {{ form.tx_satuan(class='form-control form-control-sm') }}
 									{%for message in form.tx_satuan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 								</div>
 								<div class="form-group">
-									{{ form.tx_ket.label }} {{ form.tx_ket(class='form-control') }}
+									{{ form.tx_ket.label }} {{ form.tx_ket(class='form-control form-control-sm') }}
 									{%for message in form.tx_ket.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 								</div>
 								<div class="form-group">
-									<button type="submit" class="btn btn-outline btn-primary btn-lg btn-block">Simpan</button>
-									<!--p class="help-block">Example block-level help text here.</p-->
+									<div class="btn-group">
+										<button type="button" class="btn btn-outline btn-primary btn-sm" id="btn-submit">Simpan</button>
+										<button type="button" class="btn btn-outline btn-warning btn-sm" id="btn-batal">Batal</button>
+									</div>
 								</div>
-				</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="form-group">									
+									<img src="{{ url_for('static',filename='no-image.png') }}" id="fotoProduk" name="fotoProduk" width="250px" height="250px" />
+									<hr/>
+									<!--input type="file" name="fileProduk"/-->
+									{{ form.file_foto(class='btn btn-outline btn-success btn-sm btn-block') }}
+								</div>
+							</div>							
+						</div>
+			</form>
 
-					<div class="col-lg-6">
-								<img src="{{ url_for('static',filename='icons/no-image.png') }}" id="fotoProduk" name="fotoProduk" width="250px" height="250px" />
-								<hr/>
-								<!--input type="file" name="fileProduk"/-->
-								{{ form.file_foto(class='btn btn-outline btn-success btn-sm btn-block') }}
-					</div>
-			</div><!--panel body-->
-		</form>
-	</div>
-</div>
-</div>
+<div id="msg">&nbsp;</div>
+
+
 <script type="text/javascript">
-
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -85,9 +74,64 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+$(document).ready(function() {
+	//$("#msg").css('display', 'none');
+
     $("#file_foto").change(function(){
         readURL(this);
     });
+
+    $('#btn-batal').click(function(){
+    	//$('#form')[0].reset();
+    	$('#tx_id').val('');
+    	$('#tx_nama').val('');
+    	$('#tx_harga').val('');
+    	$('#tx_satuan').val('');
+    	$('#tx_ket').val('');
+    	$('#file_foto').val('');
+    	$('#fotoProduk').attr('src', '{{ url_for('static',filename='no-image.png') }}');
+    	$('#tx_id').focus();
+    	console.log('tombol diklik.');
+    });
+
+    $('#btn-submit').click(function(){
+    	//var data=$('#form').serialize();
+    	var data=new FormData($('#form')[0]);
+    	//data=JSON.stringify(data);
+    	console.log('tombol submit fired.'+ data);
+    	$.ajax({
+    		type:'POST',
+    		data:data,
+    		url:'/dataBarang',
+    		cache:false,
+    		async: false,
+    		contentType: false,
+        	processData: false,
+    		success:function(retval){
+    			//upload file menggunakan ajax, harus matikan processData
+    			if (retval.success) {
+    				//console.log('SERVER_SUCCESS_RESPONSE: '+retval.success);
+var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+retval.success+'</span></div></div>';
+					$('#btn-batal').click();
+					$("#msg").html(msg);
+    			}else{
+					//console.log('SERVER_ERROR_RESPONSE: '+retval.error);
+var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+retval.error+'</span></div></div>';
+					$("#msg").html(msg);					
+					//console.log(msg);
+    			}
+    			//console.log('SUKSES');
+    		},
+    		error:function(){
+var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+        		console.log(msg);
+        		$("#msg").html(msg);
+    		}
+    	});  	
+    });
+
+});
 
 </script>
 

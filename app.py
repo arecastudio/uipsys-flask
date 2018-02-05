@@ -1,10 +1,11 @@
 import os
-from flask import Flask, render_template,url_for,redirect,request, escape, session,json,flash
+from flask import Flask, render_template,url_for,redirect,request, escape, session,json,jsonify,flash
 from flaskext.mysql import MySQL
 from flask_sendmail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
+from functools import wraps
 from form import FormLogin,FormDataBarang,FormDataVendor,FormDataBidang,FormManUser
 
 
@@ -39,27 +40,36 @@ def insertDataBarang(nama,satuan,harga,ket,nama_foto):
 		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket)VALUES(%s,UCASE(%s),%s,%s);",(nama,satuan,harga,ket))
 	else:
 		cursor.execute("INSERT INTO barang(nama,satuan,harga,ket,nama_foto)VALUES(%s,UCASE(%s),%s,%s,%s);",(nama,satuan,harga,ket,nama_foto))
-	return flash('Data barang berhasil ditambahkan.')
+	return 'Data barang berhasil ditambahkan.'
 
 def updateDataBarang(nama,satuan,harga,ket,sid,nama_foto):
 	if nama_foto == 'no-image.png':
 		cursor.execute("UPDATE barang SET nama=%s,satuan=UCASE(%s),harga=%s,ket=%s WHERE id=%s;",(nama,satuan,harga,ket,sid))
 	else:
 		cursor.execute("UPDATE barang SET nama=%s,satuan=UCASE(%s),harga=%s,ket=%s,nama_foto=%s WHERE id=%s;",(nama,satuan,harga,ket,nama_foto,sid))
-	return  flash('Data barang berhasil diubah.')
+	return  'Data barang berhasil diubah.'
 
 # blok fungsi=============================================================================================
 
 #print('ROOT PATH: '+app.root_path)
 
 username=None
+fullname=None
+
+def login_required(f):
+	@wraps(f)
+	def wrap(*args,**kwargs):
+		if 'username' in session:
+			return f(*args,**kwargs)
+		else:
+			flash('Anda harus login terlebih dahulu.')
+			return redirect(url_for('login'))
+	return wrap
 
 @app.route('/')
+@login_required
 def main():
-	if 'username' in session:
-		username=session['username']
-		return render_template('home.html')
-	return redirect(url_for('login'))
+	return render_template('home.html')
 
 @app.route('/login',methods=['POST','GET'])
 def login():
@@ -68,30 +78,71 @@ def login():
 		uname=request.form['tx_user']
 		upass=request.form['tx_pass']
 		if form.validate_on_submit():
-			cursor.execute("SELECT nik,nama,id_divisi,id_role,jabatan,telp,email FROM user WHERE nik=%s LIMIT 1;",(uname))
+			cursor.execute("SELECT nik,nama,id_divisi,id_role,jabatan,telp,email FROM user WHERE nik=%s AND password=MD5(%s) LIMIT 1;",(uname,upass))
 			row=cursor.fetchone()
 			if row:
 				session['username']=row[0]
+				session['fullname']=row[1]
 				print('Berhasil login.')
 				flash('Berhasil login.')
-				#return redirect(url_for('main'))
+				return redirect(url_for('main'))
 			else:
 				print('Login gagal.')
 				flash('Login gagal.')
 				return redirect(url_for('login'))
+		else:
+			flash('Lengkapi informasi login anda.')
 	return render_template('login.html',form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
 	session.pop('username',None)
+	session.pop('fullname',None)
+	session.pop('pilih_item',None)
 	return redirect(url_for('main'))
 
 @app.route('/about')
+@login_required
 def about():
 	return render_template('about.html')
 
 # blok modul==========================================================================
+@app.route('/getVendorById',methods=['POST','GET'])
+def getVendorById():
+	if request.method=='POST':
+		cid=request.get_json().get('id')
+		cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE id=%s LIMIT 1;",(cid))
+		row=cursor.fetchone();
+		return jsonify(row)
+	return ('', 204)
+# blok modul==========================================================================
+
+@app.route('/tableDataVendor',methods=['GET'])
+@login_required
+def tableDataVendor():
+	cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE 1 ORDER BY nama ASC;")
+	data = cursor.fetchall()
+	if data:
+		return render_template('data-vendor-tabel.html',data=data)
+# blok modul==========================================================================
+@app.route('/getVendor',methods=['POST','GET'])
+def getVendor():
+	if request.method=='POST':
+		cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE 1;")
+		row=cursor.fetchall()
+		if row:
+			print('getVendor berhasil.')
+			return jsonify({'sukses':row})
+		else:
+			print('getVendor berhasil.')
+			return jsonify({'gagal':'Gagal mengambil data Vendor.'})
+		#print('getVendor berhasil.')
+		#return jsonify(row)
+	return ('', 204)
+# blok modul==========================================================================
 @app.route('/dataVendor',methods=['GET','POST'])
+@login_required
 def dataVendor():
 	form=FormDataVendor(request.form)
 	cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE 1;")
@@ -106,14 +157,16 @@ def dataVendor():
 		if form.validate_on_submit():
 			if cid:
 				cursor.execute("UPDATE vendor SET nama=UCASE(%s),alamat=%s,telp=%s,email=%s,pemilik=UCASE(%s) WHERE id=%s;",(cnama,calamat,ctelp,cemail,cmilik,cid))
-				flash('Data vendor berhasil diubah.')
-				return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+				return jsonify({'success':'Data vendor berhasil diubah.'})
+				#return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
 			else:
 				cursor.execute("INSERT INTO vendor(nama,alamat,telp,email,pemilik)VALUES(UCASE(%s),%s,%s,%s,UCASE(%s));",(cnama,calamat,ctelp,cemail,cmilik))
-				flash('Data vendor berhasil ditambahkan.')
-				return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+				return jsonify({'success':'Data vendor berhasil ditambahkan.'})
+				#return redirect(url_for('dataVendor')) #agar dokumen refresh setelah submit
+		else:
+			return jsonify({'error':'Lengkapi form terlebih dahulu.'})
 	else:
-		if request.args.get('id'):			
+		if request.args.get('id'):
 			sid=request.args.get('id')
 			cursor.execute("SELECT id,nama,alamat,telp,email,pemilik FROM vendor WHERE id=%s;",(sid))
 			row=cursor.fetchone()
@@ -162,34 +215,35 @@ def hapusBarang():
 		return tableDataBarang()
 
 @app.route('/dataBarang',methods=['POST','GET'])
+@login_required
 def dataBarang():
 	row = None
 	filename = 'no-image.png'
 	form=FormDataBarang(request.form)
 	#print (form.errors)
-	if request.method=='POST':		
+	if request.method=='POST':
 		_id=request.form['tx_id']
 		_nama=request.form['tx_nama']
 		_harga=request.form['tx_harga']
 		_satuan=request.form['tx_satuan']
 		_ket=request.form['tx_ket']
-		#print('xxxxxxxxxxxxxxxxxxxxx'+_ket)
-		#foto=request.files['file_foto']
 		if form.validate_on_submit():
 			#if request.files['file_foto'].filename!='':# and allowed_file(request.files['file_foto'].filename):
 			if 'file_foto' in request.files:
-				#print('ada foto')
+				print('ada foto')
 				foto=request.files['file_foto']
 				if allowed_file(foto.filename):
 					filename = secure_filename(foto.filename)
 					foto.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			else:
+				print('tidak ada foto.')
 			if _id:
 				updateDataBarang(_nama,_satuan,_harga,_ket,_id,filename)#tambah fungsi seleksi di def query, jika filename not 'no-image.png'
 			else:
-				insertDataBarang(_nama,_satuan,_harga,_ket,filename)			
-			return redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
-		#else:
-		#	flash('Silahkan lengkapi terlebih dahulu.')
+				insertDataBarang(_nama,_satuan,_harga,_ket,filename)
+			return jsonify({'success':'Data Barang berhasil disimpan.'})#redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
+		else:
+			return jsonify({'error':'Lengkapi data terlebih dahulu.'})
 	else:
 		if request.args.get('id'):
 			sid=request.args.get('id')
@@ -208,16 +262,25 @@ def dataBarang():
 				flash('Data tidak ditemukan.')
 	return render_template('data-barang.html',form=form,data=row)
 
-@app.route('/tableDataBarang')
+@app.route('/tableDataBarang',methods=['GET'])
+@login_required
 def tableDataBarang():
 	cursor.execute("SELECT id,nama,satuan,ROUND(harga,0),ket from barang ORDER BY id ASC;")
 	data = cursor.fetchall()
-	#return redirect(url_for('dataBarang'))
-	return render_template('data-barang-tabel.html',data=data)
+	if data:
+		return render_template('data-barang-tabel.html',data=data)
 
 # blok modul==========================================================================
+@app.route('/tableDataBidang',methods=['GET'])
+@login_required
+def tableDataBidang():
+	cursor.execute("SELECT id,nama,ket from divisi ORDER BY nama ASC;")
+	data = cursor.fetchall()
+	if data:
+		return render_template('data-bidang-tabel.html',data=data)
 
 @app.route('/dataBidang',methods=['GET','POST'])
+@login_required
 def dataBidang():
 	form=FormDataBidang(request.form)
 	cursor.execute("SELECT id,nama,ket from divisi ORDER BY nama ASC;")
@@ -229,12 +292,12 @@ def dataBidang():
 		if form.validate_on_submit():
 			if cid:
 				cursor.execute("UPDATE divisi SET nama=UCASE(%s),ket=%s WHERE id=%s;",(cnama,cket,cid))
-				return redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
+				return jsonify({'success':'Berhasil ubah data bidang.'})#redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
 			else:
 				cursor.execute("INSERT INTO divisi(nama,ket)VALUES(UCASE(%s),%s);",(cnama,cket))
-				return redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
+				return jsonify({'success':'Berhasil simpan data bidang.'})#redirect(url_for('dataBidang')) #agar dokumen refresh setelah submit
 		else:
-			flash('Data belum lengkap.')
+			return jsonify({'error':'Gagal simpan data bidang.'})
 	else:
 		if request.args.get('id'):
 			cid=request.args.get('id')
@@ -264,7 +327,7 @@ def hapusBidang():
 		sid=request.form['sid']
 		cursor.execute("DELETE FROM divisi WHERE id=%s;",(sid))
 		flash('Data berhasil dihapus.')
-		return redirect(url_for('dataBidang'))
+		return redirect(url_for('tableDataBidang'))
 
 # blok modul==========================================================================
 @app.route('/hapusUser',methods=['GET','POST'])
@@ -282,6 +345,7 @@ def hapusUser():
 		return redirect(url_for('manUser'))
 
 @app.route('/manUser',methods=['GET','POST'])
+@login_required
 def manUser():
 	form=FormManUser(request.form)
 	cursor.execute("SELECT u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
@@ -338,6 +402,33 @@ def manUser():
 				flash('Data tidak ditemukan.')
 	return render_template('man-user.html',data=data,form=form)
 
+# blok modul==========================================================================
+
+@app.route('/buatPermintaan',methods=['POST','GET'])
+@login_required
+def buatPermintaan():
+	return render_template('buat-permintaan.html')
+
+# blok modul==========================================================================
+@app.route('/postSession',methods=['POST','GET'])
+def postSession():
+	if request.method=='POST':
+		data=request.get_json().get('pilih')
+		#data[1]=request.get_json().get('param2')
+		print('Item dipilih: '+data)
+		if 'pilih_item' in session:
+			if data not in session['pilih_item']:
+				session['pilih_item']+=','+data
+		else:
+			#session['pilih_item']=[]
+			session['pilih_item']=data
+		return jsonify(session['pilih_item'])
+	return ('', 204)
+# blok modul==========================================================================
+@app.route('/klirSession',methods=['POST','GET'])
+def klirSession():
+	session.pop('pilih_item',None)
+	return 'SERVER_LOG: Berhasil klir session.'
 # blok modul==========================================================================
 
 '''

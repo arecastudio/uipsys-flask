@@ -69,4 +69,35 @@
 
 </form>
 
+<script type="text/javascript">
+	$(document).ready(function(){
+		//console.log('Document ready.');
+
+		$('#bt-submit').click(function(){
+			console.log('submit button clicked.');
+			var data=$('#form').serialize();
+			$.ajax({
+				type:'POST',
+				url:'/manUser',
+				data:data,
+				success:function(resp){
+					if(resp.success){
+						console.log('Berhasil simpan data.');
+					}else{
+						console.log('Gagal simpan data.');
+					}
+				},
+				error:function(){
+					console.log('submit failed.');
+				}
+			});
+		});
+	});
+</script>
+
+
+
+
+
+
 {% endblock %}

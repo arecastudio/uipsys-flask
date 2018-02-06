@@ -372,14 +372,14 @@ def manUser():
 		if form.validate_on_submit():
 			if cid:
 				cursor.execute("UPDATE user SET nama=%s,password=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE nik=%s;",(cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
-				flash('Berhasil mengubah informasi user.')
-				return redirect(url_for('manUser'))#refresh
+				#flash('Berhasil mengubah informasi user.')
+				return jsonify({'success':'Informasi user berhasil diubah.'})#redirect(url_for('manUser'))#refresh
 			else:
 				cursor.execute("INSERT INTO user(nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,MD5(%s),%s,%s,%s,%s,%s);",(cuser,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
-				flash('Berhasil menambahkan user baru.')
-				return redirect(url_for('manUser'))#refresh
+				#flash('Berhasil menambahkan user baru.')
+				return jsonify({'success':'User baru telah ditambahkan.'})#redirect(url_for('manUser'))#refresh
 		else:
-			flash('Data belum lengkap.')
+			return jsonify({'error':'Lengkapi isian form terlebih dahulu.'})#flash('Data belum lengkap.')
 	else:
 		if request.args.get('id'):
 		#if 'id' in request.args and request.method=='GET':

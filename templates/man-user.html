@@ -62,12 +62,15 @@
 						{%for message in form.tx_jabatan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="btn-group">
-						<button type="button" id="bt-submit" class="btn btn-outline-primary btn-sm" name="">Simpan</button>
-						<button type="button" id="bt-batal" class="btn btn-outline-warning btn-sm">Batal</button>
+						<button type="button" id="bt-submit" class="btn btn-outline-primary btn-sm" name=""><i class="fas fa-save"></i>&nbsp;Simpan</button>
+						<button type="button" id="bt-batal" class="btn btn-outline-warning btn-sm"><i class="fas fa-sync"></i>&nbsp;Batal</button>
 					</div>
-
-
 </form>
+
+<div style="float:right;">
+	<a href="/manUserTabel" class="btn btn-outline-success btn-sm" style=""><i class="fas fa-table"></i>&nbsp;Tampilkan Table User</a>
+</div>
+<div style=""></div>
 
 <script type="text/javascript">
 	$(document).ready(function(){

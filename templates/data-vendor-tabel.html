@@ -7,7 +7,6 @@
 {% block body %}
 
 
-
 <!--alert area -->
 {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -49,8 +48,8 @@
                         <td>{{ row[4] }}</td>
                         <td>{{ row[5] }}</td>
                         <td>
-                            <a href="/dataBidang?id={{ row[0] }}" class="btn-sm btn-warning btn-outline" title="Ubah"><i class="fa fa-edit"></i></a>
-                            <a href="/hapusBidang?id={{ row[0] }}" class="btn-sm btn-danger btn-outline" title="Hapus" ><i class="fa fa-trash-alt"></i></a>
+                            <a href="/dataBidang?id={{ row[0] }}" class="btn btn-sm btn-outline-warning" title="Ubah"><i class="fa fa-edit"></i></a>
+                            <a href="/hapusBidang?id={{ row[0] }}" class="btn btn-sm btn-outline-danger" title="Hapus" ><i class="fa fa-trash-alt"></i></a>
                         </td>
                     </tr>
                     {% if cnt.append(cnt.pop() + 1) %}{% endif %}

@@ -39,3 +39,12 @@ class FormManUser(FlaskForm):
 	op_divisi = SelectField('Bidang',[validators.optional()], coerce=int)
 	op_role = SelectField('Hak Pakai',[validators.optional()], coerce=int)
 	tx_jabatan = TextField('Jabatan', [validators.Required("Masukkan jabatan.")])
+
+class FormOrder(FlaskForm):
+	tx_nomor = TextField('Nomor Surat',[validators.required('Masukkan nomor surat.')])
+	tx_perihal = TextField('Perihal', [validators.Required("Masukkan perihal.")])
+	tx_id = HiddenField()
+	tx_nama1 = TextField('Nama Pembuat', [validators.Required("Masukkan nama.")])
+	tx_jab1 = TextField('Jabatan', [validators.Required("Masukkan perihal.")])
+	op_nama2 = SelectField('Penanggung Jawab',[validators.optional()], coerce=str)
+	tx_jab2 = TextField('Jabatan', [validators.Required("Masukkan perihal.")])

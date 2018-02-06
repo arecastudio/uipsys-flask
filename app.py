@@ -6,7 +6,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
 from functools import wraps
-from form import FormLogin,FormDataBarang,FormDataVendor,FormDataBidang,FormManUser
+from form import FormLogin,FormDataBarang,FormDataVendor,FormDataBidang,FormManUser,FormOrder
 
 
 
@@ -398,10 +398,19 @@ def manUser():
 				form.op_role.default=row[6]
 				form.tx_jabatan.default=row[7]
 				form.process()
-				flash('Untuk mengubah informasi user, pastikan untuk mengupdate password terbaru.')
+				print('Untuk mengubah informasi user, pastikan untuk mengupdate password terbaru.')
 			else:
-				flash('Data tidak ditemukan.')
+				print('Data tidak ditemukan.')
 	return render_template('man-user.html',data=data,form=form)
+
+
+@app.route('/manUserTabel',methods={'GET','POST'})
+def manUserTabel():
+    if request.method=='GET':
+        cursor.execute("SELECT u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
+        row=cursor.fetchall()
+        return render_template('man-user-tabel.html',data=row)
+
 
 # blok modul==========================================================================
 class orderan():
@@ -429,6 +438,7 @@ def buatPermintaan():
 	cursor.execute('SELECT id,nama,UCASE(satuan),harga,nama_foto FROM barang ORDER BY nama ASC;')
 	row=cursor.fetchall()
 	return render_template('buat-permintaan.html',data=row)
+
 
 # blok modul==========================================================================
 def getBarangCount():
@@ -465,7 +475,15 @@ def klirSession():
 # blok modul==========================================================================
 @app.route('/formPermintaan',methods=['POST','GET'])
 def formPermintaan():
-	return render_template('form-permintaan.html')
+	if request.method=='POST':
+		pass
+	else:
+		form=FormOrder()
+		cursor.execute("SELECT nik,nama FROM user;")
+		tuser=cursor.fetchall()
+		suser=[(i[0], i[1]) for i in tuser]
+		form.op_nama2.choices=suser
+		return render_template('form-permintaan.html',form=form)
 # blok modul==========================================================================
 
 # blok modul==========================================================================

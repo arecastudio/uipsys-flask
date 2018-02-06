@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-	Form Permintaan
+	Formulir Permintaan
 {% endblock %}
 
 {% block body %}
@@ -27,24 +27,28 @@
 					{{ form.csrf_token }}
 					{{ form.tx_id }}
 					<div class="form-group">
-						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control form-control-sm') }}
-						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.tx_nomor.label }} {{ form.tx_nomor(class='form-control form-control-sm') }}
+						{%for message in form.tx_nomor.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_alamat.label }} {{ form.tx_alamat(class='form-control form-control-sm') }}
-						{%for message in form.tx_alamat.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.tx_perihal.label }} {{ form.tx_perihal(class='form-control form-control-sm') }}
+						{%for message in form.tx_perihal.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_telp.label }} {{ form.tx_telp(class='form-control form-control-sm') }}
-						{%for message in form.tx_telp.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.tx_nama1.label }} {{ form.tx_nama1(class='form-control form-control-sm') }}
+						{%for message in form.tx_nama1.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_email.label }} {{ form.tx_email(class='form-control form-control-sm') }}
-						{%for message in form.tx_email.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.tx_jab1.label }} {{ form.tx_jab1(class='form-control form-control-sm') }}
+						{%for message in form.tx_jab1.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_pemilik.label }} {{ form.tx_pemilik(class='form-control form-control-sm') }}
-						{%for message in form.tx_pemilik.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.op_nama2.label }} {{ form.op_nama2(class='form-control form-control-sm') }}
+						{%for message in form.op_nama2.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_jab2.label }} {{ form.tx_jab2(class='form-control form-control-sm') }}
+						{%for message in form.tx_jab2.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
 						<div class="btn-group">

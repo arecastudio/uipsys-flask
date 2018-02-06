@@ -10,12 +10,13 @@
 <button id="btn-klir" class="btn btn-primary btn-outline btn-sm">Clear Session</button>
 </p>
 
+<input type="text" class="form-control" id="tmp" value="" />
+
 <div class="" id="home">
 {% for x in range(0,100) %}
 	<button id="{{x}}" name="{{x}}" class="btn-barang btn btn-outline btn-success btn-xl" style="width: 150px;height: 150px;margin: 5px;padding: 5px;">{{x}}</button>
 {% endfor %}
 </div>
-
 
 <span id="msg"></span>
 
@@ -24,6 +25,27 @@
 		$('.btn-barang').click(function(){
 			var item_id=$(this).attr('id');
 			pesan(item_id);
+			console.log('button fired: '+item_id);
+			/*var tmp=[];
+			var isAda=0;
+			if($('#tmp').val()!='') {
+				var arr=new Array();
+				arr=$('#tmp').val().split(',');
+				tmp.push(arr);
+				console.log('hasil split: '+arr);
+			}
+			for(var i=0;i<tmp.length;i++){
+				if(tmp[i]==item_id){
+					console.log(tmp[i]+' sudah ada.');
+					isAda=1;
+				}else{
+					console.log(tmp[i]+' belum ada.');	
+				}
+			}
+			if (isAda==0) tmp.push(item_id);
+			$('#tmp').val(tmp);
+			console.log(tmp);*/
+			
 		});
 
 		function pesan(id){

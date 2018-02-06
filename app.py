@@ -16,8 +16,8 @@ mail = Mail(app)
 
 mysql = MySQL()
 # MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'rail'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'pdamjpr.123'
 app.config['MYSQL_DATABASE_DB'] = 'db_uipsys'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
@@ -55,6 +55,7 @@ def updateDataBarang(nama,satuan,harga,ket,sid,nama_foto):
 
 username=None
 fullname=None
+barang_dipilih=[]
 
 def login_required(f):
 	@wraps(f)
@@ -403,26 +404,47 @@ def manUser():
 	return render_template('man-user.html',data=data,form=form)
 
 # blok modul==========================================================================
+class orderan():
+	def __init__(self,id):
+		self.id=id
 
+
+#@staticmethod
+def buatOrderan(id):
+	mengorder=[]#deklarasi list object
+	ord=orderan(id)
+	mengorder.append(ord)
+
+# blok modul==========================================================================
 @app.route('/buatPermintaan',methods=['POST','GET'])
 @login_required
 def buatPermintaan():
 	return render_template('buat-permintaan.html')
 
 # blok modul==========================================================================
+def getBarangCount():
+	cursor.execute('SELECT COUNT(id) FROM barang;')
+	row=cursor.fetchone()
+	if row:
+		return row[0]
+	else:
+		return 0
+# blok modul==========================================================================
 @app.route('/postSession',methods=['POST','GET'])
 def postSession():
+	global barang_dipilih
+	isMatch=0
 	if request.method=='POST':
-		data=request.get_json().get('pilih')
-		#data[1]=request.get_json().get('param2')
-		print('Item dipilih: '+data)
-		if 'pilih_item' in session:
-			if data not in session['pilih_item']:
-				session['pilih_item']+=','+data
-		else:
-			#session['pilih_item']=[]
-			session['pilih_item']=data
-		return jsonify(session['pilih_item'])
+		pil=request.get_json().get('pilih')
+		print('Item dipilih: '+pil)
+		#barang_dipilih.append(pil)
+		for brg in barang_dipilih:
+			if brg==pil:
+				isMatch=1
+				print(str(pil)+' sudah ada')
+		if isMatch==0:
+			barang_dipilih.append(pil)
+		return jsonify(barang_dipilih)
 	return ('', 204)
 # blok modul==========================================================================
 @app.route('/klirSession',methods=['POST','GET'])

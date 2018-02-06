@@ -18,7 +18,7 @@
 	<div id="{{x[0]}}" name="{{x[0]}}" class="btn-barang btn btn-outline-info" style="width: 250px;margin: 3px;padding: 2px;">
 		<img src="{{ url_for('static',filename='foto/'+x[4]) }}" style="width:240px;height:130px;border-radius:5px;"/>
 		
-		<div style="background-color:#ccc;width:245px;border-radius:5px;hyphens:auto;overflow-wrap:break-word;word-wrap:break-word;">{{ x[1] }}</div>
+		<div style="background-color:#ccc;width:245px;border-radius:5px;hyphens:auto;overflow-wrap:break-word;word-wrap:break-word;"><strong style="color:#000000;font-size:13px;">{{ x[1] }}</strong></div>
 	</div>
 {% endfor %}
 {% endif %}
@@ -30,6 +30,7 @@
 	$(document).ready(function(){
 		$('.btn-barang').click(function(){
 			var item_id=$(this).attr('id');
+			document.getElementById(item_id).setAttribute('class','btn-barang btn btn-outline-danger');	
 			pesan(item_id);
 			console.log('button fired: '+item_id);
 			/*var tmp=[];

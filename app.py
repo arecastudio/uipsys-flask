@@ -459,6 +459,8 @@ def postSession():
 @app.route('/klirSession',methods=['POST','GET'])
 def klirSession():
 	session.pop('pilih_item',None)
+	global barang_dipilih
+	barang_dipilih=[]
 	return 'SERVER_LOG: Berhasil klir session.'
 # blok modul==========================================================================
 

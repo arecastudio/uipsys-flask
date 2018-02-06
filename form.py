@@ -31,7 +31,7 @@ class FormDataBidang(FlaskForm):
 
 class FormManUser(FlaskForm):
 	tx_id = HiddenField()
-	tx_user = TextField('Username', [validators.Length(min=5, max=20)])
+	tx_user = TextField('Username', [validators.Length(min=1, max=100)])
 	tx_nama = TextField('Nama Karyawan', [validators.Required("Masukkan nama lengkap.")])
 	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
 	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])

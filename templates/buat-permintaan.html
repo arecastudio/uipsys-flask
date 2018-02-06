@@ -6,13 +6,21 @@
 
 {% block body %}
 
-<p>
+<!--p>
 <button id="btn-klir" class="btn btn-primary btn-outline btn-sm">Clear Session</button>
 </p>
 
-<input type="text" class="form-control" id="tmp" value="" />
+<input type="text" class="form-control" id="tmp" value="" /-->
 
-<div class="" id="home">
+<a href="{{ url_for('formPermintaan') }}" style="float:right;" class="btn btn-sm btn-primary"><i class="fas fa-hand-point-right"></i>&nbsp;Lanjutkan Ke Form Permintaan</a>
+
+<!--div style="float:clear;" class="btn btn-sm btn-warning">Reset</div-->
+
+<div style="float:clear;margin-bottom:5px;">
+	<h5>Pilih Item</h5>
+</div>
+<hr style="float:clear;"/>
+<div class="" id="home" style="float:clear;">
 {% if data %}
 {% for x in data %}
 	<div id="{{x[0]}}" name="{{x[0]}}" class="btn-barang btn btn-outline-info" style="width: 250px;margin: 3px;padding: 2px;">

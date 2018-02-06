@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+	Form Permintaan
+{% endblock %}
+
+{% block body %}
+
+
+<!--alert area -->
+{% with messages = get_flashed_messages() %}
+	{% if messages %}
+		{% for message in messages %}
+			<div class="col-lg-12">
+				<div class="alert alert-warning alert-dismissable" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					{{ message }}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
+
+				<form id="form" name="form" role="form" method="post" action="/dataVendor" enctype="multipart/form-data">
+					{{ form.csrf_token }}
+					{{ form.tx_id }}
+					<div class="form-group">
+						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control form-control-sm') }}
+						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_alamat.label }} {{ form.tx_alamat(class='form-control form-control-sm') }}
+						{%for message in form.tx_alamat.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_telp.label }} {{ form.tx_telp(class='form-control form-control-sm') }}
+						{%for message in form.tx_telp.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_email.label }} {{ form.tx_email(class='form-control form-control-sm') }}
+						{%for message in form.tx_email.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						{{ form.tx_pemilik.label }} {{ form.tx_pemilik(class='form-control form-control-sm') }}
+						{%for message in form.tx_pemilik.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
+						<div class="btn-group">
+							<button type="button" class="btn btn-outline btn-primary btn-sm" id="btn-submit">Simpan</button>
+							<button type="button" class="btn btn-outline btn-warning btn-sm" id="btn-batal">Batal</button>
+						</div>
+					</div>
+				</form>
+<span id="msg">&nbsp;</span>
+
+<script type="text/javascript">
+	/*console.log("Aplikasi pertama menggunakan flask python.");*/
+    $(document).ready(function() {
+    	$('.btn-ubah').click(function(){
+			$('#form')[0].reset();
+    		var id=$(this).attr('id');
+    		//console.log(id);
+    		var idx={'id':id};
+    		//$('#tx_nama').val(id);
+    		$.ajax({
+    			type:'POST',
+    			url:'{{ url_for('getVendorById') }}',
+    			dataType:'json',
+    			data:JSON.stringify(idx),
+    			contentType: 'application/json;charset=UTF-8',
+    			cache:false,
+    			success:function(retval){
+    				console.log(retval);
+    				$('#tx_id').val(retval[0]);
+    				$('#tx_nama').val(retval[1]);
+    				$('#tx_alamat').val(retval[2]);
+    				$('#tx_telp').val(retval[3]);
+    				$('#tx_email').val(retval[4]);
+    				$('#tx_pemilik').val(retval[5]);
+    			},
+    			error:function(xhr, status, error){
+    				var err = eval("(" + xhr.responseText + ")");
+    				console.log('error request data vendor. '+err);
+    			}
+    		});
+    	});
+
+        $('#btn-submit').click(function(){
+		//$('#konten').load('{{ url_for('getVendor') }}');
+        	$.ajax({
+        		type:'POST',
+        		url:'{{ url_for('dataVendor') }}',
+        		data:$('#form').serialize(),
+        		success:function(res){
+        			if (res.success) {
+        				console.log(res.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.success+'</span></div></div>';
+						$('#btn-batal').click();
+						$("#msg").html(msg);
+        			}else{        				
+        				console.log(res.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';
+						$("#msg").html(msg);
+        			}
+        		},
+        		error:function(){
+        			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+        			console.log(msg);
+        			$("#msg").html(msg);
+        		}
+        	});
+					//$.showTableValues();//tampilkan data di tabel
+        });
+
+    });
+
+</script>
+
+{% endblock %}

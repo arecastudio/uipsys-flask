@@ -25,7 +25,7 @@ mysql.init_app(app)
 conn = mysql.connect()
 cursor = conn.cursor()
 
-UPLOAD_FOLDER=app.root_path+'/assets/foto/'
+UPLOAD_FOLDER=app.root_path+'/static/foto/'
 
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['jpg'])
@@ -415,11 +415,20 @@ def buatOrderan(id):
 	ord=orderan(id)
 	mengorder.append(ord)
 
+
+
+@app.route('/assets/foto/<filename>')
+def getFotoURL(filename):
+	pass
+
+
 # blok modul==========================================================================
 @app.route('/buatPermintaan',methods=['POST','GET'])
 @login_required
 def buatPermintaan():
-	return render_template('buat-permintaan.html')
+	cursor.execute('SELECT id,nama,UCASE(satuan),harga,nama_foto FROM barang ORDER BY nama ASC;')
+	row=cursor.fetchall()
+	return render_template('buat-permintaan.html',data=row)
 
 # blok modul==========================================================================
 def getBarangCount():

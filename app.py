@@ -479,10 +479,14 @@ def formPermintaan():
 		pass
 	else:
 		form=FormOrder()
-		cursor.execute("SELECT nik,nama FROM user;")
+		cursor.execute("SELECT nik,CONCAT(nama,'  [',jabatan,']') AS nmx FROM user;")
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
 		form.op_nama2.choices=suser
+		cursor.execute("SELECT nik,nama FROM user;")
+		tuser=cursor.fetchall()
+		suser=[(i[0], i[1]) for i in tuser]
+		form.op_nama3.choices=suser
 		return render_template('form-permintaan.html',form=form)
 # blok modul==========================================================================
 

@@ -34,6 +34,10 @@
 						{%for message in form.tx_user.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
+						{{ form.tx_nik.label }} {{ form.tx_nik(class='form-control form-control-sm') }}
+						{%for message in form.tx_nik.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+					</div>
+					<div class="form-group">
 						{{ form.tx_nama.label }} {{ form.tx_nama(class='form-control form-control-sm') }}
 						{%for message in form.tx_nama.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
@@ -72,7 +76,8 @@
 <div style="float:right;">
 	<a href="/manUserTabel" class="btn btn-outline-success btn-sm" style=""><i class="fas fa-table"></i>&nbsp;Tampilkan Table User</a>
 </div>
-<div style=""></div>
+
+<div id="msg" style=""></div>
 
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -87,9 +92,9 @@
 				data:data,
 				success:function(resp){
 					if(resp.success){
-						console.log('Berhasil simpan data.');
+						console.log(resp.success);
 					}else{
-						console.log('Gagal simpan data.');
+						console.log(resp.error);
 					}
 				},
 				error:function(){

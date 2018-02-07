@@ -9,6 +9,14 @@ body{
   line-height: 1.5;
 }
 
+.tabel{
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+}
+
+.tabel,tbody,tr,td{
+}
+
 .navbar{
   padding-top: 0px;
   padding-bottom: 0px;

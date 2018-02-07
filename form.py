@@ -31,7 +31,8 @@ class FormDataBidang(FlaskForm):
 
 class FormManUser(FlaskForm):
 	tx_id = HiddenField()
-	tx_user = TextField('Username', [validators.Length(min=1, max=100)])
+	tx_user = TextField('Username', [validators.Required("Masukkan nama lengkap.")])
+	tx_nik = TextField('NIK', [validators.Required("Masukkan NIK.")])
 	tx_nama = TextField('Nama Karyawan', [validators.Required("Masukkan nama lengkap.")])
 	tx_pass = PasswordField('Password', [validators.Required("Masukkan password.")])
 	tx_telp = TextField('Telepon', [validators.Required("Masukkan nomor telepon.")])
@@ -49,3 +50,4 @@ class FormOrder(FlaskForm):
 	op_nama2 = SelectField('Penanggung Jawab (Atasan)',[validators.optional()], coerce=str)
 	#tx_jab2 = TextField('Jabatan', [validators.Required("Masukkan perihal.")])
 	op_nama3 = SelectField('Pelaksana/pengganti',[validators.optional()], coerce=str)
+	op_periode = SelectField('Periode permintaan',[validators.optional()], coerce=str)

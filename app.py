@@ -1,5 +1,7 @@
 import os
-from datetime import datetime
+import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template,url_for,redirect,request, escape, session,json,jsonify,flash
 from flaskext.mysql import MySQL
 from flask_sendmail import Mail, Message
@@ -30,6 +32,30 @@ UPLOAD_FOLDER=app.root_path+'/static/foto/'
 
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['jpg'])
+
+# blok fungsi=============================================================================================
+def formatBulan(args):
+	#args harus string
+	hasil=args
+	if len(args)<2:
+		hasil='0'+str(args)
+	#print(hasil)
+	return hasil
+
+def getPeriode():
+	periode=[]
+	now=date.today()
+	prd1 = date.today()
+	prd2 = date.today() + relativedelta(months=+1)
+	prd3 = date.today() + relativedelta(months=+2)
+	prd0 = date.today() + relativedelta(months=-1)
+	periode.append(str(prd0.year)+str(formatBulan(str(prd0.month))))
+	periode.append(str(prd1.year)+str(formatBulan(str(prd1.month))))
+	periode.append(str(prd2.year)+str(formatBulan(str(prd2.month))))
+	periode.append(str(prd3.year)+str(formatBulan(str(prd3.month))))
+	print('Tanggal: '+str(periode[0]))
+	#formatBulan('3')
+	return periode
 
 # blok fungsi=============================================================================================
 
@@ -78,16 +104,11 @@ def login_required(f):
 	return wrap
 
 
-def getPeriodes():
-	dt=datetime()
-	prd1=str(dt.year)+str(dt.month)
-	print (prd1)
-	return ''
-
 @app.route('/')
 @login_required
 def main():
 	#print(str(getPeriodes()))
+	getPeriode()
 	return render_template('home.html')
 
 @app.route('/login',methods=['POST','GET'])
@@ -354,13 +375,13 @@ def hapusBidang():
 def hapusUser():
 	if request.method=='GET':
 		sid=request.args.get('id')
-		cursor.execute("SELECT nik,nama,telp,email,jabatan FROM user WHERE nik=%s;",(sid))
+		cursor.execute("SELECT nik,nama,telp,email,jabatan FROM user WHERE uname=%s;",(sid))
 		data=cursor.fetchall()
 		#return about()
 		return render_template('hapus-user.html',data=data)
 	else:
 		sid=request.form['sid']
-		cursor.execute("DELETE FROM user WHERE nik=%s;",(sid))
+		cursor.execute("DELETE FROM user WHERE uname=%s;",(sid))
 		flash('Data berhasil dihapus.')
 		return redirect(url_for('manUser'))
 
@@ -368,7 +389,7 @@ def hapusUser():
 @login_required
 def manUser():
 	form=FormManUser(request.form)
-	cursor.execute("SELECT u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
+	cursor.execute("SELECT u.uname,u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
 	data = cursor.fetchall()
 	cursor.execute("SELECT id,nama FROM divisi;")
 	tdivisi=cursor.fetchall()
@@ -381,6 +402,7 @@ def manUser():
 	if request.method=='POST':
 		cid=request.form['tx_id']#tetap ada untuk membedakan data baru dan data update
 		cuser=request.form['tx_user']
+		cnik=request.form['tx_nik']
 		cnama=request.form['tx_nama']
 		cpass=request.form['tx_pass']
 		ctelp=request.form['tx_telp']
@@ -390,11 +412,14 @@ def manUser():
 		cjab=request.form['tx_jabatan']
 		if form.validate_on_submit():
 			if cid:
-				cursor.execute("UPDATE user SET nama=%s,password=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE nik=%s;",(cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
-				#flash('Berhasil mengubah informasi user.')
-				return jsonify({'success':'Informasi user berhasil diubah.'})#redirect(url_for('manUser'))#refresh
+					if len(cpass):
+						cursor.execute("UPDATE user SET nik=%s,nama=%s,password=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE uname=%s;",(cnik,cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
+					else:
+						cursor.execute("UPDATE user SET nama=%s,nik=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE uname=%s;",(cnama,cnik,ctelp,cmail,cdiv,crole,cjab,cid))
+						#flash('Berhasil mengubah informasi user.')
+					return jsonify({'success':'Informasi user berhasil diubah.'})#redirect(url_for('manUser'))#refresh
 			else:
-				cursor.execute("INSERT INTO user(nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,MD5(%s),%s,%s,%s,%s,%s);",(cuser,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
+				cursor.execute("INSERT INTO user(uname,nik,nama,password,telp,email,id_divisi,id_role,jabatan)VALUES(%s,%s,%s,MD5(%s),%s,%s,%s,%s,%s);",(cuser,cnik,cnama,cpass,ctelp,cmail,cdiv,crole,cjab))
 				#flash('Berhasil menambahkan user baru.')
 				return jsonify({'success':'User baru telah ditambahkan.'})#redirect(url_for('manUser'))#refresh
 		else:
@@ -403,19 +428,20 @@ def manUser():
 		if request.args.get('id'):
 		#if 'id' in request.args and request.method=='GET':
 			sid=request.args.get('id')
-			cursor.execute("SELECT nik,nama,password,telp,email,id_divisi,id_role,jabatan FROM user WHERE nik=%s LIMIT 1;",(sid))
+			cursor.execute("SELECT uname,nik,nama,password,telp,email,id_divisi,id_role,jabatan FROM user WHERE uname=%s LIMIT 1;",(sid))
 			row=cursor.fetchone()
 			if row:
-				print('Data Perubahan User: '+str(row[1]))#cetak nama
+				print('Data Perubahan User: '+str(row[2]))#cetak nama
 				form.tx_id.default=row[0]
 				form.tx_user.default=row[0]
-				form.tx_nama.default=row[1]
-				form.tx_pass.default=row[2]
-				form.tx_telp.default=row[3]
-				form.tx_mail.default=row[4]
-				form.op_divisi.default=row[5]
-				form.op_role.default=row[6]
-				form.tx_jabatan.default=row[7]
+				form.tx_nik.default=row[1]
+				form.tx_nama.default=row[2]
+				form.tx_pass.default=row[3]
+				form.tx_telp.default=row[4]
+				form.tx_mail.default=row[5]
+				form.op_divisi.default=row[6]
+				form.op_role.default=row[7]
+				form.tx_jabatan.default=row[8]
 				form.process()
 				print('Untuk mengubah informasi user, pastikan untuk mengupdate password terbaru.')
 			else:
@@ -426,7 +452,7 @@ def manUser():
 @app.route('/manUserTabel',methods={'GET','POST'})
 def manUserTabel():
     if request.method=='GET':
-        cursor.execute("SELECT u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
+        cursor.execute("SELECT u.uname,u.nik,u.nama,u.password,u.telp,u.email,d.nama,r.nama,u.jabatan from user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role ORDER BY u.nama ASC;")
         row=cursor.fetchall()
         return render_template('man-user-tabel.html',data=row)
 
@@ -512,8 +538,23 @@ def formPermintaanDelItem():
 def formPermintaan():
 	global barang_dipilih
 	data=None
+	msg=''
 	if request.method=='POST':
-		pass
+		statis=request.get_json().get('statis')
+		dinamis=request.get_json().get('dinamis')
+		if statis and dinamis:
+			sql=None
+			atasan=statis['atasan']
+			isplh=statis['isplh']
+			nomor=statis['nomor']
+			operator=statis['operator']
+			perihal=statis['perihal']
+			periode=statis['periode']
+			plh=statis['plh']
+			if str(isplh)=='1':
+				sql="INSERT INTO permintaan(nomor,alasan,);"
+			print(statis['periode'])
+			return jsonify(statis)
 	else:
 		form=FormOrder()
 		cursor.execute("SELECT nik,CONCAT(nama,'  [',jabatan,']') AS nmx FROM user;")
@@ -524,6 +565,10 @@ def formPermintaan():
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
 		form.op_nama3.choices=suser
+		#for ix in getPeriode():
+		#	print(ix)
+		prd=[(str(i),str(i)) for i in getPeriode()]
+		form.op_periode.choices=prd
 		if barang_dipilih:
 			bdp=','.join(str(e) for e in barang_dipilih)
 			#bdp.replace('[','')
@@ -531,7 +576,7 @@ def formPermintaan():
 			#print(bdp)
 			#brg=str(barang_dipilih)
 			#print(brg)
-			sql="SELECT DISTINCT id,nama,satuan,ket FROM barang WHERE id IN("+bdp+");"
+			sql="SELECT DISTINCT id,nama,satuan,harga,nama_foto,ket FROM barang WHERE id IN("+bdp+");"
 			#print(sql)
 			cursor.execute(sql)
 			data=cursor.fetchall()

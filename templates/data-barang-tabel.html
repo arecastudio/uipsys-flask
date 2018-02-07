@@ -39,7 +39,9 @@
 					{% for row in data %}
 					<tr class="odd gradeX">
 						<td>{{ cnt[0] }}</td>
-						<td>{{ row[1] }}</td>
+						<td {%if row[5]!='no-image.png' %} style="color:blue;" {% endif %}>
+							{{ row[1] }}
+						</td>
 						<td class="center">{{ row[2] }}</td>
 						<td class="center">{{ row[3] }}</td>
 						<td>{{ row[4] }}</td>

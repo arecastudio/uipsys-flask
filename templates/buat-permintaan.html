@@ -18,10 +18,14 @@
 
 <!--div style="float:clear;" class="btn btn-sm btn-warning">Reset</div-->
 
-<div style="float:clear;margin-bottom:5px;">
-	<h5>Pilih Item</h5>
+<div class="input-group" style="float:clear;margin-bottom:5px;">
+	<input id="txt-search" type="text" class="form-control form-control-sm" name=""/>
+	<button id="btn-search" class="btn btn-sm btn-outline-success"><i class="fas fa-search"></i></button>
 </div>
+
+
 <hr style="float:clear;"/>
+
 <div class="" id="home" style="float:clear;">
 {% if data %}
 {% for x in data %}
@@ -38,10 +42,32 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		$('#btn-search').click(function(){
+			var txt=$('#txt-search').val();
+
+			if (txt=='') {
+				$('.btn-barang').each(function(){
+					$(this).show();
+				});
+			}else{
+				$('.btn-barang').each(function(){
+					if($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1){
+						$(this).show();
+					}else{
+						$(this).hide();
+					}
+				});
+			}
+		});
+
+
 		$('.btn-barang').click(function(){
 			var item_id=$(this).attr('id');
+			var nama=$(this).attr('nama');
+			var satuan=$(this).attr('satuan');
 			document.getElementById(item_id).setAttribute('class','btn-barang btn btn-outline-danger');	
-			pesan(item_id);
+			pesan(item_id,nama,satuan);
 			console.log('button fired: '+item_id);
 			/*var tmp=[];
 			var isAda=0;
@@ -65,10 +91,10 @@
 			
 		});
 
-		function pesan(id){
+		function pesan(id,nama,satuan){
 			//document.getElementById('pesan').value=id;
 			//var users={'param1':'admin','param2':'operator'};
-			var pilihan={'pilih':id};
+			var pilihan={'id':id,'nama':nama,'satuan':satuan};
 			$.ajax({
 				type:'POST',
 				url:'{{url_for('postSession')}}',

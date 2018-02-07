@@ -1,8 +1,7 @@
 {% include 'parts/header.html' %}
 
 
-    <div class="container">
-        <div class="row">
+
 
 
 <!--alert area -->
@@ -20,13 +19,9 @@
         {% endfor %}
     {% endif %}
 {% endwith %}
-
-            <div class="col-md-4 col-md-offset-4">
-                <div class="login-panel panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Please Sign In</h3>
-                    </div>
-                    <div class="panel-body">
+                <div class="row" style="">
+                    <div class="col-sm-3" style="margin: 0 auto;margin-top: 150px;background-color: #ccc;padding: 3px;border-radius: 5px;">
+                        <div style="text-align: center;background: #777;color: #fff;height: 50px;margin-bottom: 10px;"><h5>Login User</h5></div>
                         <form role="form" method="post" action="/login">
                             {{ form.hidden_tag() }}
                             <fieldset>
@@ -44,14 +39,14 @@
                                     </label>
                                 </div>
                                 < Change this to a button or input when using this as a form -->
-                                <input type="submit" class="btn btn-lg btn-success btn-block btn-outline btn-sm" name="" value="Login">
+                                <div class="btn-group" style="text-align: center;">
+                                    <input type="submit" class="btn btn-sm btn-success" name="" value="Login">
+                                    <input type="reset" class="btn btn-sm btn-warning" name="" value="Cancel">
+                                </div>
                             </fieldset>
                         </form>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
 
 {% include 'parts/footer.html' %}

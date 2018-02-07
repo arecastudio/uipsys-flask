@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Flask, render_template,url_for,redirect,request, escape, session,json,jsonify,flash
 from flaskext.mysql import MySQL
 from flask_sendmail import Mail, Message
@@ -49,6 +50,15 @@ def updateDataBarang(nama,satuan,harga,ket,sid,nama_foto):
 		cursor.execute("UPDATE barang SET nama=%s,satuan=UCASE(%s),harga=%s,ket=%s,nama_foto=%s WHERE id=%s;",(nama,satuan,harga,ket,nama_foto,sid))
 	return  'Data barang berhasil diubah.'
 
+class ClassOrder(object):
+	"""docstring for ClassOrder"""
+	def __init__(self, _id,_nama,_satuan):
+		super(ClassOrder, self).__init__()
+		self._id = _id
+		self._nama = _nama
+		self._satuan = _satuan
+		
+
 # blok fungsi=============================================================================================
 
 #print('ROOT PATH: '+app.root_path)
@@ -67,9 +77,17 @@ def login_required(f):
 			return redirect(url_for('login'))
 	return wrap
 
+
+def getPeriodes():
+	dt=datetime()
+	prd1=str(dt.year)+str(dt.month)
+	print (prd1)
+	return ''
+
 @app.route('/')
 @login_required
 def main():
+	#print(str(getPeriodes()))
 	return render_template('home.html')
 
 @app.route('/login',methods=['POST','GET'])
@@ -101,6 +119,7 @@ def logout():
 	session.pop('username',None)
 	session.pop('fullname',None)
 	session.pop('pilih_item',None)
+	barang_dipilih=[]
 	return redirect(url_for('main'))
 
 @app.route('/about')
@@ -266,7 +285,7 @@ def dataBarang():
 @app.route('/tableDataBarang',methods=['GET'])
 @login_required
 def tableDataBarang():
-	cursor.execute("SELECT id,nama,satuan,ROUND(harga,0),ket from barang ORDER BY id ASC;")
+	cursor.execute("SELECT id,nama,satuan,ROUND(harga,0),ket,nama_foto from barang ORDER BY id ASC;")
 	data = cursor.fetchall()
 	if data:
 		return render_template('data-barang-tabel.html',data=data)
@@ -454,16 +473,20 @@ def postSession():
 	global barang_dipilih
 	isMatch=0
 	if request.method=='POST':
-		pil=request.get_json().get('pilih')
+		pil=request.get_json().get('id')
+		nama=request.get_json().get('nama')
+		satuan=request.get_json().get('satuan')
 		print('Item dipilih: '+pil)
 		#barang_dipilih.append(pil)
-		for brg in barang_dipilih:
-			if brg==pil:
-				isMatch=1
-				print(str(pil)+' sudah ada')
+		if len(barang_dipilih):
+			for brg in barang_dipilih:
+				if brg==pil:
+					isMatch=1
+					print(str(pil)+' sudah ada')
 		if isMatch==0:
-			barang_dipilih.append(pil)
-		return jsonify(barang_dipilih)
+			dt={pil:{'id':pil,'nama':nama,'satuan':satuan}}
+			barang_dipilih.append(int(pil))
+		return json.dumps(barang_dipilih)
 	return ('', 204)
 # blok modul==========================================================================
 @app.route('/klirSession',methods=['POST','GET'])
@@ -473,8 +496,22 @@ def klirSession():
 	barang_dipilih=[]
 	return 'SERVER_LOG: Berhasil klir session.'
 # blok modul==========================================================================
+@app.route('/formPermintaanDelItem',methods=['POST','GET'])
+def formPermintaanDelItem():
+	global barang_dipilih
+	if request.method=='POST':
+		idx=request.get_json().get('id')
+		barang_dipilih.remove(int(idx))
+		if idx not in barang_dipilih:
+			return jsonify({'success':'Berhasil'})
+		else:
+			return jsonify({'error':'Gagal'})
+	return jsonify({'error':'Gagal kirim data POST'})
+# blok modul==========================================================================
 @app.route('/formPermintaan',methods=['POST','GET'])
 def formPermintaan():
+	global barang_dipilih
+	data=None
 	if request.method=='POST':
 		pass
 	else:
@@ -487,7 +524,18 @@ def formPermintaan():
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
 		form.op_nama3.choices=suser
-		return render_template('form-permintaan.html',form=form)
+		if barang_dipilih:
+			bdp=','.join(str(e) for e in barang_dipilih)
+			#bdp.replace('[','')
+			#bdp.replace(']','')
+			#print(bdp)
+			#brg=str(barang_dipilih)
+			#print(brg)
+			sql="SELECT DISTINCT id,nama,satuan,ket FROM barang WHERE id IN("+bdp+");"
+			#print(sql)
+			cursor.execute(sql)
+			data=cursor.fetchall()
+		return render_template('form-permintaan.html',form=form,data=data)
 # blok modul==========================================================================
 
 # blok modul==========================================================================

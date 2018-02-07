@@ -23,6 +23,7 @@
 	{% endif %}
 {% endwith %}
 
+<div class="col-sm-6">
 
 <form id="form" name="form" role="form" method="post" action="{{url_for('manUser')}}" enctype="multipart/form-data">
 	{{ form.csrf_token }}
@@ -66,6 +67,7 @@
 						<button type="button" id="bt-batal" class="btn btn-outline-warning btn-sm"><i class="fas fa-sync"></i>&nbsp;Batal</button>
 					</div>
 </form>
+</div>
 
 <div style="float:right;">
 	<a href="/manUserTabel" class="btn btn-outline-success btn-sm" style=""><i class="fas fa-table"></i>&nbsp;Tampilkan Table User</a>

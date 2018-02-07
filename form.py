@@ -44,7 +44,7 @@ class FormOrder(FlaskForm):
 	tx_nomor = TextField('Nomor Surat',[validators.required('Masukkan nomor surat.')])
 	tx_perihal = TextAreaField('Perihal', [validators.Required("Masukkan perihal.")])
 	tx_id = HiddenField()
-	tx_nama1 = TextField('Nama Pembuat', [validators.Required("Masukkan nama.")])
+	tx_nama1 = TextField('Yang membuat', [validators.Required("Masukkan nama.")])
 	#tx_jab1 = TextField('Jabatan', [validators.Required("Masukkan perihal.")])
 	op_nama2 = SelectField('Penanggung Jawab (Atasan)',[validators.optional()], coerce=str)
 	#tx_jab2 = TextField('Jabatan', [validators.Required("Masukkan perihal.")])

@@ -22,7 +22,8 @@
 		{% endfor %}
 	{% endif %}
 {% endwith %}
-
+	<div class="row">
+		<div class="col-sm-6">
 				<form id="form" name="form" role="form" method="post" action="/dataVendor" enctype="multipart/form-data">
 					{{ form.csrf_token }}
 					{{ form.tx_id }}
@@ -53,6 +54,8 @@
 						</div>
 					</div>
 				</form>
+			</div>
+		</div>
 <span id="msg">&nbsp;</span>
 
 <script type="text/javascript">

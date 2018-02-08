@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+	Permintaan Detail
+{% endblock %}
+
+{% block body %}
+
+{%if data%}
+	{%for row in data%}
+		<h3>{{row[3]}}</h3>
+	{%endfor%}
+{%endif%}
+
+
+
+
+
+
+{% endblock %}

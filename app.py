@@ -9,6 +9,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
 from functools import wraps
+from hashids import Hashids#encode dan decode data value, bisa untuk url
 from form import FormLogin,FormDataBarang,FormDataVendor,FormDataBidang,FormManUser,FormOrder
 
 
@@ -426,7 +427,7 @@ def manUser():
 		if form.validate_on_submit():
 			if cid:
 					if len(cpass):
-						cursor.execute("UPDATE user SET nik=%s,nama=%s,password=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE uname=%s;",(cnik,cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
+						cursor.execute("UPDATE user SET nik=%s,nama=%s,password=MD5(%s),telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE uname=%s;",(cnik,cnama,cpass,ctelp,cmail,cdiv,crole,cjab,cid))
 					else:
 						cursor.execute("UPDATE user SET nama=%s,nik=%s,telp=%s,email=%s,id_divisi=%s,id_role=%s,jabatan=%s WHERE uname=%s;",(cnama,cnik,ctelp,cmail,cdiv,crole,cjab,cid))
 						#flash('Berhasil mengubah informasi user.')
@@ -589,6 +590,7 @@ def getUserPermintaan(nik):
 
 @app.route('/formPermintaan',methods=['POST','GET'])
 def formPermintaan():
+	form=FormOrder()
 	barang_dipilih=''
 	if session['barang_dipilih']!='':
 		barang_dipilih=session['barang_dipilih']
@@ -622,6 +624,7 @@ def formPermintaan():
 			#--------------------------------------
 			print('jumlah item: '+str(len(dinamis)))
 			#--------------------------------------
+			#if form.validate_on_submit():
 			if int(isplh)==0:
 				sql="INSERT INTO permintaan(nomor,periode,alasan,id_divisi,nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan)"
 				sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
@@ -664,7 +667,6 @@ def formPermintaan():
 		else:
 			return(jsonify({'error':'Terjadi kesalahan penyimpanan data.\nApakah form belum dilengkapi?'}))
 	else:
-		form=FormOrder()
 		cursor.execute("SELECT nik,CONCAT(nama,'  [',jabatan,']') AS nmx FROM user;")
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
@@ -691,7 +693,40 @@ def formPermintaan():
 			print(sql+'\n'+str(barang_dipilih))
 		return render_template('form-permintaan.html',form=form,data=data)
 # blok modul==========================================================================
+@app.route('/getListPermintaan',methods=['POST'])
+def getListPermintaan():
+    data=None
+    payload=[]
+    content={}
+    cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,p.tgl AS tanggal,p.status FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE 1;")
+    row=cursor.fetchall()
+    if row:
+        for r in row:
+            content={'bidang':r[0],'periode':r[1],'nomor_surat':r[2],'alasan':r[3],'operator':r[4],'tanggal':r[5],'status':r[6]}
+            payload.append(content)
+            content={}
+    print('Ambil JSON data untuk tabelListPermintaan\n'+str(payload))
+    return jsonify(payload)
 
+
+@app.route('/listPermintaan',methods=['POST','GET'])
+def listPermintaan():
+    data=None
+    cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE 1 ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+    row=cursor.fetchall()
+    if row:
+    	data=row
+    return render_template('list-permintaan.html',data=data)
+
+@app.route('/listPermintaan/<string:nomor_surat>',methods=['GET','POST'])
+def listPermintaanDetail(nomor_surat):
+	if request.method=='GET':
+                cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+nomor_surat+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+                row=cursor.fetchall()
+                rowd=None
+                if row:
+                    return render_template('list-permintaan-detail.html',data=row,datad=rowd)
+	return '<h1>Berhasil %d</h1>' % nomor_surat
 # blok modul==========================================================================
 
 # blok modul==========================================================================

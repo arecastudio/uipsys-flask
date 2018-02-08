@@ -4,10 +4,13 @@ body{
   margin-bottom: 10px;
 
   font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  font-size: 12px;
+  /*font-size: 12px;*/
   font-weight: 400;
   line-height: 1.5;
+  width: 98%;
 }
+
+.bg-black{background-color: #000000;}
 
 .tabel{
   border-collapse: collapse;
@@ -24,7 +27,7 @@ body{
   padding-right: 3px;
 }
 
-.main-bg{background: linear-gradient(#00aaaa,#003333);}
+.main-bg{background: linear-gradient(#00aaaa,#008888);}
 .text-black{color:black;}
 
 .footer{
@@ -42,7 +45,6 @@ body{
   margin: 0px auto;
   padding-bottom:10px;
   padding-top:39px;
-  max-width: 100%;
 }
 
 #link-map{

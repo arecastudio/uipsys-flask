@@ -1,4 +1,4 @@
-{% extends 'layouts.html' %}
+{% extends 'layout.html' %}
 
 {% block title %}
 	Hapus Data User
@@ -18,10 +18,10 @@ Yakin untuk hapus User ini?
 	</table>
 <hr/>
 <form method="POST" action="/hapusUser">
+	<input type="hidden" name="sid" value="{{ sid }}" />
 	<div class="btn-group" role="group">
-		<input type="hidden" name="sid" value="{{ sid }}" />
 		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
-		<a href="/manUser" class="btn btn-outline btn-primary">Tidak</a>
+		<a href="/manUserTabel" class="btn btn-outline btn-primary">Tidak</a>
 	</div>
 </form>
 

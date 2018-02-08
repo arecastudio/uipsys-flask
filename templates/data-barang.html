@@ -97,7 +97,7 @@ $(document).ready(function() {
 
     $('#btn-submit').click(function(){
     	//var data=$('#form').serialize();
-    	var data=new FormData($('#form')[0]);
+    	var data=new FormData($('#form')[0]);//untuk upload gambar
     	//data=JSON.stringify(data);
     	console.log('tombol submit fired.'+ data);
     	$.ajax({

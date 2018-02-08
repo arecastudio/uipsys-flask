@@ -50,8 +50,8 @@
 					</div>
 					<div class="card-body">
 						<h6 class="card-title"><i class="fas fa-user"></i>&nbsp;{{session['fullname']}}</h6>
-						<p class="card-text">Aplikasi manajemen pengadaan barang</p>
-
+						<p class="card-text">{{ session['nama_divisi'] }}</p>
+                        <hr/>
 						<a href="#" class="text-black"><h6>Permintaan <span class="badge badge-secondary">3</span></h6></a>
 						<a href="#" class="text-black"><h6>Notifikasi <span class="badge badge-secondary">12</span></h6></a>
 						<a href="#" class="text-black"><h6>Item Baru <span class="badge badge-secondary">5</span></h6></a>
@@ -365,7 +365,7 @@
     <!-- Graphs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script type="text/javascript">
-      var ctx = document.getElementById("myChart");
+      /*var ctx = document.getElementById("myChart");
       var myChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -391,7 +391,7 @@
             display: false,
           }
         }
-      });
+      });*/
     </script>
 
 {% include 'parts/footer.html' %}

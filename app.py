@@ -91,7 +91,7 @@ class ClassOrder(object):
 
 username=None
 fullname=None
-barang_dipilih=[]
+#barang_dipilih=[]
 
 def login_required(f):
 	@wraps(f)
@@ -118,12 +118,18 @@ def login():
 		uname=request.form['tx_user']
 		upass=request.form['tx_pass']
 		if form.validate_on_submit():
-			cursor.execute("SELECT nik,nama,id_divisi,id_role,jabatan,telp,email FROM user WHERE nik=%s AND password=MD5(%s) LIMIT 1;",(uname,upass))
+			cursor.execute("SELECT u.uname,u.nik,u.nama,u.id_divisi,d.nama,u.id_role,r.nama,u.jabatan,u.telp,u.email FROM user AS u LEFT OUTER JOIN divisi AS d ON d.id=u.id_divisi LEFT OUTER JOIN role AS r ON r.id=u.id_role WHERE u.uname=%s AND password=MD5(%s) LIMIT 1;",(uname,upass))
 			row=cursor.fetchone()
 			if row:
 				session['username']=row[0]
-				session['fullname']=row[1]
-				print('Berhasil login.')
+				session['nik']=row[1]
+				session['fullname']=row[2]
+				session['id_divisi']=row[3]
+				session['nama_divisi']=row[4]
+				session['id_role']=row[5]
+				session['nama_role']=row[6]
+				session['jabatan']=row[7]
+				session['barang_dipilih']=''
 				flash('Berhasil login.')
 				return redirect(url_for('main'))
 			else:
@@ -138,9 +144,16 @@ def login():
 @login_required
 def logout():
 	session.pop('username',None)
+	session.pop('nik',None)
 	session.pop('fullname',None)
-	session.pop('pilih_item',None)
-	barang_dipilih=[]
+	session.pop('id_divisi',None)
+	session.pop('nama_divisi',None)
+	session.pop('id_role',None)
+	session.pop('nama_role',None)
+	session.pop('jabatan',None)
+	#session.pop('pilih_item',None)
+	session.pop('barang_dipilih',None)
+	#barang_dipilih=[]
 	return redirect(url_for('main'))
 
 @app.route('/about')
@@ -383,7 +396,7 @@ def hapusUser():
 		sid=request.form['sid']
 		cursor.execute("DELETE FROM user WHERE uname=%s;",(sid))
 		flash('Data berhasil dihapus.')
-		return redirect(url_for('manUser'))
+		return redirect(url_for('manUserTabel'))
 
 @app.route('/manUser',methods=['GET','POST'])
 @login_required
@@ -496,8 +509,13 @@ def getBarangCount():
 # blok modul==========================================================================
 @app.route('/postSession',methods=['POST','GET'])
 def postSession():
-	global barang_dipilih
+	#global barang_dipilih
 	isMatch=0
+	barang_dipilih=''
+	if session['barang_dipilih']:
+		val=session['barang_dipilih']
+		barang_dipilih=val
+	print('postSession start: '+str(barang_dipilih))
 	if request.method=='POST':
 		pil=request.get_json().get('id')
 		nama=request.get_json().get('nama')
@@ -505,66 +523,156 @@ def postSession():
 		print('Item dipilih: '+pil)
 		#barang_dipilih.append(pil)
 		if len(barang_dipilih):
-			for brg in barang_dipilih:
+			str_barang_dipilih=barang_dipilih.split(',')#split hanya berlaku untuk tipe data string
+			for brg in str_barang_dipilih:
 				if brg==pil:
 					isMatch=1
 					print(str(pil)+' sudah ada')
 		if isMatch==0:
-			dt={pil:{'id':pil,'nama':nama,'satuan':satuan}}
-			barang_dipilih.append(int(pil))
-		return json.dumps(barang_dipilih)
+			#dt={pil:{'id':pil,'nama':nama,'satuan':satuan}}
+			if barang_dipilih!='':
+				barang_dipilih+=','+pil
+			#barang_dipilih.append({'id':int(pil)})
+			else:
+				barang_dipilih=pil
+		session['barang_dipilih']=barang_dipilih
+		print('postSession end:'+str(session['barang_dipilih']))
+		return jsonify(barang_dipilih)
 	return ('', 204)
 # blok modul==========================================================================
 @app.route('/klirSession',methods=['POST','GET'])
 def klirSession():
-	session.pop('pilih_item',None)
-	global barang_dipilih
-	barang_dipilih=[]
+	#session.pop('pilih_item',None)
+	#global barang_dipilih
+	session['barang_dipilih']=''
 	return 'SERVER_LOG: Berhasil klir session.'
 # blok modul==========================================================================
 @app.route('/formPermintaanDelItem',methods=['POST','GET'])
 def formPermintaanDelItem():
-	global barang_dipilih
+	#global barang_dipilih
 	if request.method=='POST':
+		tmp=''
 		idx=request.get_json().get('id')
-		barang_dipilih.remove(int(idx))
-		if idx not in barang_dipilih:
+		#session['barang_dipilih'].remove(int(idx))
+		for i in session['barang_dipilih'].split(','):
+			print('formPermintaanDelItem split:'+str(i))
+			if i!=idx:
+				if tmp=='':
+					tmp=i
+				else:
+					tmp+=','+i
+			else:
+				print('hapus item: '+str(i))
+		session['barang_dipilih']=tmp
+		print('formPermintaanDelItem :'+str(tmp))
+		if idx not in session['barang_dipilih']:
 			return jsonify({'success':'Berhasil'})
 		else:
 			return jsonify({'error':'Gagal'})
 	return jsonify({'error':'Gagal kirim data POST'})
 # blok modul==========================================================================
+@app.route('/resetPermintaan',methods=['POST'])
+def resetPermintaan():
+	print('rest permintaan')
+	#global barang_dipilih
+	session['barang_dipilih']=''
+	return jsonify({'success':'reset permintaan'})
+
+
+def getUserPermintaan(nik):
+	cursor.execute("SELECT nama,jabatan FROM user WHERE nik=%s LIMIT 1;",(nik))
+	row=cursor.fetchone()
+	tmp=[]
+	tmp.append(row[0])
+	tmp.append(row[1])
+	return tmp
+
 @app.route('/formPermintaan',methods=['POST','GET'])
 def formPermintaan():
-	global barang_dipilih
+	barang_dipilih=''
+	if session['barang_dipilih']!='':
+		barang_dipilih=session['barang_dipilih']
 	data=None
+	print('formPermintaan:'+str(barang_dipilih))
 	msg=''
 	if request.method=='POST':
 		statis=request.get_json().get('statis')
 		dinamis=request.get_json().get('dinamis')
 		if statis and dinamis:
-			sql=None
-			atasan=statis['atasan']
-			isplh=statis['isplh']
+			sql=''
+			#--------------------------------------
 			nomor=statis['nomor']
-			operator=statis['operator']
-			perihal=statis['perihal']
 			periode=statis['periode']
-			plh=statis['plh']
-			if str(isplh)=='1':
-				sql="INSERT INTO permintaan(nomor,alasan,);"
-			print(statis['periode'])
-			return jsonify(statis)
+			alasan=statis['alasan']
+			id_divisi=statis['id_divisi']
+			nama_divisi=statis['nama_divisi']
+			operator=statis['operator']
+			nik_operator=statis['nik_operator']
+			nama_operator=statis['nama_operator']
+			jab_operator=statis['jab_operator']
+			nik_atasan=statis['atasan']
+			xatasan=getUserPermintaan(str(nik_atasan))
+			nama_atasan=xatasan[0]
+			jab_atasan=xatasan[1]
+			isplh=statis['isplh']
+			nik_plh=statis['plh']
+			xplh=getUserPermintaan(str(nik_plh))
+			nama_plh=xplh[0]
+			jab_plh=xplh[1]
+			#--------------------------------------
+			print('jumlah item: '+str(len(dinamis)))
+			#--------------------------------------
+			if int(isplh)==0:
+				sql="INSERT INTO permintaan(nomor,periode,alasan,id_divisi,nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan)"
+				sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+				try:
+					cursor.execute(sql,(nomor,int(periode),alasan,int(id_divisi),nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan))
+				except Exception as e:
+					#raise e
+					return jsonify({'error':'<h6>Terjadi kesalahan dalam penyimpanan data.</h6>Apakah nomor surat sudah pernah dipakai sebelumnya?<br/>Apakah permintaan untuk periode ini sudah ada?<hr/>'+str(e)})
+				else:
+					for d in range(len(dinamis)):
+						if dinamis[d]:
+							try:
+								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
+								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga']))
+							except Exception as e:
+								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
+					return jsonify({'success':'Berhasil simpan data'})
+			else:
+				try:
+					sql="INSERT INTO permintaan(nomor,periode,alasan,id_divisi,nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan,isplh,nik_plh,nama_plh,jab_plh)"
+					sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+					cursor.execute(sql,(nomor,int(periode),alasan,int(id_divisi),nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan,int('1'),nik_plh,nama_plh,jab_plh))
+				except Exception as e:
+					return jsonify({'error':'<h6>Terjadi kesalahan dalam penyimpanan data.</h6>Apakah nomor surat sudah pernah dipakai sebelumnya?<br/>Apakah permintaan untuk periode ini sudah ada?<hr/>'+str(e)})
+				else:
+					for d in range(len(dinamis)):
+						if dinamis[d]:
+							try:
+								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
+								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga']))
+							except Exception as e:
+								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
+					return jsonify({'success':'Berhasil simpan data'})
+			print(str(nama_atasan))
+			return jsonify(nama_plh)
+		else:
+			return(jsonify({'error':'Terjadi kesalahan penyimpanan data.\nApakah form belum dilengkapi?'}))
 	else:
 		form=FormOrder()
 		cursor.execute("SELECT nik,CONCAT(nama,'  [',jabatan,']') AS nmx FROM user;")
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
-		form.op_nama2.choices=suser
+		form.op_atasan.choices=suser
 		cursor.execute("SELECT nik,nama FROM user;")
 		tuser=cursor.fetchall()
 		suser=[(i[0], i[1]) for i in tuser]
-		form.op_nama3.choices=suser
+		form.op_plh.choices=suser
 		#for ix in getPeriode():
 		#	print(ix)
 		prd=[(str(i),str(i)) for i in getPeriode()]
@@ -574,12 +682,13 @@ def formPermintaan():
 			#bdp.replace('[','')
 			#bdp.replace(']','')
 			#print(bdp)
-			#brg=str(barang_dipilih)
+			#brg=str(session['barang_dipilih'])
 			#print(brg)
-			sql="SELECT DISTINCT id,nama,satuan,harga,nama_foto,ket FROM barang WHERE id IN("+bdp+");"
+			sql="SELECT DISTINCT id,nama,satuan,harga,nama_foto,ket FROM barang WHERE id IN("+ str(barang_dipilih) +");"
 			#print(sql)
 			cursor.execute(sql)
 			data=cursor.fetchall()
+			print(sql+'\n'+str(barang_dipilih))
 		return render_template('form-permintaan.html',form=form,data=data)
 # blok modul==========================================================================
 

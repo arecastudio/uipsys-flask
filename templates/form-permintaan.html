@@ -42,29 +42,29 @@
 						{%for message in form.tx_nomor.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.tx_perihal.label }} {{ form.tx_perihal(class='form-control form-control-sm') }}
-						{%for message in form.tx_perihal.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.tx_alasan.label }} {{ form.tx_alasan(class='form-control form-control-sm') }}
+						{%for message in form.tx_alasan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						<label for="tx_nama1">Yang membuat</label>
-						<input type="text" name="tx_nama1" id="tx_nama1" value="{{ session['fullname'] }}" class="form-control form-control-sm" readonly />
+						{{ form.tx_operator.label }} {{ form.tx_operator(class='form-control form-control-sm',readonly='readonly',value=session['fullname']) }}
+						{%for message in form.tx_operator.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div>
 					<div class="form-group">
-						{{ form.op_nama2.label }} {{ form.op_nama2(class='form-control form-control-sm') }}
-						{%for message in form.op_nama2.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.op_atasan.label }} {{ form.op_atasan(class='form-control form-control-sm') }}
+						{%for message in form.op_atasan.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div><hr/>
 					<div class="">
 						<input type="checkbox" name="chk_plh" id="chk_plh" value="yes" class="" />&nbsp;Plh/Plt ?
 						<input type="hidden" name="chk_plhXXX" value="no" />
 					</div>
 					<div class="form-group" style="display: none;" id="divalt">
-						{{ form.op_nama3.label }} {{ form.op_nama3(class='form-control form-control-sm') }}
-						{%for message in form.op_nama3.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
+						{{ form.op_plh.label }} {{ form.op_plh(class='form-control form-control-sm') }}
+						{%for message in form.op_plh.errors%}<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>{{message}}</div>{%endfor%}
 					</div><hr/>
 					<div class="form-group">
 						<div class="btn-group">
-							<button type="button" class="btn btn-outline btn-primary btn-sm" id="btn-submit">Simpan</button>
-							<button type="button" class="btn btn-outline btn-warning btn-sm" id="btn-batal">Batal</button>
+							<button type="button" class="btn btn-sm btn-outline-primary" id="btn-submit">Simpan</button>
+							<button type="button" class="btn btn-sm btn-outline-warning" id="btn-batal">Batal (Reset)</button>
 						</div>
 					</div>
 				</form>
@@ -114,6 +114,85 @@
 <script type="text/javascript">
 	/*console.log("Aplikasi pertama menggunakan flask python.");*/
     $(document).ready(function() {
+
+		$('#btn-submit').click(function(){
+		//$('#konten').load('{{ url_for('getVendor') }}');
+			var isplh=0;
+			if ($('#chk_plh').is(':checked'))isplh=1;
+
+			var stat={
+				'periode':$('#op_periode').val(),
+				'nomor':$('#tx_nomor').val(),
+				'alasan':$('#tx_alasan').val(),
+				'operator':'{{ session['username'] }}',
+				'nik_operator':'{{ session['nik'] }}',
+				'nama_operator':'{{ session['fullname'] }}',
+				'jab_operator':'{{ session['jabatan'] }}',
+				'atasan':$('#op_atasan').val(),
+				'isplh':isplh,
+				'plh':$('#op_plh').val(),
+				'id_divisi':'{{ session['id_divisi'] }}',
+				'nama_divisi':'{{ session['nama_divisi'] }}'
+			};
+
+			var tmp=[];
+			$('.tx-jml').each(function(e){
+				var jml=$(this).val();
+				var nomor=$(this).attr('nomor');
+				var nama=$(this).attr('nama');
+				var satuan=$(this).attr('satuan');
+				var harga=$(this).attr('harga');
+				//console.log(nomor+' berjumlah: '+jml);
+				tmp.push({'id':nomor,'nama':nama,'jml':jml,'satuan':satuan,'harga':harga});
+			});
+
+			//console.log(tmp);
+
+			var data={'statis':stat,'dinamis':tmp};
+			console.log(data);
+
+        	$.ajax({
+        		type:'POST',
+        		url:'{{ url_for('formPermintaan') }}',
+    			dataType:'json',
+    			data:JSON.stringify(data),
+    			contentType: 'application/json;charset=UTF-8',
+    			cache:false,
+        		success:function(res){
+        			if (res.success) {
+        				console.log(res.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.success+'</span></div></div>';
+						$('#btn-batal').click();
+						$("#msg").html(msg);
+        			}else{        				
+        				console.log(res.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';
+						$("#msg").html(msg);
+        			}
+        		},
+        		error:function(){
+        			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+        			//console.log(msg);
+        			$("#msg").html(msg);
+        		}
+        	});
+					//$.showTableValues();//tampilkan data di tabel
+        });
+    	//=====================================================================================================
+    	$('#btn-batal').click(function(){
+    		$.post({
+    			url:'/resetPermintaan',
+    			success:function(resp){
+    				if (resp.success) {
+    					console.log(resp.success);
+    					$(location).attr('href', '/buatPermintaan')
+    				}
+    				
+    			}
+    		});
+    	});
+    	//=====================================================================================================
+
         $('#dataTables-example').DataTable({
             responsive: true,
             "bPaginate": false
@@ -188,66 +267,6 @@
     			}
     		});
     	});
-
-        $('#btn-submit').click(function(){
-		//$('#konten').load('{{ url_for('getVendor') }}');
-			var isplh=0;
-			if ($('#chk_plh').is(':checked'))isplh=1;
-			var stat={
-				'periode':$('#op_periode').val(),
-				'nomor':$('#tx_nomor').val(),
-				'perihal':$('#tx_perihal').val(),
-				'operator':{{ session['username'] }},
-				'atasan':$('#op_nama2').val(),
-				'isplh':isplh,
-				'plh':$('#op_nama3').val()
-			};
-
-			
-
-			var tmp=[];
-			$('.tx-jml').each(function(e){
-				var jml=$(this).val();
-				var nomor=$(this).attr('nomor');
-				var nama=$(this).attr('nama');
-				var satuan=$(this).attr('satuan');
-				var harga=$(this).attr('harga');
-				//console.log(nomor+' berjumlah: '+jml);
-				tmp.push({'id':nomor,'nama':nama,'jml':jml,'satuan':satuan,'harga':harga});
-			});
-
-			//console.log(tmp);
-
-			var data={'statis':stat,'dinamis':tmp};
-			console.log(data);
-
-        	$.ajax({
-        		type:'POST',
-        		url:'{{ url_for('formPermintaan') }}',
-    			dataType:'json',
-    			data:JSON.stringify(data),
-    			contentType: 'application/json;charset=UTF-8',
-    			cache:false,
-        		success:function(res){
-        			if (res.success) {
-        				console.log(res.success);
-						/*var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.success+'</span></div></div>';
-						$('#btn-batal').click();
-						$("#msg").html(msg);*/
-        			}else{        				
-        				console.log(res.error);
-						/*var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';
-						$("#msg").html(msg);*/
-        			}
-        		},
-        		error:function(){
-        			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
-        			//console.log(msg);
-        			$("#msg").html(msg);
-        		}
-        	});
-					//$.showTableValues();//tampilkan data di tabel
-        });
 
     });
 

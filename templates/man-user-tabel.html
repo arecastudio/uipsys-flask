@@ -1,14 +1,17 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-    Tabel Data Vendor
+   Tabel Data Vendor
+
+<div style="margin-bottom:0px;float: right;">
+	<a href="/manUser" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke Form User</a>
+</div>
+
 {% endblock %}
 
 {% block body %}
 
-<div style="margin-bottom:5px;">
-	<a href="/manUser" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke Form User</a>
-</div>
+
 
 <!--alert area -->
 {% with messages = get_flashed_messages() %}

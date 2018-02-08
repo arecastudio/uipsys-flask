@@ -2,19 +2,85 @@
 
 {% block title %}
 	Permintaan Detail
+	<a href="{{url_for('listPermintaan')}}" class="btn btn-sm btn-outline-success" style="float:right;"><i class="fas fa-list"></i>&nbsp;Kembali ke list permintaan</a>
 {% endblock %}
 
 {% block body %}
 
+
+<div class="row">
+<div class="col-sm-5">
+<table class="table table-sm table-striped">
 {%if data%}
 	{%for row in data%}
-		<h3>{{row[3]}}</h3>
+		{%for i in range(0,7)%}
+			<tr>
+				<td width="150px">{{ cname[i].upper() }}</td>
+				<td width="1px;">:</td>
+				<td>
+					{% if i==6 %}
+						{% if row[i]<1 %}
+							Review Divisi
+						{% elif row[i]==1 %}
+							Review SDM
+						{% else %}
+							Dikirim ke vendor (complete)
+						{% endif %}
+					{% else %}
+						{{ row[i] }}
+					{% endif %}
+				</td>
+			</tr>
+		{%endfor%}
 	{%endfor%}
 {%endif%}
+</table>
+</div>
+</div>
 
+<div class="row">
+<div class="col-sm-6">
+<a href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
+</div>
 
+<div class="col-sm-6">
+<a style="float:right;" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
+</div>
+</div>
 
-
+<div class="row">
+<div class="col-sm-12">
+<table class="table table-sm table-hover table-bordered">
+	<thead class="thead-dark">
+		<tr>
+			<th>#</th>
+			<th>Nama Barang</th>
+			<th>Harga Satuan</th>
+			<th>Qty</th>
+			<th>Satuan</th>
+			<th>Sub. Total</th>
+			<th>Ctrl</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%if datad%} {% set cnt=[1] %}
+		{% for d in datad %}
+			<tr>
+				<td style="text-align:center;">{{cnt[0]}}</td>
+				<td>{{d[2]}}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[5]) }}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[3]) }}</td>
+				<td>{{d[4]}}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[6]) }}</td>
+				<td></td>
+			</tr>
+			{% if cnt.append(cnt.pop()+1) %}{%endif%}
+		{% endfor %}
+		{%endif%}
+	</tbody>
+</table>
+</div>
+</div>
 
 
 {% endblock %}

@@ -721,11 +721,29 @@ def listPermintaan():
 @app.route('/listPermintaan/<string:nomor_surat>',methods=['GET','POST'])
 def listPermintaanDetail(nomor_surat):
 	if request.method=='GET':
-                cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+nomor_surat+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
-                row=cursor.fetchall()
+                row=None
                 rowd=None
+                cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+nomor_surat+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+                cname=[]
+                for i in cursor.description:
+                    print (i[0])#cetak nama tabel saja
+                    if i[0]=='alasan':
+                        cname.append('perihal')
+                    elif i[0]=='nomor_surat':
+                        cname.append('nomor surat')
+                    else:
+                        cname.append(i[0])
+                #cname=cursor.description
+                row=cursor.fetchall()
                 if row:
-                    return render_template('list-permintaan-detail.html',data=row,datad=rowd)
+                    nomors=row[0][2]
+                    # detail_permintaan ----------------------------------------------------------------------
+                    #rowd=None
+                    cursor.execute("SELECT nomor_permintaan,id_barang,nama_barang,jml_minta,satuan_barang,harga_barang,(jml_minta*harga_barang),user_nama FROM permintaan_d WHERE nomor_permintaan=%s ;",(str(nomors)))
+                    #cnamed=[]
+                    rowd=cursor.fetchall()
+                    print(rowd[1])
+                    return render_template('list-permintaan-detail.html',data=row,cname=cname,datad=rowd)
 	return '<h1>Berhasil %d</h1>' % nomor_surat
 # blok modul==========================================================================
 

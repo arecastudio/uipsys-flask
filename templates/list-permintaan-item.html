@@ -1,0 +1,154 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+	Ubah Item Permintaan Nomor: {%if datad%} <strong>{{datad[0][0]}}</strong> {%endif%}
+
+	<a href="{{ url_for('formPermintaanEdit') }}" style="float:right;" class="btn btn-sm btn-outline-primary"><i class="fas fa-hand-point-right"></i>&nbsp;Lanjutkan Ke Form Permintaan</a>
+
+	<a href="/listPermintaan/{{ data[0][7] }}" class="btn btn-sm btn-outline-success" style="float:right;margin-right: 10px;"><i class="fas fa-id-card"></i>&nbsp;Kembali ke detail permintaan</a>
+{% endblock %}
+
+{% block body %}
+
+
+<div class="row">
+<div class="col-sm-12">
+<table id="tabel" class="table table-sm table-hover table-bordered">
+	<thead class="thead-dark">
+		<tr>
+			<th>#</th>
+			<th>Nama Barang</th>
+			<th>Harga Satuan</th>
+			<th>Qty</th>
+			<th>Satuan</th>
+			<th>Sub. Total</th>
+			<th>Ctrl</th>
+		</tr>
+	</thead>
+	<tbody>
+		{%if datad%} {% set cnt=[1] %}
+		{% for d in datad %}
+			<tr>
+				<td style="text-align:center;">{{cnt[0]}}</td>
+				<td>{{d[2]}}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[5]) }}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[3]) }}</td>
+				<td>{{d[4]}}</td>
+				<td style="text-align:right;">{{ "{:,}".format(d[6]) }}</td>
+				<td></td>
+			</tr>
+			{% if cnt.append(cnt.pop()+1) %}{%endif%}
+		{% endfor %}
+		{%endif%}
+	</tbody>
+</table>
+</div>
+</div>
+
+<div id="search-box" class="input-group" style="float:clear;margin-bottom:5px;display: none;">
+	<input id="txt-search" type="text" class="form-control form-control-sm" name=""/>
+	<button id="btn-search" class="btn btn-sm btn-outline-success"><i class="fas fa-search"></i></button>
+</div>
+
+<div class="" id="home" style="float:clear;display: none;">
+{% if datax %}
+{% for x in datax %}
+	<div id="{{x[0]}}" name="{{x[0]}}" nama="{{x[1]}}" satuan="{{x[2]}}" class="btn-barang btn btn-outline-info" style="width: 250px;margin: 3px;padding: 2px;">
+		<img src="{{ url_for('static',filename='foto/'+x[4]) }}" style="width:240px;height:130px;border-radius:5px;"/>
+		
+		<div style="background-color:#ccc;width:245px;border-radius:5px;hyphens:auto;overflow-wrap:break-word;word-wrap:break-word;"><strong style="color:#000000;font-size:13px;">{{ x[1] }}</strong></div>
+	</div>
+{% endfor %}
+{% endif %}
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#tabelx').DataTable({
+		responsive: true,
+		"bPaginate": false
+	});
+
+	$('#tabel').hide(2000);
+	$('#home').show(2000);
+	$('#search-box').show(2000);
+
+
+	$('#btn-search').click(function(){
+		var txt=$('#txt-search').val();
+		if (txt=='') {
+			$('.btn-barang').each(function(){
+				$(this).show();
+			});
+		}else{
+			$('.btn-barang').each(function(){
+				if($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1){
+					$(this).show();
+				}else{
+					$(this).hide();
+				}
+			});
+		}
+
+	});
+
+
+	$('#txt-search').change(function(e){
+		var txt=$('#txt-search').val();
+		txt=txt.trim();
+		console.log('Text diinput: '+txt);
+
+		if (txt=='') {
+			$('.btn-barang').each(function(){
+				$(this).show();
+			});
+		}else{
+			$('.btn-barang').each(function(){
+				if($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1){
+					$(this).show();
+				}else{
+					$(this).hide();
+				}
+			});
+		}
+
+	});
+
+
+	$('.btn-barang').click(function(){
+		var item_id=$(this).attr('id');
+		var nama=$(this).attr('nama');
+		var satuan=$(this).attr('satuan');
+		document.getElementById(item_id).setAttribute('class','btn-barang btn btn-outline-danger');	
+		//pesan(item_id,nama,satuan);
+		console.log('button fired: '+item_id);
+
+		var pilihan={'id':item_id,'nama':nama,'satuan':satuan};
+
+		$.ajax({
+			type:'POST',
+			url:'{{url_for('postSessionEdit')}}',
+			data:JSON.stringify(pilihan),
+			contentType: 'application/json;charset=UTF-8',
+			dataType:'json',
+			cache:false,
+			success:function(retval){
+				console.log(retval);
+			},
+			error:function(retval){
+				console.log('Gagal.');
+			}
+		});
+	});
+
+
+
+});
+
+</script>
+
+
+
+
+{% endblock %}

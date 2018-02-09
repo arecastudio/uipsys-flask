@@ -62,6 +62,28 @@
 		});
 
 
+		$('#txt-search').change(function(e){
+			var txt=$('#txt-search').val();
+			txt=txt.trim();
+			console.log('Text diinput: '+txt);
+
+			if (txt=='') {
+				$('.btn-barang').each(function(){
+					$(this).show();
+				});
+			}else{
+				$('.btn-barang').each(function(){
+					if($(this).text().toUpperCase().indexOf(txt.toUpperCase()) != -1){
+						$(this).show();
+					}else{
+						$(this).hide();
+					}
+				});
+			}
+			
+		});
+
+
 		$('.btn-barang').click(function(){
 			var item_id=$(this).attr('id');
 			var nama=$(this).attr('nama');

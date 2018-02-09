@@ -131,6 +131,7 @@ def login():
 				session['nama_role']=row[6]
 				session['jabatan']=row[7]
 				session['barang_dipilih']=''
+				session['barang_dipilihEdit']=''
 				flash('Berhasil login.')
 				return redirect(url_for('main'))
 			else:
@@ -154,6 +155,7 @@ def logout():
 	session.pop('jabatan',None)
 	#session.pop('pilih_item',None)
 	session.pop('barang_dipilih',None)
+	session.pop('barang_dipilihEdit',None)
 	#barang_dipilih=[]
 	return redirect(url_for('main'))
 
@@ -541,6 +543,39 @@ def postSession():
 		return jsonify(barang_dipilih)
 	return ('', 204)
 # blok modul==========================================================================
+@app.route('/postSessionEdit',methods=['POST','GET'])
+def postSessionEdit():
+	#global barang_dipilih
+	isMatch=0
+	barang_dipilih=''
+	if session['barang_dipilihEdit']:
+		val=session['barang_dipilihEdit']
+		barang_dipilih=val
+	print('postSession start: '+str(barang_dipilih))
+	if request.method=='POST':
+		pil=request.get_json().get('id')
+		nama=request.get_json().get('nama')
+		satuan=request.get_json().get('satuan')
+		print('Item dipilih: '+pil)
+		#barang_dipilih.append(pil)
+		if len(barang_dipilih):
+			str_barang_dipilih=barang_dipilih.split(',')#split hanya berlaku untuk tipe data string
+			for brg in str_barang_dipilih:
+				if brg==pil:
+					isMatch=1
+					print(str(pil)+' sudah ada')
+		if isMatch==0:
+			#dt={pil:{'id':pil,'nama':nama,'satuan':satuan}}
+			if barang_dipilih!='':
+				barang_dipilih+=','+pil
+			#barang_dipilih.append({'id':int(pil)})
+			else:
+				barang_dipilih=pil
+		session['barang_dipilihEdit']=barang_dipilih
+		print('postSession end:'+str(session['barang_dipilihEdit']))
+		return jsonify(barang_dipilih)
+	return ('', 204)
+# blok modul==========================================================================
 @app.route('/klirSession',methods=['POST','GET'])
 def klirSession():
 	#session.pop('pilih_item',None)
@@ -592,7 +627,7 @@ def getUserPermintaan(nik):
 def formPermintaan():
 	form=FormOrder()
 	barang_dipilih=''
-	if session['barang_dipilih']!='':
+	if session['barang_dipilih'] and session['barang_dipilih']!='':
 		barang_dipilih=session['barang_dipilih']
 	data=None
 	print('formPermintaan:'+str(barang_dipilih))
@@ -638,9 +673,9 @@ def formPermintaan():
 						if dinamis[d]:
 							try:
 								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
-								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang)"
-								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s);"
-								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga']))
+								sql="INSERT IGNORE INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang,id_divisi,periode)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga'],id_divisi,periode))
 							except Exception as e:
 								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
 					return jsonify({'success':'Berhasil simpan data'})
@@ -656,9 +691,9 @@ def formPermintaan():
 						if dinamis[d]:
 							try:
 								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
-								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang)"
-								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s);"
-								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga']))
+								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang,id_divisi,periode)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga'],id_divisi,periode))
 							except Exception as e:
 								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
 					return jsonify({'success':'Berhasil simpan data'})
@@ -692,6 +727,94 @@ def formPermintaan():
 			data=cursor.fetchall()
 			print(sql+'\n'+str(barang_dipilih))
 		return render_template('form-permintaan.html',form=form,data=data)
+
+
+@app.route('/formPermintaanEdit',methods=['POST','GET'])
+def formPermintaanEdit():
+	form=None
+	barang_dipilih=''
+	if session['barang_dipilihEdit'] and session['barang_dipilihEdit']!='':
+		barang_dipilih=session['barang_dipilihEdit']
+	data=None
+	print('formPermintaanEdit:'+str(barang_dipilih))
+	msg=''
+	if request.method=='POST':
+		statis=request.get_json().get('statis')
+		dinamis=request.get_json().get('dinamis')
+		if statis and dinamis:
+			sql=''
+			#--------------------------------------
+			nomor=statis['nomor']
+			periode=statis['periode']
+			alasan=statis['alasan']
+			id_divisi=statis['id_divisi']
+			nama_divisi=statis['nama_divisi']
+			operator=statis['operator']
+			nik_operator=statis['nik_operator']
+			nama_operator=statis['nama_operator']
+			jab_operator=statis['jab_operator']
+			nik_atasan=statis['atasan']
+			xatasan=getUserPermintaan(str(nik_atasan))
+			nama_atasan=xatasan[0]
+			jab_atasan=xatasan[1]
+			isplh=statis['isplh']
+			nik_plh=statis['plh']
+			xplh=getUserPermintaan(str(nik_plh))
+			nama_plh=xplh[0]
+			jab_plh=xplh[1]
+			#--------------------------------------
+			print('jumlah item: '+str(len(dinamis)))
+			#--------------------------------------
+			#if form.validate_on_submit():
+			if int(isplh)==0:
+				sql="INSERT INTO permintaan(nomor,periode,alasan,id_divisi,nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan)"
+				sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+				try:
+					cursor.execute(sql,(nomor,int(periode),alasan,int(id_divisi),nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan))
+				except Exception as e:
+					#raise e
+					return jsonify({'error':'<h6>Terjadi kesalahan dalam penyimpanan data.</h6>Apakah nomor surat sudah pernah dipakai sebelumnya?<br/>Apakah permintaan untuk periode ini sudah ada?<hr/>'+str(e)})
+				else:
+					for d in range(len(dinamis)):
+						if dinamis[d]:
+							try:
+								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
+								sql="INSERT IGNORE INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang,id_divisi,periode)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga'],id_divisi,periode))
+							except Exception as e:
+								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
+					return jsonify({'success':'Berhasil simpan data'})
+			else:
+				try:
+					sql="INSERT INTO permintaan(nomor,periode,alasan,id_divisi,nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan,isplh,nik_plh,nama_plh,jab_plh)"
+					sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+					cursor.execute(sql,(nomor,int(periode),alasan,int(id_divisi),nama_divisi,nik_operator,nama_operator,jab_operator,nik_atasan,nama_atasan,jab_atasan,int('1'),nik_plh,nama_plh,jab_plh))
+				except Exception as e:
+					return jsonify({'error':'<h6>Terjadi kesalahan dalam penyimpanan data.</h6>Apakah nomor surat sudah pernah dipakai sebelumnya?<br/>Apakah permintaan untuk periode ini sudah ada?<hr/>'+str(e)})
+				else:
+					for d in range(len(dinamis)):
+						if dinamis[d]:
+							try:
+								#nomor_permintaan,id_barang,user_nama,nama_barang,satuan_barang,harga_barang
+								sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang,id_divisi,periode)"
+								sql+="VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);"
+								cursor.execute(sql,(nomor,dinamis[d]['id'],dinamis[d]['jml'],operator,dinamis[d]['nama'],dinamis[d]['satuan'],dinamis[d]['harga'],id_divisi,periode))
+							except Exception as e:
+								return jsonify({'error':'Terjadi kesalahan penyimpanan list pilihan item.'})
+					return jsonify({'success':'Berhasil simpan data'})
+			print(str(nama_atasan))
+			return jsonify(nama_plh)
+		else:
+			return(jsonify({'error':'Terjadi kesalahan penyimpanan data.\nApakah form belum dilengkapi?'}))
+	else:
+		if barang_dipilih:
+			bdp=','.join(str(e) for e in barang_dipilih)
+			sql="SELECT DISTINCT id,nama,satuan,harga,nama_foto,ket FROM barang WHERE id IN("+ str(barang_dipilih) +");"
+			cursor.execute(sql)
+			data=cursor.fetchall()
+			print(sql+'\n'+str(barang_dipilih))
+		return render_template('form-permintaan-edit.html',data=data)		
 # blok modul==========================================================================
 @app.route('/getListPermintaan',methods=['POST'])
 def getListPermintaan():
@@ -729,6 +852,27 @@ def listPermintaanInfo(nomor_surat):
 			data=row
 		return render_template('list-permintaan-info.html',data=data)
 
+@app.route('/listPermintaan/item/<string:nomor_surat>',methods=['GET','POST'])
+def listPermintaanItem(nomor_surat):
+	data=None
+	datad=None
+	datax=None
+	if request.method=='GET':
+		#print('edit info perintaan: '+nomor_surat)		
+		cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+nomor_surat+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+		row=cursor.fetchall()
+		if row:
+			data=row
+			cursor.execute("SELECT nomor_permintaan,id_barang,nama_barang,jml_minta,satuan_barang,harga_barang,(jml_minta*harga_barang),user_nama FROM permintaan_d WHERE MD5(CONCAT(periode,'-',id_divisi))='"+nomor_surat+"' ;")
+			rowd=cursor.fetchall()
+			if rowd:
+				datad=rowd
+		cursor.execute('SELECT id,nama,UCASE(satuan),harga,nama_foto FROM barang ORDER BY nama ASC;')
+		rowx=cursor.fetchall()
+		if rowx:
+			datax=rowx
+		return render_template('list-permintaan-item.html',data=data,datad=datad,datax=datax)
+
 @app.route('/listPermintaan/<string:nomor_surat>',methods=['GET','POST'])
 def listPermintaanDetail(nomor_surat):
 	if request.method=='GET':
@@ -747,15 +891,35 @@ def listPermintaanDetail(nomor_surat):
                 #cname=cursor.description
                 row=cursor.fetchall()
                 if row:
-                    nomors=row[0][2]
+                    #nomors=row[0][2]
                     # detail_permintaan ----------------------------------------------------------------------
                     #rowd=None
-                    cursor.execute("SELECT nomor_permintaan,id_barang,nama_barang,jml_minta,satuan_barang,harga_barang,(jml_minta*harga_barang),user_nama FROM permintaan_d WHERE nomor_permintaan=%s ;",(str(nomors)))
+                    cursor.execute("SELECT nomor_permintaan,id_barang,nama_barang,jml_minta,satuan_barang,harga_barang,(jml_minta*harga_barang),user_nama FROM permintaan_d WHERE MD5(CONCAT(periode,'-',id_divisi))='"+nomor_surat+"' ;")
                     #cnamed=[]
                     rowd=cursor.fetchall()
-                    print(rowd[1])
+                    #print(rowd[1])
                     return render_template('list-permintaan-detail.html',data=row,cname=cname,datad=rowd)
 	return '<h1>Berhasil %d</h1>' % nomor_surat
+
+
+@app.route('/listPermintaanInfoSubmit',methods=['POST'])
+def listPermintaanInfoSubmit():
+    if request.method=='POST':
+        idx=request.form['id_permintaan']
+        nomor=request.form['tx_nomor']
+        perihal=request.form['tx_perihal']
+        #print('id_permintaan: '+str(idx))
+        if idx and nomor and perihal:
+        	try:
+        		cursor.execute("UPDATE permintaan SET nomor='"+nomor+"',alasan='"+perihal+"' WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"' ;")
+        		cursor.execute("UPDATE permintaan_d SET nomor_permintaan='"+nomor+"' WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"' ;")
+        		return jsonify({'success':'Berhasil mengubah informasi permintaan.'})
+        	except Exception as e:
+        		return jsonify({'error':'Gagal memperbaharui informasi permintaan. '+str(e)})
+        else:        	
+        	return jsonify({'error':'Gagal memperbaharui informasi permintaan. Cek kembali kelengkapan isian form.'})
+
+
 # blok modul==========================================================================
 
 # blok modul==========================================================================

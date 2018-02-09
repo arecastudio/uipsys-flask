@@ -7,21 +7,29 @@
 
 {% block body %}
 
-
+<span id="msg">&nbsp;</span>
 <div class="row">
 <div class="col-sm-5">
 <table class="table table-sm table-striped">
-	<form id="form" role="form" method="POST">
+	<form id="form" name="form" role="form" method="POST">
 {%if data%}
 	{%for row in data%}
+	<input id="id_permintaan" name="id_permintaan" type="hidden" value="{{ row[7] }}"/>
 	<tr><td width="150px">Divisi/ Bidang</td><td width="1px">:</td><td>{{ row[0] }}</td></tr>
 	<tr><td width="150px">Periode</td><td width="1px">:</td><td>{{ row[1] }}</td></tr>
 	<tr><td width="150px">Nomor Surat</td><td width="1px">:</td><td><input type="text" id="tx_nomor" name="tx_nomor" class="form-control form-control-sm" value="{{ row[2] }}"/></td></tr>
-	<tr><td width="150px">Perihal</td><td width="1px">:</td><td><input type="text" id="tx_nomor" name="tx_nomor" class="form-control form-control-sm" value="{{ row[3] }}"/></td></tr>
+	<tr><td width="150px">Perihal</td><td width="1px">:</td><td><input type="text" id="tx_perihal" name="tx_perihal" class="form-control form-control-sm" value="{{ row[3] }}"/></td></tr>
 	<tr><td width="150px">Operator</td><td width="1px">:</td><td>{{ row[4] }}</td></tr>
 	<tr><td width="150px">Tanggal</td><td width="1px">:</td><td>{{ row[5] }}</td></tr>
-	<tr><td width="150px">Status</td><td width="1px">:</td><td>{{ row[6] }}</td></tr>
-	<tr><td width="150px">Divisi/ Bidang</td><td width="1px">:</td><td>{{ row[7] }}</td></tr>
+	<tr><td width="150px">Status</td><td width="1px">:</td><td>			
+		{% if row[6]<1 %}
+		Review Divisi
+		{% elif row[6]==1 %}
+		Review SDM
+		{% else %}
+		Dikirim ke vendor (complete)
+		{% endif %}
+	</td></tr>
 	{%endfor%}
 {%endif%}
 	</form>
@@ -30,16 +38,9 @@
 </div>
 
 <div class="row">
-<div class="col-sm-4">
-<a href="/listPermintaan/info/{{ data[0][7] }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
-</div>
-
-<div class="col-sm-4" style="text-align:center;">
-<a href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
-</div>
-
-<div class="col-sm-4">
-<a style="float:right;" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</a>
+<div class="col-sm-5">
+	<button type="button" id="btn-submit" class="btn btn-sm btn-outline-primary" style=""><i class="fas fa-save"></i>&nbsp;Simpan</button>
+	<button type="reset" id="btn-reset" class="btn btn-sm btn-outline-primary" style="float:right;"><i class="fas fa-sync"></i>&nbsp;Batal</button>
 </div>
 </div>
 
@@ -47,8 +48,47 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('#prove-up-down').click(function(e){
-			console.log('prove button clicked.');
+		$('#btn-reset').click(function(e){
+			//$('#id_permintaan').val('');
+			$('#tx_nomor').val('');
+			$('#tx_perihal').val('');
+		});
+
+		$('#btn-submit').click(function(e){
+			var data=$('#form').serialize();			
+			console.log('data: '+data);
+
+			var idx=$('#id_permintaan').val().trim;
+			var nmr=$('#tx_nomor').val().trim;
+			var prh=$('#tx_perihal').val().trim;
+
+			if(idx!='' && nmr!='' && prh!=''){
+				$.ajax({
+					type:'POST',
+					url:'/listPermintaanInfoSubmit',
+					data:data,
+					success:function(r){
+						if (r.success) {
+							var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+r.success+'</span></div></div>';
+							$("#msg").html(msg);
+							$(location).attr('href', '/listPermintaan/{{ data[0][7] }}');
+						}else{
+							console.log('server_info: gagal')
+							var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+r.error+'</span></div></div>';
+							$("#msg").html(msg);
+						}
+					},
+					error:function(){
+						console.log('submit_info: gagal');
+	        			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+	        			//console.log(msg);
+	        			$("#msg").html(msg);
+					}
+				});
+			}else{				
+        		var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Pastikan isian form sudah terisi.</span></div></div>';
+	        	$("#msg").html(msg);
+			}
 		});
 	});
 </script>

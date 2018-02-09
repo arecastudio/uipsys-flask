@@ -9,8 +9,8 @@
 
 
 	<div class="col-sm-12">
-		<table id="tabel" width="100%" class="table table-bordered table-hover">
-			<thead>
+		<table id="tabel" width="100%" class="table table-sm table-bordered table-hover">
+			<thead class="thead-dark">
 				<th>#</th>
 				<th>Keterangan</th>
 				<th>Prd</th>
@@ -24,13 +24,13 @@
 		{% if data %}
 			{% for row in data %}
 				<tr>
-					<td>{{cnt[0]}}</td>
+					<td style="text-align: center;">{{cnt[0]}}</td>
 					<td>
 						{{row[0]}} <br/> {{row[2]}}<br/> {{row[3]}}
 					</td>
-					<td>{{row[1]}}</td>
+					<td style="text-align: center;">{{row[1]}}</td>
 					<td>{{row[4]}}</td>
-					<td>{{row[5]}}</td>
+					<td style="text-align: center;">{{row[5]}}</td>
 					<td style="text-align: center;">
 				{% if row[6]<1 %}
 					

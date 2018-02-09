@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-	Permintaan Detail
+	<span class="judul">Detail Permintaan</span>
 	<a href="{{url_for('listPermintaan')}}" class="btn btn-sm btn-outline-success" style="float:right;"><i class="fas fa-list"></i>&nbsp;Kembali ke list permintaan</a>
 {% endblock %}
 
@@ -39,12 +39,18 @@
 </div>
 
 <div class="row">
-<div class="col-sm-6">
-<a href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
+<div class="col-sm-4">
+<a href="/listPermintaan/info/{{ data[0][7] }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
 </div>
 
-<div class="col-sm-6">
-<a style="float:right;" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
+<div class="col-sm-4" style="text-align:center;">
+<a href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
+</div>
+
+<div class="col-sm-4" style="text-align: center;">
+<a style="" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-down"></i>&nbsp;Unapprove</a>
+
+<a style="float:right;" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</a>
 </div>
 </div>
 
@@ -81,6 +87,22 @@
 </table>
 </div>
 </div>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#prove-up-down').click(function(e){
+			console.log('prove button clicked.');
+		});
+	});
+</script>
+
 
 
 {% endblock %}

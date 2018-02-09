@@ -718,6 +718,17 @@ def listPermintaan():
     	data=row
     return render_template('list-permintaan.html',data=data)
 
+@app.route('/listPermintaan/info/<string:nomor_surat>',methods=['GET','POST'])
+def listPermintaanInfo(nomor_surat):
+	data=None
+	if request.method=='GET':
+		#print('edit info perintaan: '+nomor_surat)		
+		cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+nomor_surat+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+		row=cursor.fetchall()
+		if row:
+			data=row
+		return render_template('list-permintaan-info.html',data=data)
+
 @app.route('/listPermintaan/<string:nomor_surat>',methods=['GET','POST'])
 def listPermintaanDetail(nomor_surat):
 	if request.method=='GET':

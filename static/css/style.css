@@ -27,6 +27,7 @@ body{
   padding-right: 3px;
 }
 
+.judul{color: #008888;font-weight: bold;}
 .main-bg{background: linear-gradient(#00aaaa,#008888);}
 .text-black{color:black;}
 

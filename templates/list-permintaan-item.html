@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-	Ubah Item Permintaan Nomor: {%if datad%} <strong>{{datad[0][0]}}</strong> {%endif%}
+	Ubah Item Permintaan Nomor: {%if datad%} <strong>{{data[0][2]}}</strong> {%endif%}
 
-	<a href="{{ url_for('formPermintaanEdit') }}" style="float:right;" class="btn btn-sm btn-outline-primary"><i class="fas fa-hand-point-right"></i>&nbsp;Lanjutkan Ke Form Permintaan</a>
+    <a href="/formPermintaanEdit/{{data[0][7]}}" style="float:right;" class="btn btn-sm btn-outline-primary"><i class="fas fa-hand-point-right"></i>&nbsp;Lanjutkan Ke Form Permintaan</a>
 
 	<a href="/listPermintaan/{{ data[0][7] }}" class="btn btn-sm btn-outline-success" style="float:right;margin-right: 10px;"><i class="fas fa-id-card"></i>&nbsp;Kembali ke detail permintaan</a>
 {% endblock %}
@@ -31,10 +31,10 @@
 			<tr>
 				<td style="text-align:center;">{{cnt[0]}}</td>
 				<td>{{d[2]}}</td>
-				<td style="text-align:right;">{{ "{:,}".format(d[5]) }}</td>
-				<td style="text-align:right;">{{ "{:,}".format(d[3]) }}</td>
+				<td style="text-align:right;">{{ d[5] }}</td>
+				<td style="text-align:right;">{{ d[3] }}</td>
 				<td>{{d[4]}}</td>
-				<td style="text-align:right;">{{ "{:,}".format(d[6]) }}</td>
+				<td style="text-align:right;">{{ d[6] }}</td>
 				<td></td>
 			</tr>
 			{% if cnt.append(cnt.pop()+1) %}{%endif%}
@@ -70,9 +70,9 @@ $(document).ready(function() {
 		"bPaginate": false
 	});
 
-	$('#tabel').hide(2000);
-	$('#home').show(2000);
-	$('#search-box').show(2000);
+	$('#tabel').hide(2);
+	$('#home').show(2);
+	$('#search-box').show(2);
 
 
 	$('#btn-search').click(function(){

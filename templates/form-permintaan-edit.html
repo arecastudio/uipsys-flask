@@ -2,8 +2,8 @@
 
 {% block title %}
 
-					<a href="/buatPermintaanEdit" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
-&nbsp;&nbsp;&nbsp;
+<a style="float:right;" href="/listPermintaan/item/{{ passindex }}" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
+
 	Formulir Permintaan
 {% endblock %}
 
@@ -31,8 +31,8 @@
 <span id="msg">&nbsp;</span>
 
 <div class="row">
-	<div class="col-sm-8">
-		<table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+	<div class="col-sm-12">
+		<table width="100%" class="table table-sm table-striped table-bordered table-hover" id="dataTables-example">
 		<!--table width="100%" cellpadding="2" cellspacing="2" class="table table-bordered table-hover"-->
 			<thead class="thead-dark">
 				<th>#</th>
@@ -45,18 +45,18 @@
 		{% if data %}
 			{% set cnt = [1] %}
 			{% for row in data %}
-			<tr id="tr{{ row[0] }}">
+			<tr id="tr{{ row['data']['id_barang'] }}">
 				<td>
 					{{ cnt[0] }}
-					<input type="hidden" name="" id="" class="hiddentext" value="{{ row[0] }}" />
+					<input type="hidden" name="" id="" class="hiddentext" value="{{ row['data']['id_barang'] }}" />
 				</td>
-				<td>{{ row[1] }}</td>
+				<td>{{ row['data']['nama_barang'] }}</td>
 				<td>
-					<input type="text" nomor="{{ row[0] }}" nama="{{ row[1] }}" satuan="{{ row[2] }}" harga="{{ row[3] }}" class="tx-jml form-control form-control-sm" value="1" style="width: 60px;text-align: center;" maxlength="5" />
+                    <input type="text" nomor="{{ row['data']['id_barang'] }}" nama="{{ row['data']['nama_barang'] }}" satuan="{{ row['data']['harga_barang'] }}" harga="{{ row['data'][3] }}" class="tx-jml form-control form-control-sm" value="{{ row['data']['jml_minta'] }}" style="width: 60px;text-align: center;" maxlength="5" />
 				</td>
-				<td>{{ row[2] }}</td>
+				<td>{{ row['data']['satuan_barang'] }}</td>
 				<td>
-                    <button id="btn-del-{{row[0]}}" type="button" nama="{{ row[0] }}" class="btn-del btn btn-sm btn-outline-danger" title="Hapus" ><i class="fa fa-trash-alt"></i></button>
+                    <button id="btn-del-{{row['data']['id_barang']}}" type="button" nama="{{ row['data']['id_barang'] }}" class="btn-del btn btn-sm btn-outline-danger" title="Hapus" ><i class="fa fa-trash-alt"></i></button>
 				</td>
 			</tr>
 			{% if cnt.append(cnt.pop() + 1) %}{% endif %}
@@ -185,16 +185,20 @@ $(document).ready(function() {
 
     $('.btn-del').click(function(){
     	var id=$(this).attr('nama');
-    	var idx={'id':id};
     	$.ajax({
     		type:'POST',
-    		url:'/formPermintaanDelItem',
+    		url:'/formPermintaanDelItemEdit',
     		dataType:'json',
-    		data:JSON.stringify(idx),
+		data:JSON.stringify({'id':id,'myindex':'{{ passindex  }}' }),
 			contentType: 'application/json;charset=UTF-8',
 			cache:false,
     		success:function(resp){
-    			if(resp.success) $('#tr'+id).remove();
+    			if(resp.success) {
+    				console.log('SERVER_RESP: '+resp.success)
+    				$('#tr'+id).remove();
+    			}else{
+    				console.log('SERVER_RESP: '+resp.error)
+    			}
     			//DataTable.fnReloadAjax();
     			//$('#dataTables-example').DataTable().fnReloadAjax();
     			//$('#dataTables-example').ajax.reload();

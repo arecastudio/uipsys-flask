@@ -124,7 +124,7 @@ $(document).ready(function() {
 		//pesan(item_id,nama,satuan);
 		console.log('button fired: '+item_id);
 
-		var pilihan={'id':item_id,'nama':nama,'satuan':satuan};
+		var pilihan={'id':item_id,'nama':nama,'satuan':satuan,'index':'{{ data[0][7]  }}'};
 
 		$.ajax({
 			type:'POST',

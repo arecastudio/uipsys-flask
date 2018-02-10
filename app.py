@@ -617,33 +617,34 @@ def postSession():
 def postSessionEdit():
     #global barang_dipilih
     isMatch = 0
-    barang_dipilih = ''
+    barang_dipilih = []
     if session['barang_dipilihEdit']:
-        val = session['barang_dipilihEdit']
-        barang_dipilih = val
-    print('postSession start: '+str(barang_dipilih))
+        barang_dipilih = session['barang_dipilihEdit']
+    #print('\n\npostSession start: '+str(barang_dipilih))
     if request.method == 'POST':
+        myindex = request.get_json().get('index')
         pil = request.get_json().get('id')
         nama = request.get_json().get('nama')
         satuan = request.get_json().get('satuan')
-        print('Item dipilih: '+pil)
+        #print('\n\nItem dipilih: '+pil)
         # barang_dipilih.append(pil)
-        if len(barang_dipilih):
-            # split hanya berlaku untuk tipe data string
-            str_barang_dipilih = barang_dipilih.split(',')
-            for brg in str_barang_dipilih:
-                if brg == pil:
-                    isMatch = 1
-                    print(str(pil)+' sudah ada')
-        if isMatch == 0:
-            # dt={pil:{'id':pil,'nama':nama,'satuan':satuan}}
-            if barang_dipilih != '':
-                barang_dipilih += ','+pil
-            # barang_dipilih.append({'id':int(pil)})
-            else:
-                barang_dipilih = pil
+        kamus={}
+        daftar=[]
+        isMatch=0
+        kamus['id']=myindex
+        kamus['data']={ 'id_barang':pil, 'nama_barang':nama , 'jml_minta':1, 'satuan_barang':satuan  }
+        #daftar.append(kamus)
+        if barang_dipilih and barang_dipilih[0]['id']==str(myindex):
+            for barang in barang_dipilih:
+                if int(barang['data']['id_barang'])==int(pil):
+                    isMatch=1
+                    print('\n\n'+str(pil)+' Sudah ada dalam session.')
+                #else:
+                    #print('\n\n'+str(barang['data']['id_barang'])+' != '+str(pil))
+        if isMatch==0:
+            barang_dipilih.append(kamus)
         session['barang_dipilihEdit'] = barang_dipilih
-        print('postSession end:'+str(session['barang_dipilihEdit']))
+        #print('\n\npostSession barang_dipilihEdit saat ini:\n'+str(session['barang_dipilihEdit']))
         return jsonify(barang_dipilih)
     return ('', 204)
 # blok modul==========================================================================

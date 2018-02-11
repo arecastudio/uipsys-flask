@@ -1201,6 +1201,14 @@ def approveDetail(myindex):
             # print(rowd[1])
         return render_template('approve-detail.html', data=row, cname=cname, datad=rowd)
 # blok modul==========================================================================
+
+@app.route('/buatKolektif',methods=['GET','POST'])
+def buatKolektif():
+    if request.method=='POST':
+        pass
+    else:
+        return render_template('buat-kolektif.html')
+
 # blok modul==========================================================================
 # blok modul==========================================================================
 # blok modul==========================================================================

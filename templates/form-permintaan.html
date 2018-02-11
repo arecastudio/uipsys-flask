@@ -2,7 +2,7 @@
 
 {% block title %}
 
-					<a href="/buatPermintaan" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
+<a href="{{ url_for('buatPermintaan')  }}" class="btn btn-sm btn-outline-success" style="float:right;"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
 &nbsp;&nbsp;&nbsp;
 	Formulir Permintaan
 {% endblock %}
@@ -192,11 +192,11 @@
     	//=====================================================================================================
     	$('#btn-batal').click(function(){
     		$.post({
-    			url:'/resetPermintaan',
+			url:'{{ url_for('resetPermintaan')  }}',
     			success:function(resp){
     				if (resp.success) {
     					console.log(resp.success);
-    					$(location).attr('href', '/buatPermintaan')
+					$(location).attr('href', '{{ url_for('listPermintaan')  }}')
     				}
     				
     			}
@@ -232,7 +232,7 @@
         	var idx={'id':id};
         	$.ajax({
         		type:'POST',
-        		url:'/formPermintaanDelItem',
+			url:'{{ url_for('formPermintaanDelItem')  }}',
         		dataType:'json',
         		data:JSON.stringify(idx),
     			contentType: 'application/json;charset=UTF-8',

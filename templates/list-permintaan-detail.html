@@ -40,12 +40,16 @@
 
 <div class="row">
 
-<div class="col-sm-12">
+<div class="col-sm-6">
 
 <a style="" href="{{ url_for('listPermintaanInfo',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
 
 <a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
 
+</div>
+
+<div class="col-sm-6">
+	<a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-trash"></i>&nbsp;Hapus / Batalkan Permintaan</a>
 </div>
 
 </div>

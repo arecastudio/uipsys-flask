@@ -2,7 +2,7 @@
 
 {% block title %}
 
-<a style="float:right;" href="/listPermintaan/item/{{ passindex }}" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
+<a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=passindex) }}" class="btn btn-sm btn-outline-success"><i class="fa fa-hand-point-left"></i>&nbsp;Kembali ke List Item</a>
 
 	Formulir Permintaan
 {% endblock %}
@@ -131,11 +131,11 @@ $(document).ready(function() {
 	//=====================================================================================================
 	$('#btn-batal').click(function(){
 		$.post({
-			url:'/resetPermintaan',
+			url:'{{ url_for('resetPermintaan')  }}',
 			success:function(resp){
 				if (resp.success) {
 					console.log(resp.success);
-					$(location).attr('href', '/buatPermintaan')
+					$(location).attr('href', '{{ url_for('buatPermintaan')  }}')
 				}
 				
 			}
@@ -170,7 +170,7 @@ $(document).ready(function() {
     	var id=$(this).attr('nama');
     	$.ajax({
     		type:'POST',
-    		url:'/formPermintaanDelItemEdit',
+		url:'{{ url_for('formPermintaanDelItemEdit')  }}',
     		dataType:'json',
 		data:JSON.stringify({'id':id,'myindex':'{{ passindex  }}' }),
 			contentType: 'application/json;charset=UTF-8',

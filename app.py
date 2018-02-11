@@ -854,7 +854,40 @@ def formPermintaan():
         return render_template('form-permintaan.html', form=form, data=data)
 
 
-#@app.route('/formPermintaanEdit',methods=['POST','GET'])
+@app.route('/formPermintaanEditSubmit',methods=['POST'])
+def formPermintaanEditSubmit():
+    if request.method=='POST':
+        dinamis = request.get_json().get('data')
+        myindex = request.get_json().get('id')
+        if dinamis and myindex:
+            try:
+                cursor.execute("DELETE FROM permintaan_d WHERE MD5(CONCAT(periode,'-',id_divisi))=%s;",(str(myindex)))
+                cursor.execute("SELECT p.nomor,p.id_divisi,p.periode,b.nama,b.satuan,b.harga FROM permintaan AS p LEFT OUTER JOIN barang AS b ON b.id=33 WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+ myindex +"' LIMIT 1;")
+                row=cursor.fetchall()
+                if row:
+                    #karena harus dengan perulangan, berhubung cuma satu row yang di-SELECT, maka gunakan index 0
+                    nomor_surat=str(row[0][0])
+                    id_divisi=str(row[0][1])
+                    periode=str(row[0][2])
+                    nama_barang=str(row[0][3])
+                    satuan_barang=str(row[0][4])
+                    harga_barang=str(row[0][5])
+                    for d in dinamis:
+                        id_barang=d['id']
+                        jml_minta=d['jml']
+                        sql="INSERT INTO permintaan_d(nomor_permintaan,id_barang,jml_minta,user_nama,nama_barang,satuan_barang,harga_barang,id_divisi,periode)VALUES('"+nomor_surat+"',"+id_barang+","+jml_minta+",'user',(SELECT b.nama FROM barang AS b WHERE b.id="+id_barang+" LIMIT 1),(SELECT b.satuan FROM barang AS b WHERE b.id="+id_barang+"),(SELECT b.harga FROM barang AS b WHERE b.id="+id_barang+"),"+id_divisi+","+periode+");"
+                        print(sql)
+                        cursor.execute(sql)
+                #for d in dinamis:
+                    #print(d['id']+' - '+d['jml'])
+                    #cursor.execute("INSERT INTO permintaan_d()VALUES();")
+                return jsonify({'success':'List permintaan berhasil diubah.'})
+            except Exception as e:
+                print(str(e.args))
+                return jsonify({'error':'Error pada saat submit data ke data_server'})
+        else:
+            return jsonify({'error':'Terjadi error posting data ke server karena data tidak valid.'})
+
 @app.route('/formPermintaanEdit/<string:myindex>', methods=['POST', 'GET'])
 def formPermintaanEdit(myindex):
     form = None
@@ -1102,9 +1135,59 @@ def listPermintaanInfoSubmit():
 
 
 # blok modul==========================================================================
-
+@app.route('/approve',methods=['POST','GET'])
+def approve():
+    resetSessionPilihan()
+    data = None
+    datad = None
+    if request.method=='POST':
+        pass
+    else:
+        #REQUEST METHOD GET
+    # Hapus session item dipilih
+        cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE p.status<2 ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+        row = cursor.fetchall()
+        if row:
+            data = row
+        return render_template('approve.html',data=data,datad=datad)
 # blok modul==========================================================================
-
+@app.route('/approve/<string:myindex>',methods=['POST','GET'])
+def approveDetail(myindex):
+    data=None
+    datad=None
+    if request.method=='POST':
+        pass
+    else:
+        row = None
+        rowd = None
+        cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+myindex+"' ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+        cname = []
+        # cetak nama tabel saja
+        print('--------NAMA FIELD DI TABEL _barang_------------')
+        for i in cursor.description:
+            print(i[0])  # cetak nama tabel saja
+            if i[0] == 'alasan':
+                cname.append('perihal')
+            elif i[0] == 'nomor_surat':
+                cname.append('nomor surat')
+            else:
+                cname.append(i[0])
+        # cname=cursor.description
+        row = cursor.fetchall()
+        if row:
+            # nomors=row[0][2]
+            # detail_permintaan ----------------------------------------------------------------------
+            # rowd=None
+            cursor.execute("SELECT nomor_permintaan,id_barang,nama_barang,jml_minta,satuan_barang,harga_barang,(jml_minta*harga_barang),user_nama FROM permintaan_d WHERE MD5(CONCAT(periode,'-',id_divisi))='"+myindex+"' ;")
+            # cnamed=[]
+            rowd = cursor.fetchall()
+            # print(rowd[1])
+        return render_template('approve-detail.html', data=row, cname=cname, datad=rowd)
+# blok modul==========================================================================
+# blok modul==========================================================================
+# blok modul==========================================================================
+# blok modul==========================================================================
+# blok modul==========================================================================
 # blok modul==========================================================================
 
 '''

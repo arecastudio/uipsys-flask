@@ -66,6 +66,12 @@
 		</table>
 	</div><!-- col-sm-8 -->
 </div><!-- row -->
+<hr style="border:1px dashed #ccf;"/>
+<div class="row">
+	<div class="col-sm-12">
+		<button id="btn-submit" name="btn-submit" type="button" role="button" style="float:right;" class="btn btn-outline-primary"><i class="fas fa-save"></i>&nbsp;Simpan Perubahan</button>
+	</div>
+</div><!-- row -->
 
 
 <script type="text/javascript">
@@ -73,59 +79,36 @@
 $(document).ready(function() {
 
 	$('#btn-submit').click(function(){
-	//$('#konten').load('{{ url_for('getVendor') }}');
-		var isplh=0;
-		if ($('#chk_plh').is(':checked'))isplh=1;
-
-		var stat={
-			'periode':$('#op_periode').val(),
-			'nomor':$('#tx_nomor').val(),
-			'alasan':$('#tx_alasan').val(),
-			'operator':'{{ session['username'] }}',
-			'nik_operator':'{{ session['nik'] }}',
-			'nama_operator':'{{ session['fullname'] }}',
-			'jab_operator':'{{ session['jabatan'] }}',
-			'atasan':$('#op_atasan').val(),
-			'isplh':isplh,
-			'plh':$('#op_plh').val(),
-			'id_divisi':'{{ session['id_divisi'] }}',
-			'nama_divisi':'{{ session['nama_divisi'] }}'
-		};
 
 		var tmp=[];
 		$('.tx-jml').each(function(e){
 			var jml=$(this).val();
 			var nomor=$(this).attr('nomor');
-			var nama=$(this).attr('nama');
-			var satuan=$(this).attr('satuan');
-			var harga=$(this).attr('harga');
+			//var nama=$(this).attr('nama');
+			//var satuan=$(this).attr('satuan');
+			//var harga=$(this).attr('harga');
 			//console.log(nomor+' berjumlah: '+jml);
-			tmp.push({'id':nomor,'nama':nama,'jml':jml,'satuan':satuan,'harga':harga});
+			tmp.push({'id':nomor,'jml':jml});
 		});
 
-		//console.log(tmp);
-
-		var data={'statis':stat,'dinamis':tmp};
-		console.log(data);
-
-		var nomor_surat=$('#tx_nomor').val();
-		var alasan=$('#tx_alasan').val();
-
-		if($.trim(nomor_surat)!='' || $.trim(alasan)!=''){
-
-        	$.ajax({
-        		type:'POST',
-        		url:'{{ url_for('formPermintaan') }}',
-    			dataType:'json',
-    			data:JSON.stringify(data),
-    			contentType: 'application/json;charset=UTF-8',
-    			cache:false,
+		//validasi
+		if(tmp){
+			var data={'data':tmp,'id':'{{passindex}}'}
+			$.ajax({
+				type:'POST',
+				url:'{{ url_for('formPermintaanEditSubmit') }}',
+				dataType:'json',
+				data:JSON.stringify(data),
+				contentType: 'application/json;charset=UTF-8',
+				cache:false,
         		success:function(res){
         			if (res.success) {
         				console.log(res.success);
 						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.success+'</span></div></div>';
+						//$("#msg").html(msg);
 						$('#btn-batal').click();
-						$("#msg").html(msg);
+						console.log(res.success);
+					$(location).attr('href', '/listPermintaan/{{passindex}}')
         			}else{        				
         				console.log(res.error);
 						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';

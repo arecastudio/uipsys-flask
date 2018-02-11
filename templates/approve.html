@@ -50,7 +50,7 @@
 				{% endif %}
 					</td>
 					<td style="text-align: center;">
-						<a href="/approve/{{row[7]}}" class="btn btn-sm btn-outline-primary"><i class="fas fa-search-plus"></i>&nbsp;Detail</a>
+						<a href="{{ url_for('approveDetail',myindex=row[7])  }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-search-plus"></i>&nbsp;Detail</a>
 					</td>
 				</tr>
 				{% if cnt.append(cnt.pop() + 1) %}{% endif %}

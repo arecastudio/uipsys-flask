@@ -22,7 +22,7 @@
                 <div class="row" style="">
                     <div class="col-sm-3" style="margin: 0 auto;margin-top: 150px;background-color: #ccc;padding: 3px;border-radius: 5px;">
                         <div style="text-align: center;background: #777;color: #fff;height: 50px;margin-bottom: 10px;"><h5>Login User</h5></div>
-                        <form role="form" method="post" action="/login">
+			<form role="form" method="post" action="{{ url_for('login')  }}">
                             {{ form.hidden_tag() }}
                             <fieldset>
                                 <div class="form-group">

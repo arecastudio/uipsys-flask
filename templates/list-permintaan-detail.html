@@ -39,19 +39,15 @@
 </div>
 
 <div class="row">
-<div class="col-sm-4">
-<a href="/listPermintaan/info/{{ data[0][7] }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
+
+<div class="col-sm-12">
+
+<a style="" href="{{ url_for('listPermintaanInfo',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
+
+<a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
+
 </div>
 
-<div class="col-sm-4" style="text-align:center;">
-<a href="/listPermintaan/item/{{ data[0][7] }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
-</div>
-
-<div class="col-sm-4" style="text-align: center;">
-<a style="" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-down"></i>&nbsp;Unapprove</a>
-
-<a style="float:right;" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</a>
-</div>
 </div>
 
 <div class="row">

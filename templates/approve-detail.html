@@ -2,7 +2,7 @@
 
 {% block title %}
 	<span class="judul">Detail Permintaan</span>
-	<a href="/approve" class="btn btn-sm btn-outline-success" style="float:right;"><i class="fas fa-list"></i>&nbsp;Kembali ke approvement list</a>
+	<a href="{{ url_for('approve')  }}" class="btn btn-sm btn-outline-success" style="float:right;"><i class="fas fa-list"></i>&nbsp;Kembali ke approvement list</a>
 {% endblock %}
 
 {% block body %}
@@ -42,9 +42,9 @@
 	<div class="col-sm-8">&nbsp;</div>
 
 <div class="col-sm-4" style="text-align: center;">
-<a style="" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-down"></i>&nbsp;Unapprove</a>
+<a style="" id="prove-down" href="#" class="btn btn-sm {% if data[0][6]!=1 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-down"></i>&nbsp;Unapprove</a>
 
-<a style="float:right;" id="prove-up-down" href="#" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</a>
+<a style="float:right;" id="prove-up" href="#" class="btn btn-sm {% if data[0][6]!=0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-thumbs-up"></i>&nbsp;Approve</a>
 </div>
 </div>
 
@@ -91,8 +91,50 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('#prove-up-down').click(function(e){
-			console.log('prove button clicked.');
+		$('#prove-up').click(function(e){
+			console.log('approve button clicked.');
+			//agar dapat dikirim ke wsgi, gunakan contentType dan dataType
+			$.ajax({
+				type:'POST',
+				url:'{{ url_for('approveDetail',myindex=data[0][7])  }}',
+				dataType:'json',
+				contentType: 'application/json; charset=utf-8',
+				data:JSON.stringify({'status':1,'index':'{{ data[0][7]  }}'}),
+				success:function(resp){
+					if(resp.success){
+						console.log(resp.success);
+						$(location).attr('href', '{{ url_for('approve')  }}');
+					}else{
+						console.log(resp.error);
+					}
+				},
+				error:function(){
+					console.log('Gagal kirim ajax data.');
+				}
+			});
+		});
+		
+		$('#prove-down').click(function(e){
+			console.log('approve button clicked.');
+			//agar dapat dikirim ke wsgi, gunakan contentType dan dataType
+			$.ajax({
+				type:'POST',
+				url:'{{ url_for('approveDetail',myindex=data[0][7])  }}',
+				dataType:'json',
+				contentType: 'application/json; charset=utf-8',
+				data:JSON.stringify({'status':0,'index':'{{ data[0][7]  }}'}),
+				success:function(resp){
+					if(resp.success){
+						console.log(resp.success);
+						$(location).attr('href', '{{ url_for('approve')  }}');
+					}else{
+						console.log(resp.error);
+					}
+				},
+				error:function(){
+					console.log('Gagal kirim ajax data.');
+				}
+			});
 		});
 	});
 </script>

@@ -23,10 +23,10 @@
 				    	<div class="dropdown-menu dropdown-menu-right">
 				        	<a href="{{ url_for('buatPermintaan')  }}" class="dropdown-item">Buat Permintaan</a>
 				        	<a href="{{ url_for('listPermintaan')  }}" class="dropdown-item">List Permintaan</a>
-				       		<div class="dropdown-divider"></div>
 				        	<a href="{{ url_for('approve')  }}" class="dropdown-item">Approvement</a>
-				       		<div class="dropdown-divider"></div>
+						<div class="dropdown-divider"></div>
 				        	<a href="{{ url_for('buatKolektif')  }}" class="dropdown-item">Buat Permintaan Kolektif [SDM]</a>
+				        	<a href="{{ url_for('kirimVendor')  }}" class="dropdown-item">Kirim ke Vendor</a>
 				    	</div>
 				</li>
 				<li class="nav-item active"><a href="#" class="nav-link">Laporan</a></li>
@@ -59,12 +59,10 @@
 						<a href="#" class="text-black"><h6>Notifikasi <span class="badge badge-secondary">12</span></h6></a>
 						<a href="#" class="text-black"><h6>Item Baru <span class="badge badge-secondary">5</span></h6></a>
                         <hr/>
-                        <h6><a href="/tableDataBarang" class="text-black"><i class="fas fa-table"></i>&nbsp;Tabel Data Barang</a></h6>
-                        <h6><a href="/tableDataBidang" class="text-black"><i class="fas fa-table"></i>&nbsp;Tabel Data Bidang</a></h6>
-                        <h6><a href="/tableDataVendor" class="text-black"><i class="fas fa-table"></i>&nbsp;Tabel Data Vendor</a></h6>
+			<h6><a href="{{ url_for('listPermintaan')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Permintaan</a></h6>
                         <hr/>
                         <div>
-                            <a href="/about" title="Informasi aplikasi">
+				<a href="{{ url_for('about')  }}" title="Informasi aplikasi">
                                 <img src="{{ url_for('static',filename='logo-listrik-pintar.jpg') }}" style="border-radius: 15px;width: 100%;" />
                             </a>
                         </div>

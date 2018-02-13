@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-	List Permintaan
+	List Permintaan Kolektif
 {% endblock %}
 
 {% block body %}
@@ -74,8 +74,31 @@
             "bPaginate": true
         });
     });
+	/*$('#tabel').DataTable( {
+		//console.log('mengambil data');
+        	'processing': true,
+        	'serverSide': true,
+        	'ajax': {
+           		'url': '/getListPermintaan',
+            		'type': 'POST'
+        	},
+        	'columns': [
+            		{ 'data': 'bidang' },
+            		{ 'data': 'periode' },
+            		{ 'data': 'nomor_surat' },
+            		{ 'data': 'alasan' },
+            		{ 'data': 'operator' },
+            		{ 'data': 'tanggal' },
+            		{ 'data': 'tanggal' },
+            		{ 'data': 'status' }
+        	]
+    	});*/
+
+
 
 </script>
+
+
 
 
 {% endblock %}

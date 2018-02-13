@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+{% block head %}
+	Kirim ke Vendor
+{% endblock %}
+
+{% block body %}
+
+<div class="row">
+	<div class="col-sm-12">
+		<table id="tabel"  width="100%" class="table table-sm table-bordered table-hover">
+		
+			<thead class="thead-dark">
+				<th>#</th>
+				<th width="450px">Keterangan</th>
+				<th>Tanggal</th>
+				<th>Operator</th>
+				<th>Ctrl</th>
+			</thead>
+			<tbody id="tbody">
+                            {% if data %}{% set cnt=[1] %}
+                        {% for row in data %}
+                        <tr>
+                            <td style="text-align:center;">{{ cnt[0] }}</td>
+                            <td>
+                                {{ row[1]  }}
+                                <hr/>
+                                <small>{{ row[2]  }}</small>
+                            </td>
+                            <td style="text-align:center;">{{ row[3]  }}</td>
+                            <td style="text-align:center;">{{ row[5]  }}</td>
+                            <td style="text-align:center;">
+                                <a href="{{ url_for('kirimVendorDetail',idx=row[0])  }}" id="{{ row[0]  }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-envelope"></i>&nbsp;Kirim</a>
+                            </td>
+                        </tr>
+				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+                        {% endfor %}
+                        {% endif %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+     $(document).ready(function() {
+        $('#tabel').DataTable({
+            responsive: true,
+            "bPaginate": true
+        });
+    });
+
+</script>
+
+
+
+
+{% endblock %}

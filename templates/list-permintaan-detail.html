@@ -36,6 +36,12 @@
 {%endif%}
 </table>
 </div>
+<div class="col-sm-6">
+	<div class="alert alert-success" role="alert">
+	<h5 class="alert-heading">Deskripsi</h5>
+	<p class="mb-0">Untuk meng-<i>edit</i>, menghapus dan membatalkan permintaan, status permintaan harus dalam review divisi. Untuk permintaan yang sudah dikirimkan ke SDM, harus <i>unapproved</i> terlebih dahulu.</p>
+	</div>
+</div>
 </div>
 
 <div class="row">
@@ -100,6 +106,9 @@
 		$('#prove-up-down').click(function(e){
 			console.log('prove button clicked.');
 		});
+	});
+
+	$('#btn-submit').click(function(e){
 	});
 </script>
 

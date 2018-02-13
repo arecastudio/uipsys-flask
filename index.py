@@ -1,11 +1,14 @@
 import os
 import datetime
+import smtplib
 from datetime import date
 #from mod_python import apache
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, url_for, redirect, request, escape, session, json, jsonify, flash
 from flaskext.mysql import MySQL
-from flask_sendmail import Mail, Message
+#from flask_sendmail import Mail, Message
+#from flaskext.mail import Mail, Message
+#from flask_mail import Mail, Message
 from werkzeug import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug import secure_filename
@@ -18,7 +21,8 @@ app = Flask(__name__)
 
 # app.route = prefix_route(app.route, '/uipsys')
 
-mail = Mail(app)
+#mail = Mail(app)
+#mail = Mail(app)
 
 mysql = MySQL()
 # MySQL configurations
@@ -35,6 +39,8 @@ UPLOAD_FOLDER = app.root_path+'/static/foto/'
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['jpg'])
+
+
 
 # blok fungsi=============================================================================================
 #def handler(req):
@@ -106,6 +112,25 @@ class ClassOrder(object):
         self._nama = _nama
         self._satuan = _satuan
 
+
+
+def kirim_email(tujuan,isi):
+    try:
+        gmail_user = 'noreplyrobotmail@gmail.com'  
+        gmail_password = 'pdam.!@#'
+        body='ini adalah isi email'
+        sent_from = gmail_user  
+        to = 'ondiisrail@gmail.com'
+        subject = 'OMG Super Important Message'
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(sent_from, to, body)
+        server.close()
+        return 'Email berhasil terkirim.'
+    except Exception as e:
+        #raise e
+        return 'Gagal terkirim. '+str(e)
 
 # blok fungsi=============================================================================================
 
@@ -1019,7 +1044,7 @@ def listPermintaan():
     # Hapus session item dipilih
     resetSessionPilihan()
     data = None
-    cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE 1 ORDER BY p.id_divisi ASC,p.status ASC,p.tgl DESC;")
+    cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE 1 ORDER BY p.status ASC,p.id_divisi ASC,p.tgl DESC;")
     row = cursor.fetchall()
     if row:
         data = row
@@ -1204,11 +1229,117 @@ def approveDetail(myindex):
 
 @app.route('/buatKolektif',methods=['GET','POST'])
 def buatKolektif():
+    data=None
+    datad=None
+    if request.method=='POST':
+        isi=request.get_json().get('isi');
+        pilih=request.get_json().get('pilih');
+        if isi and pilih:
+            #print('====================')
+            #print(str(isi))
+            #print(str(pilih))
+            user={}
+            nomor=isi[0]['no_surat'];
+            ket=isi[0]['alasan'];
+            nik=isi[0]['operator'];
+            nik_atasan=isi[0]['atasan'];
+            sql_user="SELECT o.nik,o.nama,o.jabatan,a.nik,a.nama,a.jabatan FROM user AS a LEFT OUTER JOIN user AS o ON o.nik='"+nik+"' WHERE a.nik='"+nik_atasan+"' LIMIT 1;"
+            try:
+                cursor.execute(sql_user)
+                row=cursor.fetchall()
+                if row:
+                    # karena limit 1, tidak perlu pakai perulangan
+                    user['o_nik']=row[0][0]
+                    user['o_nama']=row[0][1]
+                    user['o_jabatan']=row[0][2]
+                    user['a_nik']=row[0][3]
+                    user['a_nama']=row[0][4]
+                    user['a_jabatan']=row[0][5]
+                #jika data user tidak lengkap akan muncul error pada server response
+                sql_dpb="INSERT INTO dpb_kolektif(nomor,ket,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan)VALUES(%s,%s,%s,%s,%s,%s,%s,%s);"
+                cursor.execute(sql_dpb,(nomor,ket,user['o_nik'],user['o_nama'],user['o_jabatan'],user['a_nik'],user['a_nama'],user['a_jabatan']))
+                for i in pilih:
+                    idx= i['index']
+                    sql="INSERT INTO dpb_kolektif_d(nomor_dpb_kolektif,nomor_permintaan,id_divisi,nama_divisi,periode) SELECT (SELECT '"+nomor+"') AS n,nomor,id_divisi,nama_divisi,periode FROM permintaan WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"';"
+                    cursor.execute(sql)
+                    #print(sql)
+                    cursor.execute("UPDATE permintaan set status=3 WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"';")
+            except Exception as e:
+                raise e
+                return jsonify({'error':'SERVER_RESP: Terjadi kesalahan proses penyimpanan data. Silahkan ulangi kembali. '+str(e)})
+            return jsonify({'success':'Berhasil simpan data.'})
+        else:
+            return jsonify({'error':'SERVER_RESP: Terjasi kesalahan proses penyimpanan data. Data yang dikirim tidak lengkap, silahkan dicoba kembali.'})
+    else:
+        cursor.execute("SELECT uname,nik,nama,jabatan FROM user;")
+        row=cursor.fetchall()
+        if row:
+            data=row
+        cursor.execute("SELECT d.nama AS bidang,p.periode,p.nomor AS nomor_surat,p.alasan,u.nama AS operator,DATE_FORMAT(DATE(p.tgl),'%d %b %Y') AS tanggal,p.status,MD5(CONCAT(p.periode,'-',p.id_divisi)) AS id FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE status=1 ORDER BY p.tgl ASC,p.id_divisi ASC,p.periode ASC;")
+        rowd=cursor.fetchall()
+        if rowd:
+            datad=rowd
+        return render_template('buat-kolektif.html',data=data,datad=datad)
+
+
+@app.route('/listKolektif',methods=['GET','POST'])
+def listKolektif():
     if request.method=='POST':
         pass
     else:
-        return render_template('buat-kolektif.html')
+        return render_template('list-kolektif.html')
 
+@app.route('/kirimVendor/<string:idx>',methods=['GET','POST'])
+def kirimVendorDetail(idx):
+    data=None
+    datad=None
+    if request.method=='POST':
+        #print(idx)
+        #banyak orang tidak mengerti bahwa
+        nomor=request.get_json().get('nomor')
+        idx=request.get_json().get('nomor_dpb_kolektif')
+        id_vendor=request.get_json().get('id_vendor')
+        ket=request.get_json().get('ket')
+        konten_surat=request.get_json().get('konten_surat')
+        #konten_surat='xxxx'
+        cursor.execute("SELECT nomor FROM dpb_kolektif WHERE MD5(id)=%s LIMIT 1;",(idx))
+        row1=cursor.fetchone()
+        nomor_dpb_kolektif=row1[0]
+        #print('hasil query untuk nomor_dpb_kolektif: '+nomor_dpb_kolektif)
+        sql="INSERT INTO nota(nomor,nomor_dpb_kolektif,id_vendor,konten_surat,ket)VALUES(%s,%s,%s,%s,%s);"
+        try:
+            cursor.execute(sql,(nomor,nomor_dpb_kolektif,id_vendor,konten_surat,ket))
+            print('Berhasil simpan data nota kerjasama vendor.')
+            #persiapkan fungsi kirim email ke vendor
+            return jsonify({'success':'Berhasil simpan data.'})
+        except Exception as e:
+            raise e
+            print(str(e.args))
+            return jsonify({'error':'Terjadi kesalahan dalam proses simpan data.'+str(e.args)})
+    else:
+        sql="SELECT MD5(id),nomor,ket,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS tg,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan FROM dpb_kolektif WHERE MD5(id)='"+str(idx)+"' ORDER BY tgl DESC LIMIT 1;"
+        cursor.execute(sql)
+        row=cursor.fetchall()
+        if row:
+            data=row
+        cursor.execute("SELECT id,nama,pemilik FROM vendor ORDER BY nama ASC;")
+        rowd=cursor.fetchall()
+        if rowd:
+            datad=rowd
+        return render_template('kirim-vendor-detail.html',data=data,datad=datad)
+
+@app.route('/kirimVendor',methods=['POST','GET'])
+def kirimVendor():
+    data=None
+    if request.method=='POST':
+        pass
+    else:
+        sql="SELECT MD5(id),nomor,ket,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS tg,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan FROM dpb_kolektif ORDER BY tgl DESC;"
+        cursor.execute(sql)
+        row=cursor.fetchall()
+        if row:
+            data=row
+        return render_template('kirim-vendor.html',data=data)
 # blok modul==========================================================================
 # blok modul==========================================================================
 # blok modul==========================================================================

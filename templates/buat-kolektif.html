@@ -7,9 +7,154 @@
 {% block body %}
 
 <div class="row">
-	<div class="col-sm-12">
-		lkjshfldskajfds
+	<div class="col-sm-6">
+		<div class="form-group">
+			<label for="tx-nomor">No. Surat Permintaan Kolektif</label>
+			<input type="text" id="tx-nomor" class="form-control form-control-sm" />
+		</div>
+		<div class="form-group">
+			<label for="tx-perihal">Perihal</label>
+			<textarea id="tx-perihal" class="form-control form-control-sm" ></textarea>
+		</div>
+		<div class="form-group">
+			<label for="tx-operator">Operator</label>
+			<input type="text" id="tx-operator" class="form-control form-control-sm" readonly value="{{ session['fullname']  }}" nik="{{ session['nik']  }}" />
+		</div>
+		<div class="form-group">
+			<label for="cb-atasan">Penanggung Jawab</label>
+			<select id="cb-atasan" class="form-control form-control-sm">
+			{%if data%}
+			{% for d in data %}
+			<option value="{{ d[1]  }}">{{ d[2]  }} [ {{ d[3]  }} ]</option>
+			{%endfor%}
+			{%endif%}
+			</select>
+		</div>
+	</div>
+	<div class="col-sm-6">
+		<div class="alert alert-success" role="alert">
+		<h5 class="alert-heading">Deskripsi</h5>
+		<p>Setiap permintaan dari masing-masing bidang yang sudah di-approve akan muncul pada form ini untuk selanjutnya dikemas dalam sebuah permintaan kolektif yang kemudian dapat dilanjutkan ke vendor.</p>
+		<hr>
+		<p class="mb-0">Seteleh proses ini selesai, surat permintaan dapat dicetak serta dikirimkan ke vendor atau bagian terkait.</p>
+		</div>
 	</div>
 </div>
+
+<div class="row">
+	<div class="col-sm-6">
+		<button type="button" id="btn-reset" class="btn btn-sm btn-outline-warning"><i class="fas fa-sync"></i>&nbsp;Batal</button>
+		<button type="button" id="btn-submit" class="btn btn-sm btn-outline-primary" style="float:right;"><i class="fas fa-save"></i>&nbsp;Simpan</button>
+	</div>
+</div>
+<span id="msg"></span>
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card-header" style="text-align:center;">
+			<span>## Tabel Permintaan yang sudah di-approve dari masing-masing bidang/divisi ##</span>
+		</div>
+		<table id="tabel" width="100%" class="table table-sm table-bordered table-hover">
+			<thead class="thead-dark">
+				<th>#</th>
+				<th>Keterangan</th>
+				<th>Prd</th>
+				<th>Operator</th>
+				<th>Tanggal</th>
+				<th>Ctrl</th>
+			</thead>
+			<tbody id="tbody">
+			{%if datad %} {% set cnt=[1] %}
+			{% for r in datad %}
+				<tr>
+					<td style="text-align: center;">{{ cnt[0] }}</td>
+					<td>
+						{{ r[0] }}<br/>
+						<strong>{{ r[2] }}</strong><br/>
+						<small>{{ r[3] }}</small>
+					</td>
+					<td style="text-align: center;color:#000099;font-weight:bold;">{{ r[1] }}</td>
+					<td>{{ r[4] }}</td>
+					<td style="text-align: center;">{{ r[5] }}</td>
+					<td style="text-align: center;">
+					<div class="form-check">
+						<input class="form-check-input chk-pilih" type="checkbox" value="{{ r[7]  }}" id="{{ r[7] }}">
+						<label class="form-check-label" for="{{ r[7] }}">
+					pilih
+					  </label>
+					</div>
+					</td>
+				</tr>
+				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+			{% endfor %}			
+			{%endif%}
+			</tbody>
+		</table>
+	</div>
+
+</div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#tabel').DataTable({
+		responsive: true,
+		"bPaginate": false
+	});
+
+	$('#btn-submit').click(function(e){
+		//console.log('Button submit clicked');
+		
+		var no_surat=$('#tx-nomor').val().trim();
+		var alasan=$('#tx-perihal').val().trim();
+		var operator=$('#tx-operator').attr('nik');
+		var atasan=$('#cb-atasan').val();
+		var isi=[{'no_surat':no_surat,'alasan':alasan,'operator':operator,'atasan':atasan}];
+
+		var pilih=[];
+		$('.chk-pilih').each(function(){
+			if ($(this).is(':checked')) pilih.push( {'index':$(this).attr('id')}  );
+		});
+		
+		//console.log(isi);
+
+		if(no_surat!='' && alasan!='' && pilih.length>0){
+			//console.log('Siap simpan data.');
+			$.ajax({
+				type:'POST',
+				url:'{{ url_for('buatKolektif')  }}',
+				dataType:'json',
+				contentType: 'application/json; charset=utf-8',
+				data:JSON.stringify({'isi':isi,'pilih':pilih}),
+				success:function(resp){
+					if(resp.success){
+						console.log(resp.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.success+'</span></div></div>';
+						$('#msg').html(msg);
+						$(location).attr('href', '{{ url_for('about')  }}');
+					}else{
+						console.log(resp.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.error+'</span></div></div>';
+						$('#msg').html(msg);
+					}
+				},
+				error:function(){
+					console.log('Gagal kirim ajax data.');
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal menyimpan ke database. Periksa kembali kelengkapan form.</span></div></div>';
+						$('#msg').html(msg);
+				}
+			});
+		}else{
+			console.log('Lengkapi dulu.');
+		}
+	});
+});
+</script>
+
+
+
+
+
+
 
 {% endblock %}

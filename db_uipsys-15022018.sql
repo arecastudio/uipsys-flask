@@ -107,17 +107,20 @@ DROP TABLE IF EXISTS `dpb_kolektif`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dpb_kolektif` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nomor` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ket` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tgl` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `nik` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mail_send` int(11) NOT NULL DEFAULT '0',
-  `nik_atasan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nama_atasan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `id_posisi_atasan` int(11) DEFAULT NULL,
-  `nama_posisi_atasan` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`nomor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `nik_operator` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_operator` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jabatan_operator` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nik_atasan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_atasan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jabatan_atasan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nomor` (`nomor`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,6 +129,7 @@ CREATE TABLE `dpb_kolektif` (
 
 LOCK TABLES `dpb_kolektif` WRITE;
 /*!40000 ALTER TABLE `dpb_kolektif` DISABLE KEYS */;
+INSERT INTO `dpb_kolektif` VALUES (1,'55555','Do you know where your application is? If you are developing the answer is quite simple: it’s on localhost port something and directly on the root of that server. But what if you later decide to move your application to a different location?','2018-02-14 03:42:09','111','Primus Eka','staf','69','Root Linuxer','staf',1),(2,'454095/kolektif/333','Seteleh proses ini selesai, surat permintaan dapat dicetak serta dikirimkan ke vendor atau bagian terkait','2018-02-14 11:37:13','111','Primus Eka','staf','69','Root Linuxer','staf',0);
 /*!40000 ALTER TABLE `dpb_kolektif` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -139,10 +143,11 @@ DROP TABLE IF EXISTS `dpb_kolektif_d`;
 CREATE TABLE `dpb_kolektif_d` (
   `nomor_dpb_kolektif` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nomor_permintaan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `divisi` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `id_divisi` int(11) DEFAULT NULL,
-  PRIMARY KEY (`nomor_dpb_kolektif`,`nomor_permintaan`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id_divisi` int(11) NOT NULL,
+  `nama_divisi` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `periode` int(11) NOT NULL,
+  PRIMARY KEY (`periode`,`id_divisi`,`nomor_dpb_kolektif`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,6 +156,7 @@ CREATE TABLE `dpb_kolektif_d` (
 
 LOCK TABLES `dpb_kolektif_d` WRITE;
 /*!40000 ALTER TABLE `dpb_kolektif_d` DISABLE KEYS */;
+INSERT INTO `dpb_kolektif_d` VALUES ('55555','pert/1/2018/02',6,'BAG PERTANAHAN',201801),('55555','adm/keu/02/2018',18,'BAG ADM KEU',201802),('55555','xxxx343434',6,'BAG PERTANAHAN',201803),('454095/kolektif/333','MUM/XX/234/FEB/2018',18,'BAG ADM KEU',201801),('454095/kolektif/333','xxxdfdfdf',18,'BAG ADM KEU',201803);
 /*!40000 ALTER TABLE `dpb_kolektif_d` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -162,15 +168,18 @@ DROP TABLE IF EXISTS `nota`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `nota` (
-  `nomor` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nomor` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `id_vendor` int(11) NOT NULL,
   `nomor_dpb_kolektif` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `mail_send` int(11) NOT NULL DEFAULT '0',
   `konten_surat` text COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY (`nomor`,`id_vendor`,`nomor_dpb_kolektif`),
+  `ket` text COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`nomor_dpb_kolektif`,`id_vendor`),
+  UNIQUE KEY `id` (`id`),
   UNIQUE KEY `nomor` (`nomor`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -179,7 +188,7 @@ CREATE TABLE `nota` (
 
 LOCK TABLES `nota` WRITE;
 /*!40000 ALTER TABLE `nota` DISABLE KEYS */;
-INSERT INTO `nota` VALUES ('Nota-02/SDM/XI/2017',1,'SPBK/01/SDM/XI/2017','2017-11-18 11:53:17',1,'Bersama ini kami memesan Kepada Perusahaan Saudara Barang-barang sebagaimana terlampir.\ndengan syarat-syarat sebagai berikut :\n\n1.  PPn 10% dan PPh 1,5% dipungut langsung oleh pihak PLN UIP Papua,\n2.  Tidak diberi uang muka,\n3.  Barang /material sudah harus diterima PLN(Persero) UIP Papua paling lambat tanggal 23 November 2017\n     seluruhnya, dan apabila sampai batas waktu tersebut ternyata Saudara belum menyerahkan\n     barang/material maka Saudara harus membayar ganti rugi,\n4.  Barang /material harus diterima dengan baik, lengkap, baru dan asli sesuai spesifikasi yang ditentukan\n     dalam Surat Pesanan ini,\n5.  Pembayaran akan dilaksanakan 100% setelah barang/material/sparepart diterima dengan baik dan\n     melampirkan antara lain :\n     a. Kwitansi tagihan bermeterai\n     b. Faktur Pajak\n     c. Surat Setoran Pajak\n6.  Apabila syarat-syarat tersebut di atas tidak dipenuhi, barang/material/sparepart akan dikembalikan/ditolak\n     dan segala biaya yang timbul menjadi tanggung jawab Saudara.\n\nDemikian kami sampaikan, dengan harapan dapat diselesaikan dengan sebaik-baiknya.'),('SPBV/01/I/2018',1,'SPBK/SDM/01/I/2018','2018-01-25 05:16:54',0,'Bersama ini kami memesan Kepada Perusahaan Saudara Barang-barang sebagaimana terlampir.\ndengan syarat-syarat sebagai berikut :\n\n1.  PPn 10% dan PPh 1,5% dipungut langsung oleh pihak PLN UIP Papua,\n2.  Tidak diberi uang muka,\n3.  Barang /material sudah harus diterima PLN(Persero) UIP Papua paling lambat tanggal 2 Februari 2018\n     seluruhnya, dan apabila sampai batas waktu tersebut ternyata Saudara belum menyerahkan\n     barang/material maka Saudara harus membayar ganti rugi,\n4.  Barang /material harus diterima dengan baik, lengkap, baru dan asli sesuai spesifikasi yang ditentukan\n     dalam Surat Pesanan ini,\n5.  Pembayaran akan dilaksanakan 100% setelah barang/material/sparepart diterima dengan baik dan\n     melampirkan antara lain :\n     a. Kwitansi tagihan bermeterai\n     b. Faktur Pajak\n     c. Surat Setoran Pajak\n6.  Apabila syarat-syarat tersebut di atas tidak dipenuhi, barang/material/sparepart akan dikembalikan/ditolak\n     dan segala biaya yang timbul menjadi tanggung jawab Saudara.\n\nDemikian kami sampaikan, dengan harapan dapat diselesaikan dengan sebaik-baiknya.');
+INSERT INTO `nota` VALUES (1,'666',946,'55555','2018-02-14 03:54:27',0,'Bersama ini kami memesan Kepada Perusahaan Saudara Barang-barang sebagaimana terlampir.dengan syarat-syarat sebagai berikut :1.  PPn 10% dan PPh 1,5% dipungut langsung oleh pihak PLN UIP Papua,2.  Tidak diberi uang muka,3.  Barang /material sudah harus diterima PLN(Persero) UIP Papua paling lambat tanggal     seluruhnya, dan apabila sampai batas waktu tersebut ternyata Saudara belum menyerahkan     barang/material maka Saudara harus membayar ganti rugi,4.  Barang /material harus diterima dengan baik, lengkap, baru dan asli sesuai spesifikasi yang ditentukan     dalam Surat Pesanan ini,5.  Pembayaran akan dilaksanakan 100% setelah barang/material/sparepart diterima dengan baik dan     melampirkan antara lain :     a. Kwitansi tagihan bermeterai     b. Faktur Pajak     c. Surat Setoran Pajak6.  Apabila syarat-syarat tersebut di atas tidak dipenuhi, barang/material/sparepart akan dikembalikan/ditolak     dan segala biaya yang timbul menjadi tanggung jawab Saudara.Demikian kami sampaikan, dengan harapan dapat diselesaikan dengan sebaik-baiknya.','Do you know where your application is? If you are developing the answer is quite simple: it’s on localhost port something and directly on the root of that server. But what if you later decide to move your application to a different location? ');
 /*!40000 ALTER TABLE `nota` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -248,7 +257,7 @@ CREATE TABLE `permintaan` (
 
 LOCK TABLES `permintaan` WRITE;
 /*!40000 ALTER TABLE `permintaan` DISABLE KEYS */;
-INSERT INTO `permintaan` VALUES ('pert/1/2018/02',201801,'Permintaan untuk bulan januari 2018 yang baru saja dimasukkan.',1,'2018-02-09 06:17:17',6,'BAG PERTANAHAN','111','Primus Eka','staf','69','Root Linuxer','staf',0,NULL,NULL,NULL),('pert/2/xx/2018',201802,'Permintaan februari 2018',0,'2018-02-09 06:34:59',6,'BAG PERTANAHAN','111','Primus Eka','staf','69','Root Linuxer','staf',0,NULL,NULL,NULL),('MUM/XX/234/FEB/2018',201801,'Permintaan pada bagian umum februari 2018',0,'2018-02-10 13:37:46',18,'BAG ADM KEU','33355555','mike akaishi','operator pengadaan alat berat sekali','113','Anak Kampung','Kepala Tukang',1,'112','Tamuji','staf');
+INSERT INTO `permintaan` VALUES ('pert/1/2018/02',201801,'Permintaan untuk bulan januari 2018 yang baru saja dimasukkan.',3,'2018-02-09 06:17:17',6,'BAG PERTANAHAN','111','Primus Eka','staf','69','Root Linuxer','staf',0,NULL,NULL,NULL),('pert/2/xx/2018',201802,'Permintaan februari 2018',0,'2018-02-09 06:34:59',6,'BAG PERTANAHAN','111','Primus Eka','staf','69','Root Linuxer','staf',0,NULL,NULL,NULL),('MUM/XX/234/FEB/2018',201801,'Permintaan pada bagian umum februari 2018',2,'2018-02-10 13:37:46',18,'BAG ADM KEU','33355555','mike akaishi','operator pengadaan alat berat sekali','113','Anak Kampung','Kepala Tukang',1,'112','Tamuji','staf'),('adm/keu/02/2018',201802,'permintan bulan februari 2018',3,'2018-02-11 10:57:46',18,'BAG ADM KEU','33355555','mike akaishi','operator pengadaan alat berat sekali','69','Root Linuxer','staf',0,NULL,NULL,NULL),('xxxdfdfdf',201803,'sdfsafsadfasf',2,'2018-02-11 11:03:51',18,'BAG ADM KEU','33355555','mike akaishi','operator pengadaan alat berat sekali','69','Root Linuxer','staf',0,NULL,NULL,NULL),('xxxx343434',201803,'dsafasfasfsfsa',3,'2018-02-11 11:08:08',6,'BAG PERTANAHAN','111','Primus Eka','staf','69','Root Linuxer','staf',0,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `permintaan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +291,7 @@ CREATE TABLE `permintaan_d` (
 
 LOCK TABLES `permintaan_d` WRITE;
 /*!40000 ALTER TABLE `permintaan_d` DISABLE KEYS */;
-INSERT INTO `permintaan_d` VALUES ('pert/1/2018/02',1,4,0,'-','eka','2018-02-09 06:17:17','Ballpoint hitam tinta basah','PAK',15000,6,201801),('pert/1/2018/02',2,3,0,'-','eka','2018-02-09 06:17:17','Ballpoint hitam tinta kering','PAK',2500,6,201801),('pert/1/2018/02',9,4,0,'-','eka','2018-02-09 06:17:17','hekter','BUAH',1500,6,201801),('pert/1/2018/02',18,6,0,'-','eka','2018-02-09 06:17:17','Kertas Biru','RIM',12500,6,201801),('pert/1/2018/02',32,7,0,'-','eka','2018-02-09 06:17:17','Flash Disk 16GB','STICK',85000,6,201801),('pert/1/2018/02',33,9,0,'-','eka','2018-02-09 06:17:17','Flash Disk 32GB','STICK',250000,6,201801),('pert/2/xx/2018',6,8,0,'-','user','2018-02-10 23:38:56','Penghapus Pencil','DOS',500,6,201802),('pert/2/xx/2018',10,6,0,'-','user','2018-02-10 23:38:56','Spidol Hitam','DOS',1200,6,201802),('pert/2/xx/2018',5,5,0,'-','user','2018-02-10 23:38:56','Stempel','LEMBAR',220,6,201802),('MUM/XX/234/FEB/2018',1,2,0,'-','mike','2018-02-10 13:37:46','Ballpoint hitam tinta basah','PAK',15000,18,201801),('MUM/XX/234/FEB/2018',2,3,0,'-','mike','2018-02-10 13:37:46','Ballpoint hitam tinta kering','PAK',2500,18,201801),('MUM/XX/234/FEB/2018',9,4,0,'-','mike','2018-02-10 13:37:46','hekter','BUAH',1500,18,201801),('MUM/XX/234/FEB/2018',17,5,0,'-','mike','2018-02-10 13:37:46','Kertas Kuning','RIM',25000,18,201801),('MUM/XX/234/FEB/2018',32,5,0,'-','mike','2018-02-10 13:37:46','Flash Disk 16GB','STICK',85000,18,201801),('MUM/XX/234/FEB/2018',33,2,0,'-','mike','2018-02-10 13:37:46','Flash Disk 32GB','STICK',250000,18,201801),('pert/2/xx/2018',12,2,0,'-','user','2018-02-10 23:38:56','Penggaris Lurus','DOS',2300,6,201802),('pert/2/xx/2018',38,4,0,'-','user','2018-02-10 23:38:56','Flash Disk 8GB','STICK',85000,6,201802);
+INSERT INTO `permintaan_d` VALUES ('pert/1/2018/02',1,4,0,'-','eka','2018-02-09 06:17:17','Ballpoint hitam tinta basah','PAK',15000,6,201801),('pert/1/2018/02',2,3,0,'-','eka','2018-02-09 06:17:17','Ballpoint hitam tinta kering','PAK',2500,6,201801),('pert/1/2018/02',9,4,0,'-','eka','2018-02-09 06:17:17','hekter','BUAH',1500,6,201801),('pert/1/2018/02',18,6,0,'-','eka','2018-02-09 06:17:17','Kertas Biru','RIM',12500,6,201801),('pert/1/2018/02',32,7,0,'-','eka','2018-02-09 06:17:17','Flash Disk 16GB','STICK',85000,6,201801),('pert/1/2018/02',33,9,0,'-','eka','2018-02-09 06:17:17','Flash Disk 32GB','STICK',250000,6,201801),('pert/2/xx/2018',6,8,0,'-','user','2018-02-10 23:38:56','Penghapus Pencil','DOS',500,6,201802),('pert/2/xx/2018',10,6,0,'-','user','2018-02-10 23:38:56','Spidol Hitam','DOS',1200,6,201802),('pert/2/xx/2018',5,5,0,'-','user','2018-02-10 23:38:56','Stempel','LEMBAR',220,6,201802),('MUM/XX/234/FEB/2018',1,2,0,'-','mike','2018-02-10 13:37:46','Ballpoint hitam tinta basah','PAK',15000,18,201801),('MUM/XX/234/FEB/2018',2,3,0,'-','mike','2018-02-10 13:37:46','Ballpoint hitam tinta kering','PAK',2500,18,201801),('MUM/XX/234/FEB/2018',9,4,0,'-','mike','2018-02-10 13:37:46','hekter','BUAH',1500,18,201801),('MUM/XX/234/FEB/2018',17,5,0,'-','mike','2018-02-10 13:37:46','Kertas Kuning','RIM',25000,18,201801),('MUM/XX/234/FEB/2018',32,5,0,'-','mike','2018-02-10 13:37:46','Flash Disk 16GB','STICK',85000,18,201801),('MUM/XX/234/FEB/2018',33,2,0,'-','mike','2018-02-10 13:37:46','Flash Disk 32GB','STICK',250000,18,201801),('adm/keu/02/2018',8,7,0,'-','mike','2018-02-11 10:57:46','Kertas HVS','PAK',8500,18,201802),('pert/2/xx/2018',12,2,0,'-','user','2018-02-10 23:38:56','Penggaris Lurus','DOS',2300,6,201802),('pert/2/xx/2018',38,4,0,'-','user','2018-02-10 23:38:56','Flash Disk 8GB','STICK',85000,6,201802),('adm/keu/02/2018',12,6,0,'-','mike','2018-02-11 10:57:46','Penggaris Lurus','DOS',2300,18,201802),('adm/keu/02/2018',14,8,0,'-','mike','2018-02-11 10:57:46','Penggaris Segi Tiga','PAK',350,18,201802),('adm/keu/02/2018',17,3,0,'-','mike','2018-02-11 10:57:46','Kertas Kuning','RIM',25000,18,201802),('xxxdfdfdf',17,9,0,'-','user','2018-02-14 06:14:40','Kertas Kuning','RIM',25000,18,201803),('xxxdfdfdf',12,8,0,'-','user','2018-02-14 06:14:40','Penggaris Lurus','DOS',2300,18,201803),('fdfdfdf',1,10,0,'-','mike','2018-02-11 11:06:33','Ballpoint hitam tinta basah','PAK',15000,18,201804),('fdfdfdf',2,15,0,'-','mike','2018-02-11 11:06:33','Ballpoint hitam tinta kering','PAK',2500,18,201804),('xxxx343434',13,4,0,'-','eka','2018-02-11 11:08:08','Kertas Postit','DOS',5000,6,201803),('xxxx343434',17,8,0,'-','eka','2018-02-11 11:08:08','Kertas Kuning','RIM',25000,6,201803),('xxxx343434',18,7,0,'-','eka','2018-02-11 11:08:08','Kertas Biru','RIM',12500,6,201803),('xxxx343434',32,3,0,'-','eka','2018-02-11 11:08:08','Flash Disk 16GB','STICK',85000,6,201803),('PERTANAHAN/XXX/APRIL',15,13,0,'-','user','2018-02-14 11:36:05','Kertas HVS Later','PAK',8000,6,201804),('PERTANAHAN/XXX/APRIL',17,2,0,'-','user','2018-02-14 11:36:05','Kertas Kuning','RIM',25000,6,201804),('PERTANAHAN/XXX/APRIL',1,3,0,'-','user','2018-02-14 11:36:05','Ballpoint hitam tinta basah','PAK',15000,6,201804),('xxxdfdfdf',10,7,0,'-','user','2018-02-14 06:14:40','Spidol Hitam','DOS',1200,18,201803),('xxxdfdfdf',15,5,0,'-','user','2018-02-14 06:14:40','Kertas HVS Later','PAK',8000,18,201803),('PERTANAHAN/XXX/APRIL',2,5,0,'-','user','2018-02-14 11:36:05','Ballpoint hitam tinta kering','PAK',2500,6,201804),('PERTANAHAN/XXX/APRIL',12,6,0,'-','user','2018-02-14 11:36:05','Penggaris Lurus','DOS',2300,6,201804),('PERTANAHAN/XXX/APRIL',5,3,0,'-','user','2018-02-14 11:36:05','Stempel','LEMBAR',220,6,201804);
 /*!40000 ALTER TABLE `permintaan_d` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,7 +368,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `uname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nik` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nik` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nama` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(1000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `telp` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -367,7 +376,8 @@ CREATE TABLE `user` (
   `id_divisi` int(11) NOT NULL,
   `id_role` int(11) NOT NULL,
   `jabatan` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`uname`)
+  PRIMARY KEY (`uname`),
+  UNIQUE KEY `nik` (`nik`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -486,4 +496,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-11 19:17:27
+-- Dump completed on 2018-02-15  8:28:37

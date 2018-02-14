@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+
+<a style="float:right;" href="{{ url_for('listKolektif')  }}" class="btn btn-sm btn-outline-success"><i class="fas fa-table"></i>&nbsp;Kembali ke List Kolektif</a>
+
+Detail Permintaan Kolektif
+{% endblock %}
+
+{% block body %}
+<span id="msg"></span>
+
+<div class="row">
+	<div class="col-sm-5">
+		<table id="tabel" class="table table-sm table-hover table-striped table-bordered">
+{% if data and cname %}
+	{% set c=[0]  %}
+	{% for i in cname %}
+
+
+	<tr>
+
+	<td>{{ i[0].upper() }}</td> 
+	<td>
+		{{ data[c[0]]  }}<input id="tx-nomor" type="hidden" value="{{ data[0]  }}"/>
+	</td>
+	</tr>
+
+
+	{% if  c.append(c.pop()+1) %}{% endif %}
+	{% endfor %}
+{% endif %}
+		</table>
+
+
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+
+	});
+</script>
+
+
+
+
+
+
+{% endblock %}

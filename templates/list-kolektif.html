@@ -8,6 +8,13 @@ List Permintaan Kolektif
 
 <div class="row">
 	<div class="col-sm-12">
+
+
+	<div class="alert alert-success" role="alert" style="" >
+	<h5 class="alert-heading">Deskripsi</h5>
+	<p class="mb-0">Satu permintaan kolektif hanya dapat dikirimkan sebanyak 1 (satu) kali kepada vendor.</p>
+	</div>
+
 		<table id="tabel"  width="100%" class="table table-sm table-bordered table-hover">
 		
 			<thead class="thead-dark">
@@ -38,6 +45,7 @@ List Permintaan Kolektif
 				  <i class="fas fa-cog"></i>
 			  </button>
 			  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+			    <a class="dropdown-item" href="{{ url_for('detailKolektif',idx=row[0])  }}"><i class="fas fa-search-plus"></i>&nbsp;Detail</a>
 			    <a class="dropdown-item" href="{{ url_for('kirimVendor',idx=row[0])  }}"><i class="fas fa-envelope"></i>&nbsp;Kirim Ke Vendor</a>
 			    <a class="dropdown-item" href="{{ url_for('ubahKolektif',idx=row[0])  }}"><i class="fas fa-edit"></i>&nbsp;Ubah Informasi</a>
 			    <a class="dropdown-item" href="{{ url_for('hapusKolektif',idx=row[0])  }}"><i class="fas fa-trash"></i>&nbsp;Hapus</a>

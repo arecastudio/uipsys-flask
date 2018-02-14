@@ -32,12 +32,12 @@ List Nota Permintaan ke Vendor
 				<td style="text-align:center;">{{cnt[0]}}</td>
 <td style="" width="40%">
 	Nomor Nota: {{d[1]}}<br/>
-	Nomor Kolektif: {{d[4]}}<hr/>
-	{{d[8]}}<br/>
+	Nomor Kolektif: {{d[5]}}<hr/>
+	{{d[9]}}<br/>
 </td>
-<td style=""></td>
-<td style=""></td>
-<td style=""></td>
+<td style="">{{ d[3]  }}<br/><small>{{ d[4]  }}</small></td>
+<td style="">{{ d[6]  }}</td>
+<td style="">{{ d[7]  }}</td>
 {%if cnt.append(cnt.pop()+1) %} {% endif %}
 				{%endfor%}
 				{%endif%}

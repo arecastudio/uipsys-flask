@@ -29,7 +29,7 @@ mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'pdamjpr.123'
 app.config['MYSQL_DATABASE_DB'] = 'db_uipsys'
-app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
 conn = mysql.connect()
@@ -1115,32 +1115,6 @@ def listPermintaanItem(nomor_surat):
         return render_template('list-permintaan-item.html', data=data, datad=datad, datax=datax)
 
 
-
-@app.route('/hapusPermintaan/<string:idx>',methods=['POST','GET'])
-def hapusPermintaan(idx):
-    data=None
-    cname=None
-    if request.method=='POST':
-        ind=request.get_json().get('idx')
-        if ind and ind==idx:
-            print('hapus data '+idx)
-            try:
-                cursor.execute("DELETE FROM permintaan WHERE status=%s AND MD5(CONCAT(periode,'-',id_divisi))=%s;",(0,idx))
-            except Exception as e:
-                return jsonify({'error':'Terjadi kesalahan saat hapus data. '+str(e.args)})
-            return jsonify({'success':'Berhasil hapus data'})
-        else:
-            return jsonify({'error':'Terjadi kesalahan proses hapus data. Index request JSON tidak sesuai dengan input form.'})
-    else:
-        print('listPermintaan GET: '+idx)
-        sql="SELECT d.nama AS `Divisi`,p.periode,p.nomor AS `Nomor Surat`,p.alasan AS `Keterangan`,u.nama AS `Operator`,DATE_FORMAT(p.tgl,'%d %b %y') AS `Tanggal`,p.status AS `Status`,MD5(CONCAT(p.periode,'-',p.id_divisi)) FROM permintaan AS p LEFT OUTER JOIN divisi AS d ON d.id=p.id_divisi LEFT OUTER JOIN user AS u ON u.nik=p.nik_operator WHERE MD5(CONCAT(p.periode,'-',p.id_divisi))='"+idx+"' LIMIT 1 ;"
-        cursor.execute(sql)
-        data=cursor.fetchone()
-        cname=cursor.description
-        return render_template('hapus-permintaan.html',cname=cname,data=data)
-
-
-
 @app.route('/listPermintaan/<string:nomor_surat>', methods=['GET', 'POST'])
 def listPermintaanDetail(nomor_surat):
     if request.method == 'GET':
@@ -1363,25 +1337,6 @@ def listKolektif():
             data=row
         return render_template('list-kolektif.html',data=data)
 
-
-
-@app.route('/detailKolektif/<string:idx>',methods=['POST','GET'])
-def detailKolektif(idx):
-    data=None
-    if request.method=='POST':
-        pass
-    else:
-        cname=None
-        sql="SELECT MD5(id) AS id,nomor AS `no. surat`,ket AS perihal,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS `tgl surat`,CONCAT(nama_operator,' - ',jabatan_operator) AS operator,CONCAT(nama_atasan,' - ',jabatan_atasan) AS atasan FROM dpb_kolektif WHERE MD5(id)='"+idx+"' LIMIT 1;"
-        cursor.execute(sql)
-        cname=cursor.description
-        row=cursor.fetchone()
-        if row:
-            data=row
-        return render_template('detail-kolektif.html',data=data,cname=cname)
-
-
-
 @app.route('/hapusKolektif/<string:idx>',methods=['POST','GET'])
 def hapusKolektif(idx):
     data=None
@@ -1451,7 +1406,7 @@ def listNota():
         pass
     else:
         cname=['#','Keterangan','Vendor','Tgl Nota','Ctrl']
-        sql="SELECT n.id, n.nomor, v.id, v.nama, v.pemilik, n.nomor_dpb_kolektif, DATE_FORMAT(n.tgl,'%d-%b-%Y'), n.mail_send, n.konten_surat, n.ket FROM nota AS n LEFT OUTER JOIN vendor AS v ON v.id=n.id_vendor WHERE 1;"
+        sql="SELECT n.id AS ID,n.nomor AS `Nomor Nota`,v.id AS `ID Vendor`,v.nama AS `Nama Vendor`,n.nomor_dpb_kolektif AS `Nomor Kolektif`,n.tgl AS `Tangga`,n.mail_send,n.konten_surat AS `Isi Nota`,n.ket AS `Keterangan` FROM nota AS n LEFT OUTER JOIN vendor AS v ON v.id=n.id_vendor WHERE 1;"
         cursor.execute(sql);
         #cname=cursor.description
         data=cursor.fetchall()

@@ -1,10 +1,50 @@
 {% extends 'layout.html' %}
 {% block head %}
-	Kirim ke Vendor
+	Kirim ke Vendor Detail
 {% endblock %}
 
 {% block body %}
 
+<span id="msg"></span>
+<div class="row">
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label for="tx-nota">Nomor Nota</label>
+			<input type="text" id="tx-nota" class="form-control form-control-sm"/>
+			<input type="hidden" id="tx-id" name="tx-id" value="{{ data[0][0]  }}"/>
+		</div>
+		<div class="form-group">
+			<label for="cb-vendor">Vendor</label>
+			<select id="cb-vendor" class="form-control form-control-sm">
+				{%if datad %}
+				{%for x in datad%}
+				<option value={{ x[0] }}>{{x[1]}} - {{x[2]}}</option>
+				{%endfor%}
+				{%endif %}
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="tx-ket">Keterangan tambahan (opsional)</label>
+			<textarea id="tx-ket" class="form-control form-control-sm"></textarea>
+		</div>
+
+		<div class="alert alert-success" role="alert">
+		<h5 class="alert-heading">Deskripsi</h5>
+		<p class="mb-0">Dengan menekan tombol Simpan, email akan segera dikirimkan ke vendor yang bersangkutan. Setelah proses simpan/kirim selesai, status surat permintaan dapat dicek pada modul <a href="{{ url_for('about')  }}">Nota kerjasama</a><br/>Jika dalam proses simpan muncul pesan error: Duplicate entry, Nomor Kolektif tersebut sudah pernah dimuat dalam nota sebelumnya.</p>
+		</div>
+		<hr/>
+		<div class="" id="btn-box">
+			<button id="btn-cancel" class="btn btn-sm btn-outline-warning"><i class="fas fa-sync"></i>&nbsp;Batal</button>
+			<button id="btn-submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-save"></i>&nbsp;Simpan & Kirim</button>
+		</div>
+
+	</div>
+	<div class="col-sm-8">
+		<div contenteditable="true" id="isi-surat">
+<p>Bersama ini kami memesan Kepada Perusahaan Saudara Barang-barang sebagaimana terlampir.<br />dengan syarat-syarat sebagai berikut :<br /><br />1.&nbsp; PPn 10% dan PPh 1,5% dipungut langsung oleh pihak PLN UIP Papua,<br />2.&nbsp; Tidak diberi uang muka,<br />3.&nbsp; Barang /material sudah harus diterima PLN(Persero) UIP Papua paling lambat tanggal<br />&nbsp;&nbsp;&nbsp;&nbsp; seluruhnya, dan apabila sampai batas waktu tersebut ternyata Saudara belum menyerahkan<br />&nbsp;&nbsp;&nbsp;&nbsp; barang/material maka Saudara harus membayar ganti rugi,<br />4.&nbsp; Barang /material harus diterima dengan baik, lengkap, baru dan asli sesuai spesifikasi yang ditentukan<br />&nbsp;&nbsp;&nbsp;&nbsp; dalam Surat Pesanan ini,<br />5.&nbsp; Pembayaran akan dilaksanakan 100% setelah barang/material/sparepart diterima dengan baik dan<br />&nbsp;&nbsp;&nbsp;&nbsp; melampirkan antara lain :<br />&nbsp;&nbsp;&nbsp;&nbsp; a. Kwitansi tagihan bermeterai<br />&nbsp;&nbsp;&nbsp;&nbsp; b. Faktur Pajak<br />&nbsp;&nbsp;&nbsp;&nbsp; c. Surat Setoran Pajak<br />6.&nbsp; Apabila syarat-syarat tersebut di atas tidak dipenuhi, barang/material/sparepart akan dikembalikan/ditolak<br />&nbsp;&nbsp;&nbsp;&nbsp; dan segala biaya yang timbul menjadi tanggung jawab Saudara.<br /><br />Demikian kami sampaikan, dengan harapan dapat diselesaikan dengan sebaik-baiknya.</p>
+		</div>
+	</div>
+</div>
 <div class="row">
 	<div class="col-sm-12">
 		<table id="tabel"  width="100%" class="table table-sm table-bordered table-hover">
@@ -14,7 +54,6 @@
 				<th width="450px">Keterangan</th>
 				<th>Tanggal</th>
 				<th>Operator</th>
-				<th>Ctrl</th>
 			</thead>
 			<tbody id="tbody">
                             {% if data %}{% set cnt=[1] %}
@@ -28,9 +67,6 @@
                             </td>
                             <td style="text-align:center;">{{ row[3]  }}</td>
                             <td style="text-align:center;">{{ row[5]  }}</td>
-                            <td style="text-align:center;">
-                                <a href="{{ url_for('kirimVendorDetail',idx=row[0])  }}" id="{{ row[0]  }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-envelope"></i>&nbsp;Kirim</a>
-                            </td>
                         </tr>
 				{% if cnt.append(cnt.pop() + 1) %}{% endif %}
                         {% endfor %}
@@ -41,16 +77,71 @@
 </div>
 
 
+<style type="text/css">
+#isi-surat{
+	padding:5px;
+	border:1px solid #cccccc;
+}
+#btn-submit{float:right;}
+</style>
 
 
 <script type="text/javascript">
 
-     $(document).ready(function() {
-        $('#tabel').DataTable({
-            responsive: true,
-            "bPaginate": true
+$(document).ready(function() {
+	$('#tabelXXX').DataTable({
+		responsive: true,
+		"bPaginate": false
         });
-    });
+
+	$('#btn-submit').click(function(e){
+		console.log('button submit clicked.');
+		var nota=$('#tx-nota').val().trim();
+		var idx=$('#tx-id').val().trim();
+		var vend=$('#cb-vendor').val();
+		var ket=$('#tx-ket').val();
+		var surat=$('#isi-surat').text().trim();
+
+		var data={'nomor':nota,'nomor_dpb_kolektif':idx,'id_vendor':vend,'konten_surat':surat,'ket':ket};
+
+		var base_url="{{ url_for('kirimVendor',idx=data[0][0])  }}";
+
+		if(nota!='' && idx!='' && vend!='' && surat!=''){
+			//
+			$.ajax({
+				type:'POST',
+				dataType:'json',
+				contentType: 'application/json; charset=utf-8',
+				url:base_url,
+				data:JSON.stringify(data),
+				success:function(resp){
+					if (resp.success){
+						console.log(resp.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.success+'</span></div></div>';
+						$('#msg').html(msg);
+						//$(location).attr('href', '{{ url_for('about')  }}');
+					}else{
+						console.log(resp.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.error+'</span></div></div>';
+						$('#msg').html(msg);
+					}
+				},
+				error:function(){
+					//
+					console.log('Gagal simpan data.');
+					var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal menyimpan data.</span></div></div>';
+					$('#msg').html(msg);
+				}
+					
+
+			});
+		}else{
+			console.log('Lengkapi form terlebih dahulu.');
+			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Lengkapi form terlebih dahulu.</span></div></div>';
+			$('#msg').html(msg);
+		}
+	});
+});
 
 </script>
 

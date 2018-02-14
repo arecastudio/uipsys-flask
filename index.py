@@ -114,7 +114,7 @@ class ClassOrder(object):
 
 
 
-def kirim_email(tujuan,isi):
+def kirimEmail(tujuan,isi):
     try:
         gmail_user = 'noreplyrobotmail@gmail.com'  
         gmail_password = 'pdam.!@#'
@@ -1207,7 +1207,7 @@ def approveDetail(myindex):
         # cetak nama tabel saja
         print('--------NAMA FIELD DI TABEL _barang_------------')
         for i in cursor.description:
-            print(i[0])  # cetak nama tabel saja
+            #print(i[0])  # cetak nama tabel saja
             if i[0] == 'alasan':
                 cname.append('perihal')
             elif i[0] == 'nomor_surat':
@@ -1281,16 +1281,8 @@ def buatKolektif():
             datad=rowd
         return render_template('buat-kolektif.html',data=data,datad=datad)
 
-
-@app.route('/listKolektif',methods=['GET','POST'])
-def listKolektif():
-    if request.method=='POST':
-        pass
-    else:
-        return render_template('list-kolektif.html')
-
 @app.route('/kirimVendor/<string:idx>',methods=['GET','POST'])
-def kirimVendorDetail(idx):
+def kirimVendor(idx):
     data=None
     datad=None
     if request.method=='POST':
@@ -1313,9 +1305,9 @@ def kirimVendorDetail(idx):
             #persiapkan fungsi kirim email ke vendor
             return jsonify({'success':'Berhasil simpan data.'})
         except Exception as e:
-            raise e
-            print(str(e.args))
-            return jsonify({'error':'Terjadi kesalahan dalam proses simpan data.'+str(e.args)})
+            #raise e
+            #print(str(e.args))
+            return jsonify( {'error':'Terjadi kesalahan dalam proses simpan data.'+str(e)} )
     else:
         sql="SELECT MD5(id),nomor,ket,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS tg,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan FROM dpb_kolektif WHERE MD5(id)='"+str(idx)+"' ORDER BY tgl DESC LIMIT 1;"
         cursor.execute(sql)
@@ -1326,10 +1318,10 @@ def kirimVendorDetail(idx):
         rowd=cursor.fetchall()
         if rowd:
             datad=rowd
-        return render_template('kirim-vendor-detail.html',data=data,datad=datad)
+        return render_template('kirim-vendor.html',data=data,datad=datad)
 
-@app.route('/kirimVendor',methods=['POST','GET'])
-def kirimVendor():
+@app.route('/listKolektif',methods=['POST','GET'])
+def listKolektif():
     data=None
     if request.method=='POST':
         pass
@@ -1339,7 +1331,68 @@ def kirimVendor():
         row=cursor.fetchall()
         if row:
             data=row
-        return render_template('kirim-vendor.html',data=data)
+        return render_template('list-kolektif.html',data=data)
+
+@app.route('/hapusKolektif/<string:idx>',methods=['POST','GET'])
+def hapusKolektif(idx):
+    data=None
+    if request.method=='POST':
+        #
+        nomor=request.get_json().get('nomor')
+        if nomor:
+            #always validate on backend, thats great
+            try:
+                sql1="UPDATE permintaan SET status=1 WHERE nomor IN (SELECT nomor_permintaan FROM dpb_kolektif_d WHERE nomor_dpb_kolektif=(SELECT nomor FROM dpb_kolektif WHERE MD5(id)=%s));"
+                cursor.execute(sql1,idx)
+                sql="DELETE FROM dpb_kolektif WHERE MD5(id)=%s;"
+                cursor.execute(sql,(idx))
+                print('eksekusi query HAPUS kolektif')
+                return jsonify({'success':'Berhasil hapus data.'})
+                #else:
+                #    return jsonify({'error':'Terjadi kesalahan saat simpan data. '})
+            except Exception as e:
+                return jsonify({'error':'Terjadi kesalahan saat menghapus data. '+str(e.args)})
+    else:
+        cname=None
+        sql="SELECT MD5(id) AS id,nomor AS `no. surat`,ket AS perihal,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS `tgl surat`,CONCAT(nama_operator,' - ',jabatan_operator) AS operator,CONCAT(nama_atasan,' - ',jabatan_atasan) AS atasan FROM dpb_kolektif WHERE MD5(id)='"+idx+"' LIMIT 1;"
+        cursor.execute(sql)
+        cname=cursor.description
+        row=cursor.fetchone()
+        if row:
+            data=row
+        return render_template('hapus-kolektif.html',data=data,cname=cname)
+
+@app.route('/ubahKolektif/<string:idx>',methods=['POST','GET'])
+def ubahKolektif(idx):
+    data=None
+    if request.method=='POST':
+        nomor=request.get_json().get('nomor')
+        ket=request.get_json().get('ket')
+        if nomor and ket:
+            #always validate on backend, thats great
+            try:
+                sql1="UPDATE dpb_kolektif_d SET nomor_dpb_kolektif=%s WHERE nomor_dpb_kolektif=(SELECT DISTINCT nomor FROM dpb_kolektif WHERE MD5(id)=%s);";
+                if cursor.execute(sql1,(nomor,idx)):
+                    sql="UPDATE dpb_kolektif SET nomor=%s,ket=%s WHERE MD5(id)=%s;"
+                    cursor.execute(sql,(nomor,ket,idx))
+                    print('eksekusi query ubah kolektif')
+                    return jsonify({'success':'Berhasil simpan data.'})
+                else:
+                    return jsonify({'error':'Terjadi kesalahan saat simpan data. '})
+            except Exception as e:
+                return jsonify({'error':'Terjadi kesalahan saat menyimpan data. '+str(e.args)})
+        else:
+            return jsonify({'error':'Lengkapi form sebelum menyimpan.'})
+    else:
+        cname=None
+        sql="SELECT MD5(id) AS id,nomor AS `no. surat`,ket AS perihal,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS `tgl surat`,CONCAT(nama_operator,' - ',jabatan_operator) AS operator,CONCAT(nama_atasan,' - ',jabatan_atasan) AS atasan FROM dpb_kolektif WHERE MD5(id)='"+idx+"' LIMIT 1;"
+        cursor.execute(sql)
+        cname=cursor.description
+        row=cursor.fetchone()
+        if row:
+            data=row
+        return render_template('ubah-kolektif.html',data=data,cname=cname)
+
 # blok modul==========================================================================
 # blok modul==========================================================================
 # blok modul==========================================================================

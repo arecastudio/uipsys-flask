@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Hapus Permintaan Kolektif
+{% endblock %}
+
+{% block body %}
+<span id="msg"></span>
+
+<div class="row">
+	<div class="col-sm-5">
+		<table id="tabel" class="table table-sm table-hover table-striped table-bordered">
+{% if data and cname %}
+	{% set c=[0]  %}
+	{% for i in cname %}
+
+
+	<tr>
+
+	<td>{{ i[0].upper() }}</td> 
+	<td>
+		{{ data[c[0]]  }}<input id="tx-nomor" type="hidden" value="{{ data[0]  }}"/>
+	</td>
+	</tr>
+
+
+	{% if  c.append(c.pop()+1) %}{% endif %}
+	{% endfor %}
+{% endif %}
+		</table>
+
+		<div>
+			<button id="btn-submit" class="btn btn-sm btn-outline-danger" style="float:right;"><i class="fas fa-trash"></i>&nbsp;Hapus</button>
+			<button id="btn-reset" class="btn btn-sm btn-outline-warning" ><i class="fas fa-sync"></i>&nbsp;Batal</button>
+		</div>
+
+
+
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+		$('#btn-reset').click(function(){
+			console.log('tombol reset clicked.');
+			window.location.replace('{{ url_for('listKolektif')  }}');
+		});
+
+		$('#btn-submit').click(function(){
+			var nomor=$('#tx-nomor').val().trim();
+			//var ket=$('#2').val().trim();
+		console.log(nomor);
+			$.ajax({
+
+				type:'POST',
+				url:'{{ url_for('hapusKolektif',idx=data[0])  }}',
+				dataType:'json',
+				data:JSON.stringify({'nomor':nomor}),
+	    			contentType: 'application/json;charset=UTF-8',
+				cache:false,
+				success:function(resp){
+					if(resp.success){
+						console.log(resp.success);
+						var msg='<div class="col-lg-12"><div class="alert alert-success alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.success+'</span></div></div>';
+						$("#msg").html(msg);
+						window.location.replace('{{ url_for('listKolektif')  }}');
+					}else{
+						console.log(resp.error);
+						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+resp.error+'</span></div></div>';
+						$("#msg").html(msg);
+					}
+				},
+				error:function(request,status,error){
+					console.log('error: '+request.responseText);
+	        			var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>Gagal proses form</span></div></div>';
+				}
+			});
+
+		});
+	});
+</script>
+
+
+
+
+
+
+{% endblock %}

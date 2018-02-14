@@ -8,6 +8,19 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav ml-auto">
+
+				<li class="nav-item active dropdown">
+					<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown2" data-toggle="dropdown">Proses</a>
+				    	<div class="dropdown-menu dropdown-menu-right">
+				        	<a href="{{ url_for('buatPermintaan')  }}" class="dropdown-item">Buat Permintaan</a>
+				        	<a href="{{ url_for('listPermintaan')  }}" class="dropdown-item">List Permintaan</a>
+				        	<a href="{{ url_for('approve')  }}" class="dropdown-item">Approvement</a>
+						<div class="dropdown-divider"></div>
+				        	<a href="{{ url_for('buatKolektif')  }}" class="dropdown-item">Buat Permintaan Kolektif [SDM]</a>
+				        	<a href="{{ url_for('listKolektif')  }}" class="dropdown-item">List Permintaan kolektif</a>
+				    	</div>
+				</li>
+				<li class="nav-item active"><a href="#" class="nav-link">Laporan</a></li>
 				<li class="nav-item active dropdown">
 					<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown">Berkas</a>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -19,19 +32,7 @@
 					</div>
 				</li>
 				<li class="nav-item active dropdown">
-					<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown2" data-toggle="dropdown">Proses</a>
-				    	<div class="dropdown-menu dropdown-menu-right">
-				        	<a href="{{ url_for('buatPermintaan')  }}" class="dropdown-item">Buat Permintaan</a>
-				        	<a href="{{ url_for('listPermintaan')  }}" class="dropdown-item">List Permintaan</a>
-				        	<a href="{{ url_for('approve')  }}" class="dropdown-item">Approvement</a>
-						<div class="dropdown-divider"></div>
-				        	<a href="{{ url_for('buatKolektif')  }}" class="dropdown-item">Buat Permintaan Kolektif [SDM]</a>
-				        	<a href="{{ url_for('kirimVendor')  }}" class="dropdown-item">Kirim ke Vendor</a>
-				    	</div>
-				</li>
-				<li class="nav-item active"><a href="#" class="nav-link">Laporan</a></li>
-				<li class="nav-item active dropdown">
-					<a href="#" class="nav-link dropdown-toggle" id="menuTool" data-toggle="dropdown">Tool</a>
+					<a href="#" class="nav-link dropdown-toggle" id="menuTool" data-toggle="dropdown">Utilities</a>
 					<div class="dropdown-menu dropdown-menu-right">
 				        	<a href="{{ url_for('manUser')  }}" class="dropdown-item">Manajemen User</a>
 				        	<div class="dropdown-divider"></div>

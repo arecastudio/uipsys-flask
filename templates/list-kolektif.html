@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
-{% block head %}
-	Kirim ke Vendor
+
+{% block title %}
+List Permintaan Kolektif
 {% endblock %}
 
 {% block body %}
@@ -14,6 +15,7 @@
 				<th width="450px">Keterangan</th>
 				<th>Tanggal</th>
 				<th>Operator</th>
+				<th>Status</th>
 				<th>Ctrl</th>
 			</thead>
 			<tbody id="tbody">
@@ -28,6 +30,7 @@
                             </td>
                             <td style="text-align:center;">{{ row[3]  }}</td>
                             <td style="text-align:center;">{{ row[5]  }}</td>
+			    <td style="text-align:center;">{% if row[10]==0  %}<strong style="color:red;">Belum kirim ke vendor</strong> {% else %} <strong style="color:blue;">Terkirim ke vendor</strong> {%endif%}</td>
                             <td style="text-align:center;">
 
 			<div class="dropdown">

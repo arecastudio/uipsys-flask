@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+List Nota Permintaan ke Vendor
+{% endblock %}
+
+{% block body %}
+
+<div class="row">
+	<div class="col-sm-12">
+		<table id="tabel"  width="100%" class="table table-sm table-bordered table-hover">
+		
+			<thead class="thead-dark">
+				<!--th>#</th>
+				<th width="450px">Keterangan</th>
+				<th>Tanggal</th>
+				<th>Operator</th>
+				<th>Strtatus</th>
+				<th>Ctrl</th-->
+
+				{%if cname%}
+				{%for i in range(cname|length)%}
+				<th>{{cname[i]}}</th>
+				{%endfor%}
+				{%endif%}
+
+			</thead>
+			<tbody id="tbody">
+
+				{%if data%}{%set cnt=[1]%}
+				{%for d in data%}
+				<td style="text-align:center;">{{cnt[0]}}</td>
+<td style="" width="40%">
+	Nomor Nota: {{d[1]}}<br/>
+	Nomor Kolektif: {{d[4]}}<hr/>
+	{{d[8]}}<br/>
+</td>
+<td style=""></td>
+<td style=""></td>
+<td style=""></td>
+{%if cnt.append(cnt.pop()+1) %} {% endif %}
+				{%endfor%}
+				{%endif%}
+
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+     $(document).ready(function() {
+        $('#tabel').DataTable({
+            responsive: true,
+            "bPaginate": true
+        });
+    });
+
+</script>
+
+
+
+
+{% endblock %}

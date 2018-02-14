@@ -108,7 +108,7 @@ $(document).ready(function() {
 						//$("#msg").html(msg);
 						$('#btn-batal').click();
 						console.log(res.success);
-					$(location).attr('href', '/listPermintaan/{{passindex}}')
+					$(location).attr('href', '{{ url_for('listPermintaanDetail',nomor_surat=passindex) }}')
         			}else{        				
         				console.log(res.error);
 						var msg='<div class="col-lg-12"><div class="alert alert-danger alert-dismissable" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="close"><span aria-hidden="true">&times;</span></button><span>'+res.error+'</span></div></div>';

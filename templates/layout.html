@@ -18,17 +18,16 @@
 						<div class="dropdown-divider"></div>
 				        	<a href="{{ url_for('buatKolektif')  }}" class="dropdown-item">Buat Permintaan Kolektif [SDM]</a>
 				        	<a href="{{ url_for('listKolektif')  }}" class="dropdown-item">List Permintaan kolektif</a>
+				        	<a href="{{ url_for('listNota')  }}" class="dropdown-item">List Nota ke Vendor</a>
 				    	</div>
 				</li>
 				<li class="nav-item active"><a href="#" class="nav-link">Laporan</a></li>
 				<li class="nav-item active dropdown">
-					<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown">Berkas</a>
+					<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown">Master</a>
 					<div class="dropdown-menu dropdown-menu-right">
 						<a href="{{ url_for('dataBarang')  }}" class="dropdown-item">Data Barang</a>
 						<a href="{{ url_for('dataBidang')  }}" class="dropdown-item">Data Bidang</a>
                         			<a href="{{ url_for('dataVendor')  }}" class="dropdown-item">Data Vendor</a>
-						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">Data Barang</a>
 					</div>
 				</li>
 				<li class="nav-item active dropdown">
@@ -61,6 +60,7 @@
 						<a href="#" class="text-black"><h6>Item Baru <span class="badge badge-secondary">5</span></h6></a>
                         <hr/>
 			<h6><a href="{{ url_for('listPermintaan')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Permintaan</a></h6>
+			<h6><a href="{{ url_for('listKolektif')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Kolektif</a></h6>
                         <hr/>
                         <div>
 				<a href="{{ url_for('about')  }}" title="Informasi aplikasi">

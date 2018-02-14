@@ -1263,7 +1263,7 @@ def buatKolektif():
                     sql="INSERT INTO dpb_kolektif_d(nomor_dpb_kolektif,nomor_permintaan,id_divisi,nama_divisi,periode) SELECT (SELECT '"+nomor+"') AS n,nomor,id_divisi,nama_divisi,periode FROM permintaan WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"';"
                     cursor.execute(sql)
                     #print(sql)
-                    cursor.execute("UPDATE permintaan set status=3 WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"';")
+                    cursor.execute("UPDATE permintaan set status=2 WHERE MD5(CONCAT(periode,'-',id_divisi))='"+idx+"';")
             except Exception as e:
                 raise e
                 return jsonify({'error':'SERVER_RESP: Terjadi kesalahan proses penyimpanan data. Silahkan ulangi kembali. '+str(e)})
@@ -1299,8 +1299,12 @@ def kirimVendor(idx):
         nomor_dpb_kolektif=row1[0]
         #print('hasil query untuk nomor_dpb_kolektif: '+nomor_dpb_kolektif)
         sql="INSERT INTO nota(nomor,nomor_dpb_kolektif,id_vendor,konten_surat,ket)VALUES(%s,%s,%s,%s,%s);"
+        sql1="UPDATE permintaan SET status=3 WHERE nomor IN(SELECT DISTINCT nomor_permintaan FROM dpb_kolektif_d WHERE nomor_dpb_kolektif=(SELECT nomor FROM dpb_kolektif WHERE MD5(id)=%s)) ;"
+        sql2="UPDATE dpb_kolektif SET status=1 WHERE MD5(id)=%s;"
         try:
+            cursor.execute(sql1,idx)
             cursor.execute(sql,(nomor,nomor_dpb_kolektif,id_vendor,konten_surat,ket))
+            cursor.execute(sql2,idx)
             print('Berhasil simpan data nota kerjasama vendor.')
             #persiapkan fungsi kirim email ke vendor
             return jsonify({'success':'Berhasil simpan data.'})
@@ -1326,7 +1330,7 @@ def listKolektif():
     if request.method=='POST':
         pass
     else:
-        sql="SELECT MD5(id),nomor,ket,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS tg,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan FROM dpb_kolektif ORDER BY tgl DESC;"
+        sql="SELECT MD5(id),nomor,ket,DATE_FORMAT(date(tgl),'%d-%b-%Y') AS tg,nik_operator,nama_operator,jabatan_operator,nik_atasan,nama_atasan,jabatan_atasan,status FROM dpb_kolektif ORDER BY tgl DESC;"
         cursor.execute(sql)
         row=cursor.fetchall()
         if row:
@@ -1372,13 +1376,13 @@ def ubahKolektif(idx):
             #always validate on backend, thats great
             try:
                 sql1="UPDATE dpb_kolektif_d SET nomor_dpb_kolektif=%s WHERE nomor_dpb_kolektif=(SELECT DISTINCT nomor FROM dpb_kolektif WHERE MD5(id)=%s);";
-                if cursor.execute(sql1,(nomor,idx)):
-                    sql="UPDATE dpb_kolektif SET nomor=%s,ket=%s WHERE MD5(id)=%s;"
-                    cursor.execute(sql,(nomor,ket,idx))
-                    print('eksekusi query ubah kolektif')
-                    return jsonify({'success':'Berhasil simpan data.'})
-                else:
-                    return jsonify({'error':'Terjadi kesalahan saat simpan data. '})
+                cursor.execute(sql1,(nomor,idx))
+                sql="UPDATE dpb_kolektif SET nomor=%s,ket=%s WHERE MD5(id)=%s;"
+                cursor.execute(sql,(nomor,ket,idx))
+                print('eksekusi query ubah kolektif')
+                return jsonify({'success':'Berhasil simpan data.'})
+               # else:
+               #     return jsonify({'error':'Terjadi kesalahan saat simpan data. '})
             except Exception as e:
                 return jsonify({'error':'Terjadi kesalahan saat menyimpan data. '+str(e.args)})
         else:
@@ -1394,6 +1398,19 @@ def ubahKolektif(idx):
         return render_template('ubah-kolektif.html',data=data,cname=cname)
 
 # blok modul==========================================================================
+@app.route('/listNota',methods=['POST','GET'])
+def listNota():
+    data=None
+    cname=None
+    if request.method=='POST':
+        pass
+    else:
+        cname=['#','Keterangan','Vendor','Tgl Nota','Ctrl']
+        sql="SELECT n.id AS ID,n.nomor AS `Nomor Nota`,v.id AS `ID Vendor`,v.nama AS `Nama Vendor`,n.nomor_dpb_kolektif AS `Nomor Kolektif`,n.tgl AS `Tangga`,n.mail_send,n.konten_surat AS `Isi Nota`,n.ket AS `Keterangan` FROM nota AS n LEFT OUTER JOIN vendor AS v ON v.id=n.id_vendor WHERE 1;"
+        cursor.execute(sql);
+        #cname=cursor.description
+        data=cursor.fetchall()
+        return render_template('list-nota.html',cname=cname,data=data)
 # blok modul==========================================================================
 # blok modul==========================================================================
 # blok modul==========================================================================

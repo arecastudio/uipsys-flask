@@ -23,6 +23,8 @@
 							Review Divisi
 						{% elif row[i]==1 %}
 							Review SDM
+						{% elif row[i]==2 %}
+							Kolektif SDM
 						{% else %}
 							Dikirim ke vendor (complete)
 						{% endif %}
@@ -36,29 +38,32 @@
 {%endif%}
 </table>
 </div>
-<div class="col-sm-6">
-	<div class="alert alert-success" role="alert">
+<div class="col-sm-7">
+
+
+
+
+			<div class="dropdown" style="float:right;">
+			  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				  <i class="fas fa-cog"></i>
+			  </button>
+			  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+				  <a  href="{{ url_for('listPermintaanInfo',nomor_surat=data[0][7]) }}"class="dropdown-item {%if data[0][6]>0%}disabled {%endif%}"  {%if data[0][6]>0%} onClick="return false;" {%endif%}><i class="fas fa-edit"></i>&nbsp;Edit Info Permintaan</a>
+			    <a href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="dropdown-item {%if data[0][6]>0%}disabled {%endif%}"  {%if data[0][6]>0%} onClick="return false;" {%endif%}><i class="fas fa-edit"></i>&nbsp;Edit List Permntaan</a>
+			    <a href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="dropdown-item {%if data[0][6]>0%}disabled {%endif%}"  {%if data[0][6]>0%} onClick="return false;" {%endif%}><i class="fas fa-trash"></i>&nbsp;Hapus Permintaan</a>
+			  </div>
+			</div>
+
+
+			<div style="float:clear;margin:10px;">&nbsp;</div>
+
+	<div class="alert alert-success" role="alert" style="" >
 	<h5 class="alert-heading">Deskripsi</h5>
 	<p class="mb-0">Untuk meng-<i>edit</i>, menghapus dan membatalkan permintaan, status permintaan harus dalam review divisi. Untuk permintaan yang sudah dikirimkan ke SDM, harus <i>unapproved</i> terlebih dahulu.</p>
 	</div>
 </div>
 </div>
 
-<div class="row">
-
-<div class="col-sm-6">
-
-<a style="" href="{{ url_for('listPermintaanInfo',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit info permintaan</a>
-
-<a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-primary{%endif%}"><i class="fas fa-edit"></i>&nbsp;Edit daftar barang</a>
-
-</div>
-
-<div class="col-sm-6">
-	<a style="float:right;" href="{{ url_for('listPermintaanItem',nomor_surat=data[0][7]) }}" class="btn btn-sm {% if data[0][6]>0 %}btn-outline-secondary disabled{%else%}btn-outline-danger{%endif%}"><i class="fas fa-trash"></i>&nbsp;Hapus / Batalkan Permintaan</a>
-</div>
-
-</div>
 
 <div class="row">
 <div class="col-sm-12">

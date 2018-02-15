@@ -9,7 +9,7 @@
 
 <span id="msg">&nbsp;</span>
 <div class="row">
-<div class="col-sm-5">
+<div class="col-sm-7">
 <table class="table table-sm table-striped">
 	<form id="form" name="form" role="form" method="POST">
 {%if data%}
@@ -18,7 +18,13 @@
 	<tr><td width="150px">Divisi/ Bidang</td><td width="1px">:</td><td>{{ row[0] }}</td></tr>
 	<tr><td width="150px">Periode</td><td width="1px">:</td><td>{{ row[1] }}</td></tr>
 	<tr><td width="150px">Nomor Surat</td><td width="1px">:</td><td><input type="text" id="tx_nomor" name="tx_nomor" class="form-control form-control-sm" value="{{ row[2] }}"/></td></tr>
-	<tr><td width="150px">Perihal</td><td width="1px">:</td><td><input type="text" id="tx_perihal" name="tx_perihal" class="form-control form-control-sm" value="{{ row[3] }}"/></td></tr>
+	<tr>
+		<td width="">Perihal</td>
+		<td width="1px">:</td>
+		<td>
+			<textarea id="tx_perihal" name="tx_perihal" class="form-control form-control-sm">{{ row[3]  }}</textarea>
+		</td>
+	</tr>
 	<tr><td width="150px">Operator</td><td width="1px">:</td><td>{{ row[4] }}</td></tr>
 	<tr><td width="150px">Tanggal</td><td width="1px">:</td><td>{{ row[5] }}</td></tr>
 	<tr><td width="150px">Status</td><td width="1px">:</td><td>			
@@ -38,9 +44,9 @@
 </div>
 
 <div class="row">
-<div class="col-sm-5">
-	<button type="button" id="btn-submit" class="btn btn-sm btn-outline-primary" style=""><i class="fas fa-save"></i>&nbsp;Simpan</button>
-	<button type="reset" id="btn-reset" class="btn btn-sm btn-outline-primary" style="float:right;"><i class="fas fa-sync"></i>&nbsp;Batal</button>
+<div class="col-sm-7">
+	<button type="button" id="btn-submit" class="btn btn-sm btn-outline-primary" style="float:right;"><i class="fas fa-save"></i>&nbsp;Simpan</button>
+	<button type="reset" id="btn-reset" class="btn btn-sm btn-outline-warning" style=""><i class="fas fa-sync"></i>&nbsp;Batal</button>
 </div>
 </div>
 

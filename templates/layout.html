@@ -55,12 +55,15 @@
 						<h6 class="card-title"><i class="fas fa-user"></i>&nbsp;{{session['fullname']}}</h6>
 						<p class="card-text">{{ session['nama_divisi'] }}</p>
                         <hr/>
-						<a href="#" class="text-black"><h6>Permintaan <span class="badge badge-secondary">3</span></h6></a>
-						<a href="#" class="text-black"><h6>Notifikasi <span class="badge badge-secondary">12</span></h6></a>
-						<a href="#" class="text-black"><h6>Item Baru <span class="badge badge-secondary">5</span></h6></a>
+						<!--a href="#" class="text-black"><h6>Permintaan <span class="badge badge-secondary">3</span></h6></a>
+						<a href="#" class="text-black"><h6>Notifikasi <span class="badge badge-secondary">12</span></h6></a-->
+						<a href="#" style="width:100%" class="btn btn-sm btn-outline-info">
+						<div class=""><span style="float:left;">Notifikasi</span> <span style="float:right;" class="badge badge-pill badge-danger">5</span></div>
+						</a>
                         <hr/>
 			<h6><a href="{{ url_for('listPermintaan')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Permintaan</a></h6>
 			<h6><a href="{{ url_for('listKolektif')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Kolektif</a></h6>
+			<h6><a href="{{ url_for('listNota')  }}" class="text-black"><i class="fas fa-table"></i>&nbsp;List Nota ke Vendor</a></h6>
                         <hr/>
                         <div>
 				<a href="{{ url_for('about')  }}" title="Informasi aplikasi">

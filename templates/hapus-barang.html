@@ -16,11 +16,11 @@ Yakin untuk hapus barang ini?
 		<tr><td>Keterangan</td><td>: {{row[4]}}</td></tr>
 	</table>
 <hr/>
-<form method="POST" action="/hapusBarang">
+<form method="POST" action="{{ url_for('hapusBarang',idx=row[5])  }}">
 	<input type="hidden" name="sid" value="{{ sid }}" />
 	<div class="btn-group" role="group">
 		<input type="submit" class="btn btn-outline btn-danger" name="" value="Hapus" />
-		<a href="/tableDataBarang" class="btn btn-outline btn-primary">Tidak</a>
+		<a href="{{ url_for('dataBarang')  }}" class="btn btn-outline btn-primary">Tidak</a>
 	</div>
 </form>
 

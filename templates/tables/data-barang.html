@@ -1,0 +1,72 @@
+
+
+				<table width="100%" class="table table-sm table-striped table-bordered table-hover" id="dataTables-example">
+					<thead class="thead-dark">
+						<tr>
+							<th>#</th>
+							<th>Nama</th>
+							<th>Satuan</th>
+							<th>Harga</th>
+							<th>Keterangan</th>
+							<th>Controller</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% set cnt = [1] %}
+					{% for row in data %}
+					<tr class="odd gradeX">
+						<td>{{ cnt[0] }}</td>
+						<td {%if row[5]!='no-image.png' %} style="color:blue;" {% endif %}>
+							{{ row[1] }}
+						</td>
+						<td class="center">{{ row[2] }}</td>
+						<td class="center">{{ row[3] }}</td>
+						<td>{{ row[4] }}</td>
+						<td class="center">
+							<button id="{{ row[0] }}" nama="{{ row[1]  }}" satuan="{{ row[2]  }}" harga="{{ row[3]  }}" ket="{{ row[4]  }}"   class="btn btn-sm btn-outline-warning btn-ubah" title="Ubah"><i class="fa fa-edit"></i></button>
+							&nbsp;&nbsp;
+							<a href="{{ url_for('hapusBarang',idx=row[6]) }}" class="btn btn-sm btn-outline-danger btn-hapus" title="Hapus" ><i class="fa fa-trash-alt"></i></a>
+						</td>
+					</tr>
+					{% if cnt.append(cnt.pop() + 1) %}{% endif %}
+					{% endfor %}
+					</tbody>
+				</table>
+
+
+<script type="text/javascript">
+	/*console.log("Aplikasi pertama menggunakan flask python.");*/
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true,
+		paginate:false
+        });
+
+
+	    $('.btn-ubah').click(function(e){
+		    var id=$(this).attr('id');
+		    var nama=$(this).attr('nama');
+		    var satuan=$(this).attr('satuan');
+		    var harga=$(this).attr('harga');
+		    var ket=$(this).attr('ket');
+		    console.log('id tombol: '+id);
+		    $('#tx_id').val(id);
+		    $('#tx_nama').val(nama);
+		    $('#tx_satuan').val(satuan);
+		    $('#tx_harga').val(harga);
+		    $('#tx_ket').val(ket);
+	    });
+
+/*
+	    $('#btn-batal').click(function(){
+		    $('#tx_id').val('');
+		    $('#tx_nama').val('');
+		    $('#tx_satuan').val('');
+		    $('#tx_harga').val('');
+		    $('#tx_ket').val('');
+	    });
+
+*/
+    });
+</script>
+

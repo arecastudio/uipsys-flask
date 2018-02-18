@@ -1,6 +1,8 @@
 import os
 import datetime
 import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from datetime import date
 #from mod_python import apache
 from dateutil.relativedelta import relativedelta
@@ -15,7 +17,7 @@ from werkzeug import secure_filename
 from functools import wraps
 from hashids import Hashids  # encode dan decode data value, bisa untuk url
 from form import FormLogin, FormDataBarang, FormDataVendor, FormDataBidang, FormManUser, FormOrder
-
+from celery import Celery
 
 app = Flask(__name__)
 
@@ -41,6 +43,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['jpg'])
 
 
+app.config.update(
+        CELERY_BROKER_URL='redis://127.0.0.1:6379/0',
+        CELERY_RESULT_BACKEND='redis://127.0.0.1:6379/0'
+        )
+celery=Celery(app.name,broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
 
 # blok fungsi=============================================================================================
 #def handler(req):
@@ -48,6 +56,10 @@ ALLOWED_EXTENSIONS = set(['jpg'])
 #    req.send_http_header()
 #    req.write("Hello World!")
 #    return apache.OK
+
+def getTanggal():
+    tgl=datetime.datetime.now()
+    return tgl.strftime("%d-%b-%Y %H:%M:%S")
 
 def formatBulan(args):
     # args harus string
@@ -113,24 +125,41 @@ class ClassOrder(object):
         self._satuan = _satuan
 
 
+@celery.task()
+def sendEmail(to,title,content,sql):
+    msg=MIMEMultipart()
+    gmail_user = ''  
+    passwd = 'pdam.!@#'
 
-def kirimEmail(tujuan,isi):
+#    body='ini adalah isi email'
+#    sent_from = gmail_user  
+#    to = 'humaspdamjpr@gmail.com'
+#    subject = 'OMG Super Important Message'
+#    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+#l       server.ehlo()
+#        server.login(gmail_user, gmail_password)
+#        server.sendmail(sent_from, to, body)
+#        server.close()
+
+    msg['from']='noreplyrobotmail@gmail.com'
+    msg['to']=to
+    msg['subject']=title
+    body=content
+    msg.attach(MIMEText(body,'html'))
     try:
-        gmail_user = 'noreplyrobotmail@gmail.com'  
-        gmail_password = 'pdam.!@#'
-        body='ini adalah isi email'
-        sent_from = gmail_user  
-        to = 'ondiisrail@gmail.com'
-        subject = 'OMG Super Important Message'
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server=smtplib.SMTP_SSL('smtp.gmail.com',465)
         server.ehlo()
-        server.login(gmail_user, gmail_password)
-        server.sendmail(sent_from, to, body)
-        server.close()
-        return 'Email berhasil terkirim.'
+        server.login(msg['from'],passwd)
+        server.sendmail(msg['from'],msg['to'],msg.as_string())
+        server.quit()
+
+        if sql!="":
+            cursor.execute(sql)
+
+        print('Email berhasil terkirim.')
     except Exception as e:
         #raise e
-        return 'Gagal terkirim. '+str(e)
+        print('Gagal terkirim. '+str(e))
 
 # blok fungsi=============================================================================================
 
@@ -212,6 +241,7 @@ def logout():
 @app.route('/about')
 @login_required
 def about():
+    #sendEmail.delay('humaspdamjpr@gmail.com','percobaan '+getTanggal(),'<h2>Ini adalah example mail send over python service.</h2>')
     return render_template('about.html')
 
 # blok modul==========================================================================
@@ -325,29 +355,39 @@ def hapusVendor():
 # blok modul==========================================================================
 
 
-@app.route('/hapusBarang', methods=['GET', 'POST'])
-def hapusBarang():
+@app.route('/hapusBarang/<string:idx>', methods=['GET', 'POST'])
+def hapusBarang(idx):
     if request.method == 'GET':
-        sid = request.args.get('id')
+        sid = idx#request.args.get('id')
         cursor.execute(
-            "SELECT id,nama,satuan,harga,ket FROM barang WHERE id=%s;", (sid))
+            "SELECT id,nama,satuan,harga,ket,MD5(id) FROM barang WHERE MD5(id)=%s;", (sid))
         data = cursor.fetchall()
         # return about()
         return render_template('hapus-barang.html', data=data)
     else:
-        sid = request.form['sid']
-        cursor.execute("DELETE FROM barang WHERE id=%s;", (sid))
+        sid = idx#request.form['sid']
+        cursor.execute("DELETE FROM barang WHERE MD5(id)=%s;", (sid))
         flash('Data berhasil dihapus.')
-        return tableDataBarang()
+        return redirect(url_for('dataBarang'))
+
+@app.route('/getTableDataBarang/<int:isJson>',methods=['POST'])
+def getTableDataBarang(isJson):
+    cursor.execute("SELECT id,nama,satuan,ROUND(harga,0),ket,nama_foto,MD5(id) from barang ORDER BY id ASC;")
+    row=cursor.fetchall()
+    if isJson==1:
+        return jsonify({'data_table': render_template('tables/data-barang.html',data=row) })
+    return render_template('tables/data-barang.html',data=row)
 
 
 @app.route('/dataBarang', methods=['POST', 'GET'])
 @login_required
 def dataBarang():
     row = None
+    data_table=None
     filename = 'no-image.png'
     form = FormDataBarang(request.form)
     #print (form.errors)
+
     if request.method == 'POST':
         _id = request.form['tx_id']
         _nama = request.form['tx_nama']
@@ -371,7 +411,8 @@ def dataBarang():
             else:
                 insertDataBarang(_nama, _satuan, _harga, _ket, filename)
             # redirect(url_for('dataBarang')) #agar dokumen refresh setelah submit
-            return jsonify({'success': 'Data Barang berhasil disimpan.'})
+            data_table=getTableDataBarang(0)
+            return jsonify({'success': 'Data Barang berhasil disimpan.','data_table':data_table})
         else:
             return jsonify({'error': 'Lengkapi data terlebih dahulu.'})
     else:
@@ -391,7 +432,9 @@ def dataBarang():
             else:
                 print('Data tidak ditemukan.')
                 flash('Data tidak ditemukan.')
-    return render_template('data-barang.html', form=form, data=row)
+    data_table=getTableDataBarang(1)
+    return render_template('data-barang.html', form=form, data=row,data_table=data_table)
+
 
 
 @app.route('/tableDataBarang', methods=['GET'])
@@ -817,6 +860,7 @@ def formPermintaan():
                 try:
                     cursor.execute(sql, (nomor, int(periode), alasan, int(
                         id_divisi), nama_divisi, nik_operator, nama_operator, jab_operator, nik_atasan, nama_atasan, jab_atasan))
+                    #sendEmail('ondiisrail@gmail.com','percobaan',sql)
                 except Exception as e:
                     #raise e
                     return jsonify({'error': '<h6>Terjadi kesalahan dalam penyimpanan data.</h6>Apakah nomor surat sudah pernah dipakai sebelumnya?<br/>Apakah permintaan untuk periode ini sudah ada?<hr/>'+str(e)})
@@ -1333,6 +1377,8 @@ def kirimVendor(idx):
             cursor.execute(sql2,idx)
             print('Berhasil simpan data nota kerjasama vendor.')
             #persiapkan fungsi kirim email ke vendor
+            sql_mail="UPDATE nota SET mail_send=1 WHERE nomor='"+ nomor +"';"
+            sendEmail.delay('samudranta@gmail.com','Judul Email','<h2>INi Bagus hahah</h2>',sql_mail)
             return jsonify({'success':'Berhasil simpan data.'})
         except Exception as e:
             #raise e

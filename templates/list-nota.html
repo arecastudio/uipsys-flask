@@ -29,6 +29,7 @@ List Nota Permintaan ke Vendor
 
 				{%if data%}{%set cnt=[1]%}
 				{%for d in data%}
+				<tr>
 				<td style="text-align:center;">{{cnt[0]}}</td>
 <td style="" width="40%">
 	Nomor Nota: {{d[1]}}<br/>
@@ -39,6 +40,7 @@ List Nota Permintaan ke Vendor
 <td style="">{{ d[6]  }}</td>
 <td style="">{{ d[7]  }}</td>
 {%if cnt.append(cnt.pop()+1) %} {% endif %}
+</tr>
 				{%endfor%}
 				{%endif%}
 

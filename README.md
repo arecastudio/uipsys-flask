@@ -1,5 +1,10 @@
 # UIPSys - Integrated System
-## Firs Python Web Application
+## Deskripsi
+
+Aplikasi Pengadaan Barang dan ATK yang disiapkan untuk kebutuhan perusahaan lokal, disesuaikan dengan work flow yang berjalan.
+Masing-masing perusahaan tentu memiliki aturan sendri dalam hal accessement dan approval berita acara.
+Berikut ini disajikan dalam bentuk aplikasi yang lebih memudahkan pekerjaan administrasi perusahaan,
+dilengkapi dengan system notifikasi otomatis dan pelaporan yang terpadu.
 
 ![logo](static/form-example.png)
 
